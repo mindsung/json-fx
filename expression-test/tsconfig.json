@@ -1,0 +1,16 @@
+{
+  "extends": "../ts-core/tsconfig.json",
+  "include": ["lib/**/*.ts", "src/**/*.ts"],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "paths": {
+      "@mindsung/expression": [
+        "lib/js-expression/public_api"
+      ]
+    }
+  }
+}

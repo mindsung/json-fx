@@ -1,0 +1,88 @@
+{
+  "somethingAboutBooks": {
+    "bestToWorst": [
+      {
+        "book": {
+          "id": 2,
+          "isbn": "9781449365035",
+          "title": "Speaking JavaScript",
+          "subtitle": "An In-Depth Guide for Programmers",
+          "author": {
+            "name": "Axel Rauschmayer",
+            "birthDate": "1997-04-29T00:00:00.000Z"
+          },
+          "published": "2014-02-01T00:00:00.000Z",
+          "publisher": { "name": "O'Reilly Media" },
+          "pages": 460,
+          "description": "Like it or not, JavaScript is everywhere these days-from browser to server to mobile-and now you, too, need to learn the language or dive deeper than you have. This concise book guides you into and through JavaScript, written by a veteran programmer who once found himself in the same position.",
+          "website": "http://speakingjs.com/",
+          "ratings": [{ "rating": 4, "comments": "Not bad" }]
+        },
+        "avgRating": 4
+      },
+      {
+        "book": {
+          "id": 0,
+          "isbn": "9781593275846",
+          "title": "Eloquent JavaScript, Second Edition",
+          "subtitle": "A Modern Introduction to Programming",
+          "author": { "name": "Marijn Haverbeke" },
+          "published": "2014-12-14T00:00:00.000Z",
+          "publisher": { "name": "No Starch Press" },
+          "pages": 472,
+          "description": "JavaScript lies at the heart of almost every modern web application, from social apps to the newest browser-based games. Though simple for beginners to pick up and play with, JavaScript is a flexible, complex language that you can use to build full-scale applications.",
+          "website": "http://eloquentjavascript.net/",
+          "ratings": [
+            { "rating": 4, "comments": "Pretty good" },
+            { "rating": 5, "comments": "Really good" },
+            { "rating": 1, "comments": "Total crap" },
+            { "rating": 3 }
+          ]
+        },
+        "avgRating": 3.25
+      }
+    ],
+    "worstToBest": [
+      {
+        "book": {
+          "id": 0,
+          "isbn": "9781593275846",
+          "title": "Eloquent JavaScript, Second Edition",
+          "subtitle": "A Modern Introduction to Programming",
+          "author": { "name": "Marijn Haverbeke" },
+          "published": "2014-12-14T00:00:00.000Z",
+          "publisher": { "name": "No Starch Press" },
+          "pages": 472,
+          "description": "JavaScript lies at the heart of almost every modern web application, from social apps to the newest browser-based games. Though simple for beginners to pick up and play with, JavaScript is a flexible, complex language that you can use to build full-scale applications.",
+          "website": "http://eloquentjavascript.net/",
+          "ratings": [
+            { "rating": 4, "comments": "Pretty good" },
+            { "rating": 5, "comments": "Really good" },
+            { "rating": 1, "comments": "Total crap" },
+            { "rating": 3 }
+          ]
+        },
+        "avgRating": 3.25
+      },
+      {
+        "book": {
+          "id": 2,
+          "isbn": "9781449365035",
+          "title": "Speaking JavaScript",
+          "subtitle": "An In-Depth Guide for Programmers",
+          "author": {
+            "name": "Axel Rauschmayer",
+            "birthDate": "1997-04-29T00:00:00.000Z"
+          },
+          "published": "2014-02-01T00:00:00.000Z",
+          "publisher": { "name": "O'Reilly Media" },
+          "pages": 460,
+          "description": "Like it or not, JavaScript is everywhere these days-from browser to server to mobile-and now you, too, need to learn the language or dive deeper than you have. This concise book guides you into and through JavaScript, written by a veteran programmer who once found himself in the same position.",
+          "website": "http://speakingjs.com/",
+          "ratings": [{ "rating": 4, "comments": "Not bad" }]
+        },
+        "avgRating": 4
+      }
+    ]
+  }
+}
