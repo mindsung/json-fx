@@ -148,7 +148,7 @@ function constMapParams(params: any[]) {
   return params.map(p => (isValueType(p) ? new ConstantExpression(p) : p));
 }
 
-export function createExpression(
+function createExpression(
   typeName: string,
   params: any[]
 ): Expression<any> {
@@ -170,7 +170,7 @@ export function createExpression(
   }
 }
 
-export function createExpressionWithInput(
+function createExpressionWithInput(
   typeName: string,
   input: Expression<any>,
   params: any[]
@@ -198,7 +198,7 @@ export interface ExpressionVariable {
   value: ValueType | Expression<any>;
 }
 
-export function withScopeVariables(
+function withScopeVariables(
   vars: ExpressionVariable[],
   expr: Expression<any>
 ) {
@@ -210,3 +210,17 @@ export function withScopeVariables(
     .forEach(v => expr.scope.addVariableExpression(v.name, v.value));
   return expr;
 }
+
+export const $withVars = (...vars: ExpressionVariable[]) => {
+  vars
+    return {
+      $f: (...params: any[]) => withScopeVariables(vars, createExpression(params[0],
+        params.length > 1 ? params.slice(1) : [])),
+      $fx: (...params: any[]) => withScopeVariables(vars, createExpressionWithInput(params[0],
+        params.length > 1 ? params[1] : null,
+        params.length > 2 ? params.slice(2) : []))
+    };
+};
+
+export const $f = (...params: any[]) => $withVars().$f(...params);
+export const $fx = (...params: any[]) => $withVars().$fx(...params);

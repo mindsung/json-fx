@@ -1,16 +1,9 @@
 import { sampleBookLibrary } from "./books";
-import { createExpression, createExpressionWithInput, ExpressionVariable, withScopeVariables, Expression } from "@mindsung/expression";
+import { $f, $fx, $withVars } from "@mindsung/expression";
 
 export const allSampleData = {
   bookLibrary: sampleBookLibrary
 };
-
-export const $f = (...params: any[]) => createExpression(params[0],
-  params.length > 1 ? params.slice(1) : []);
-export const $fx = (...params: any[]) => createExpressionWithInput(params[0],
-  params.length > 1 ? params[1] : null,
-  params.length > 2 ? params.slice(2) : []);
-export const $withVars = (vars: ExpressionVariable[], expr: Expression<any>) => withScopeVariables(vars, expr);
 
 export function foo() {
   const template = {
@@ -35,31 +28,31 @@ export function foo() {
   }
 
   const expr = $fx("_transform", allSampleData.bookLibrary,
-    $withVars([
+    $withVars(
       { name: "$books", value: $f("prop", "books") }
-    ], $f("object", [
-      { key: "somethingAboutBooks", value: $withVars([
+    ).$f("object", [
+      { key: "somethingAboutBooks", value: $withVars(
         { name: "$booksWithRatings", value: $fx("filter", $f("var", "$books"),
           $fx("and",
             $fx("neq", $fx("prop", $f("var", "$"), "ratings"), $f("var", "$null")),
             $fx("gt", $fx("count", $fx("prop", $f("var", "$"), "ratings")), 0)
           ))
         },
-        { name: "$booksAndRatings", value: $fx("map", $f("var", "$booksWithRatings"), $withVars([
+        { name: "$booksAndRatings", value: $fx("map", $f("var", "$booksWithRatings"), $withVars(
             { name: "$book", value: $f("var", "$") }
-          ], $f("object",
+          ).$f("object",
           [
             { key: "book", value: $f("var", "$") },
             { key: "avgRating", value: $fx("avg", $f("prop", "ratings"), $f("prop", "rating")) }
-          ])))
+          ]))
         }
-      ], $f("object", [
+      ).$f("object", [
         { key: "bestToWorst", value: $fx("sort", $f("var", "$booksAndRatings"),
           $f("prop", "avgRating"), "desc") },
         { key: "worstToBest", value: $fx("sort", $f("var", "$booksAndRatings"),
           $f("prop", "avgRating")) }
-      ]))
-    }]))
+      ])
+    }])
   );
 
   return expr.evaluate();

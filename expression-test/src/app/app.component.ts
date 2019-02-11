@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { allSampleData, foo } from "../sample-data/all-sample-data";
-import { createExpression, createExpressionWithInput } from "@mindsung/expression";
+import { $f, $fx, $withVars } from "@mindsung/expression";
 
 @Component({
   selector: "app-root",
@@ -10,9 +10,10 @@ import { createExpression, createExpressionWithInput } from "@mindsung/expressio
 export class AppComponent implements OnInit {
   ngOnInit() {
     // $f(name: string, exprParams...)
-    window["$f"] = (...params: any[]) => createExpression(params[0], params.length > 1 ? params.slice(1) : []);
+    window["$f"] = $f;
     // $fx(name: string, input: Expression<any>, exprParams...)
-    window["$fx"] = (...params: any[]) => createExpressionWithInput(params[0], params.length > 1 ? params[1] : null, params.length > 2 ? params.slice(2) : []);
+    window["$fx"] = $fx;
+    window["$withVars"] = $withVars;
     window["$foo"] = foo;
     // window["$parser"] = new ExpressionParser();
     window["$sample"] = allSampleData;
