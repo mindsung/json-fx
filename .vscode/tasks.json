@@ -5,6 +5,7 @@
       "label": "js-expression-test build and run",
       "type": "npm",
       "script": "start",
+      "path": "expression-test/",
       "group": {
         "kind": "build",
         "isDefault": true
