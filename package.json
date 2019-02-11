@@ -1,0 +1,22 @@
+{
+  "name": "@mindsung/expression",
+  "version": "0.1.0",
+  "description": "MindSung Expression Library",
+  "main": "public_api.js",
+  "author": "Robb Eads",
+  "contributors": [
+    "Aaron Eads"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.120",
+    "tslint": "~5.9.1",
+    "typescript": "^3.2.4"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}
