@@ -2,7 +2,7 @@ import { Expression } from "../core/expression";
 
 export class VariableExpression<TOut> extends Expression<TOut> {
   constructor(private name: string) {
-    super();
+    super(false);
   }
 
   protected out() {

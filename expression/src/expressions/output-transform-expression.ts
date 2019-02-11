@@ -4,7 +4,7 @@ import { ConstantExpression } from "./constant-expression";
 
 export class OutputTransformExpression extends TransformExpression<any, any> {
     constructor(input: Expression<any>, private output: Expression<any>) {
-      super(input, [output]);
+      super(true, input, [output]);
       if (input == null) {
         throw new Error("Output transform requires an input expression.");
       }

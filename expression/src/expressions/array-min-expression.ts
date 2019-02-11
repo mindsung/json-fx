@@ -4,7 +4,7 @@ import { TransformExpression } from "../core/transform-expression";
 
 export class ArrayMinExpression<TIn extends Array<TItem>, TItem, TValue extends number | string | Date> extends ArrayExpression<TIn, TItem, TValue> {
   constructor(input: Expression<TIn>, private itemValue: TransformExpression<TItem, TValue>) {
-    super(input);
+    super(true, input);
   }
 
   private minOf(val1: TValue, val2: TValue) {

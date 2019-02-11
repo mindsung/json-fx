@@ -7,7 +7,7 @@ export type SortDirection = "asc" | "desc";
 
 export class ArraySortExpression<TIn extends Array<TItem>, TItem, TValue extends ValueType> extends ArrayExpression<TIn, TItem, Array<TItem>> {
   constructor(input: Expression<TIn>, private itemValue: TransformExpression<TItem, TValue>, private direction?: Expression<SortDirection>) {
-    super(input, [direction]);
+    super(true, input, [direction]);
   }
 
   transform(inputValue: TIn) {

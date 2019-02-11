@@ -3,7 +3,7 @@ import { TransformExpression } from "../core/transform-expression";
 
 export class PropertyExpression<TIn, TOut> extends TransformExpression<TIn, TOut> {
   constructor(input: Expression<TIn>, private path: Expression<string>) {
-    super(input, [path]);
+    super(false, input, [path]);
   }
 
   transform(inputValue: TIn) {

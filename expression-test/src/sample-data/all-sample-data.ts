@@ -16,7 +16,9 @@ export function foo() {
   const template = {
     "$books": "$:prop(books)",
     "somethingAboutBooks": {
-      "$booksWithRatings": "$books:filter($:prop(ratings) != $null && $$:prop(ratings):count > 0))",
+      "$booksWithRatings": "$books:filter($:prop(ratings) != $null && $:prop(ratings):count > 0))",
+      // Above equivalent to:
+      // "$booksWithRatings": "$books:filter($:prop(ratings):neq($null):and($:prop(ratings):count:gt(0)))",
       "$booksAndRatings": {
         "$booksWithRatings:map": {
           "@0": {
@@ -38,25 +40,18 @@ export function foo() {
     ], $f("object", [
       { key: "somethingAboutBooks", value: $withVars([
         { name: "$booksWithRatings", value: $fx("filter", $f("var", "$books"),
-          $withVars([
-            // PROBLEM: This evaluates to null because inputs' scope is set to the owner's parent, not the owner.
-            // (If set to the owner, infinite recursion occurs resulting in a stack overflow.)
-            // So for the first level under an item-based array operation, each of which gets a new scope representing an item,
-            // it will resolve to null, not the item.
-            { name: "$book", value: $f("var", "$") }
-          ],
           $fx("and",
             $fx("neq", $fx("prop", $f("var", "$"), "ratings"), $f("var", "$null")),
-            // PROBLEM: with nested, single operation logic or math expressions (or any that follow that pattern),
-            // each level deeper requires a deeper level of the input variable: $, $$, $$$, etc.
-            $fx("gt", $fx("count", $fx("prop", $f("var", "$$"), "ratings")), 0)
-          )))
+            $fx("gt", $fx("count", $fx("prop", $f("var", "$"), "ratings")), 0)
+          ))
         },
-        { name: "$booksAndRatings", value: $fx("map", $f("var", "$booksWithRatings"), $f("object",
+        { name: "$booksAndRatings", value: $fx("map", $f("var", "$booksWithRatings"), $withVars([
+            { name: "$book", value: $f("var", "$") }
+          ], $f("object",
           [
             { key: "book", value: $f("var", "$") },
             { key: "avgRating", value: $fx("avg", $f("prop", "ratings"), $f("prop", "rating")) }
-          ]))
+          ])))
         }
       ], $f("object", [
         { key: "bestToWorst", value: $fx("sort", $f("var", "$booksAndRatings"),

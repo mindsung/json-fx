@@ -5,11 +5,12 @@ const EXPRESSION_CLASS_TOKEN = "_@@MINDSUNG_EXPRESSION_CLASS";
 export abstract class Expression<TOut> {
   private __expression_class_token = EXPRESSION_CLASS_TOKEN;
 
-  constructor(scopeParams: any[] = []) {
+  constructor(private createScope: boolean, scopeParams: any[] = []) {
+    this.scope = new ExpressionScope(!createScope);
     this.addToScope(scopeParams);
   }
 
-  public scope = new ExpressionScope();
+  public readonly scope: ExpressionScope;
 
   public addToScope(vals: any[]): Expression<TOut> {
     vals.forEach(val => {
@@ -40,7 +41,7 @@ export function isExpression(value: any): value is Expression<any> {
 
 class ExpressionValueCache<TOut> extends Expression<TOut> {
   constructor(public expr: Expression<TOut>) {
-    super();
+    super(false);
   }
 
   private cachedValue: TOut;
@@ -65,6 +66,8 @@ class ExpressionValueCache<TOut> extends Expression<TOut> {
 }
 
 export class ExpressionScope {
+  constructor(private proxyParent: boolean) {}
+
   public parentScope: ExpressionScope = null;
   private expressions: ExpressionValueCache<any>[] = [];
   private variables: { [ key: string ]: ExpressionValueCache<any> } = {};
@@ -81,6 +84,9 @@ export class ExpressionScope {
   }
 
   public addVariableExpression(name: string, expr: Expression<any>) {
+    if (this.proxyParent) {
+      throw new Error("Variables may only be added to scoped expressions.");
+    }
     if (!name || !name.startsWith("$")) {
       throw new Error(`Invalid expression variable name "${name}": variable names must begin with "$".`);
     }
@@ -136,7 +142,7 @@ export class ExpressionScope {
       this.inputCache.uncache();
     }
     this.expressions.forEach(exprCache => {
-      exprCache.expr.scope.parentScope = this;
+      exprCache.expr.scope.parentScope = this.proxyParent ? this.parentScope : this;
       exprCache.uncache();
     });
   }

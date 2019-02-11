@@ -7,7 +7,7 @@ export interface KeyValueExpressionPair {
 
 export class ObjectExpression extends Expression<{}> {
   constructor(private kvs: Array<{ key: Expression<string>, value: Expression<any> }>) {
-    super(kvs.map(kv => kv.key as Expression<any>).concat(kvs.map(kv => kv.value)));
+    super(true, kvs.map(kv => kv.key as Expression<any>).concat(kvs.map(kv => kv.value)));
   }
 
   protected out() {

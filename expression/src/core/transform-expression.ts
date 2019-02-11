@@ -5,8 +5,8 @@ const TRANSFORM_EXPRESSION_CLASS_TOKEN = "_@@MINDSUNG_TRANSFORM_EXPRESSION_CLASS
 export abstract class TransformExpression<TIn, TOut> extends Expression<TOut> {
   private __transform_expression_class_token = TRANSFORM_EXPRESSION_CLASS_TOKEN;
 
-  constructor(input: Expression<TIn>, scopeParams: Expression<any>[] = []) {
-    super(scopeParams);
+  constructor(createScope: boolean, input: Expression<TIn>, scopeParams: Expression<any>[] = []) {
+    super(createScope, scopeParams);
     this.scope.setInputExpression(input);
   }
 

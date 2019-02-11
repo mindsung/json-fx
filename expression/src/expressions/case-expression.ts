@@ -5,7 +5,7 @@ export class CaseExpression<TOut> extends Expression<TOut> {
     protected cases: Array<{ caseIf: Expression<boolean>; caseThen: Expression<TOut> }>,
     protected caseElse: Expression<TOut>
   ) {
-    super([cases, caseElse]);
+    super(true, [cases, caseElse]);
   }
 
   protected out() {

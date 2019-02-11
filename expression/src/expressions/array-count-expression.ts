@@ -3,7 +3,7 @@ import { TransformExpression } from "../core/transform-expression";
 
 export class ArrayCountExpression<TIn extends Array<any>> extends TransformExpression<TIn, number> {
   constructor(input: Expression<TIn>) {
-    super(input);
+    super(true, input);
   }
 
   transform(inputValue: TIn) {
