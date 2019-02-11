@@ -9,13 +9,10 @@ import { $f, $fx, $withVars } from "@mindsung/expression";
 })
 export class AppComponent implements OnInit {
   ngOnInit() {
-    // $f(name: string, exprParams...)
     window["$f"] = $f;
-    // $fx(name: string, input: Expression<any>, exprParams...)
     window["$fx"] = $fx;
     window["$withVars"] = $withVars;
     window["$foo"] = foo;
-    // window["$parser"] = new ExpressionParser();
     window["$sample"] = allSampleData;
     window["$toJson"] = JSON.stringify;
     window["$fromJson"] = (json: string) => {
