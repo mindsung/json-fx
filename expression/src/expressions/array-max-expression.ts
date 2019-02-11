@@ -3,7 +3,7 @@ import { ArrayExpression } from "../core/array-expression";
 import { TransformExpression } from "../core/transform-expression";
 
 export class ArrayMaxExpression<TIn extends Array<TItem>, TItem, TValue extends number | string | Date> extends ArrayExpression<TIn, TItem, TValue> {
-  constructor(input: Expression<TIn>, private params: [ TransformExpression<TItem, TValue> ]) {
+  constructor(input: Expression<TIn>, private itemValue: TransformExpression<TItem, TValue>) {
     super(input);
   }
 
@@ -17,7 +17,7 @@ export class ArrayMaxExpression<TIn extends Array<TItem>, TItem, TValue extends 
 
   transform(inputValue: TIn) {
     let max: TValue = null;
-    inputValue.forEach(item => max = this.maxOf(max, this.evaluateForItem(item, this.params[0])));
+    inputValue.forEach(item => max = this.maxOf(max, this.evaluateForItem(item, this.itemValue)));
     return max;
   }
 }

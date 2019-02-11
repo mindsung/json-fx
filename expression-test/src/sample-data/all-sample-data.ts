@@ -16,7 +16,7 @@ export function foo() {
   const template = {
     "$books": "$:prop(books)",
     "somethingAboutBooks": {
-      "$booksWithRatings": "$books:filter($:prop(ratings) != $null && $:prop(ratings):count > 0))",
+      "$booksWithRatings": "$books:filter($:prop(ratings) != $null && $$:prop(ratings):count > 0))",
       "$booksAndRatings": {
         "$booksWithRatings:map": {
           "@0": {
@@ -38,9 +38,9 @@ export function foo() {
     ], $f("object", [
       { key: "somethingAboutBooks", value: $withVars([
         { name: "$booksWithRatings", value: $fx("filter", $f("var", "$books"),
-          $f("and",
-            $f("compare", $f("prop", "ratings"), "neq", $f("var", "$null")),
-            $f("compare", $fx("count", $f("prop", "ratings")), "gt", 0)
+          $fx("and",
+            $fx("neq", $fx("prop", $f("var", "$"), "ratings"), $f("var", "$null")),
+            $fx("gt", $fx("count", $fx("prop", $f("var", "$$"), "ratings")), 0)
           ))
         },
         { name: "$booksAndRatings", value: $fx("map", $f("var", "$booksWithRatings"), $f("object",

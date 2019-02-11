@@ -2,14 +2,13 @@ import { Expression } from "../core/expression";
 import { TransformExpression } from "../core/transform-expression";
 
 export class PropertyExpression<TIn, TOut> extends TransformExpression<TIn, TOut> {
-  constructor(input: Expression<TIn>, private params: [ Expression<string> ]) {
-    super(input, params);
+  constructor(input: Expression<TIn>, private path: Expression<string>) {
+    super(input, [path]);
   }
 
   transform(inputValue: TIn) {
     let out = inputValue as any;
-    const pathExpr = this.params.length > 0 ? this.params[0] : null;
-    let pathValue = pathExpr != null ? (pathExpr.evaluate() || "") : "";
+    let pathValue = this.path != null ? (this.path.evaluate() || "") : "";
     if (pathValue.startsWith(".")) {
       pathValue = pathValue.substring(1);
     }

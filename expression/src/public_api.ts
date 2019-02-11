@@ -8,9 +8,7 @@ export * from "./expressions/variable-expression";
 export * from "./expressions/object-expression";
 export * from "./expressions/property-expression";
 export * from "./expressions/case-expression";
-export * from "./expressions/logical-compare-expression";
-export * from "./expressions/logical-and-expression";
-export * from "./expressions/logical-or-expression";
+export * from "./expressions/logical-expressions";
 
 export * from "./expressions/array-count-expression";
 export * from "./expressions/array-filter-expression";
