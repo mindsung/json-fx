@@ -6,9 +6,11 @@ export interface KeyValueExpressionPair {
 }
 
 export class ObjectExpression extends Expression<{}> {
-  constructor(private kvs: Array<{ key: Expression<string>, value: Expression<any> }>) {
+  constructor(...kvs: KeyValueExpressionPair[]) {
     super(true, kvs.map(kv => kv.key as Expression<any>).concat(kvs.map(kv => kv.value)));
+    this.kvs = kvs;
   }
+  private kvs: KeyValueExpressionPair[];
 
   protected out() {
     const out = {};

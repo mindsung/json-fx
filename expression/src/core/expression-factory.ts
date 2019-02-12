@@ -58,14 +58,14 @@ const expressionFactoryMap: { [key: string]: ExpressionMapItem } = {
   object: {
     type: ObjectExpression,
     isTransform: false,
-    factory: (params: [KeyValueExpressionPair[]]) => {
-      const mappedKvs = params[0].map(kv => ({
+    factory: (params: KeyValueExpressionPair[]) => {
+      const mappedKvs = params.map(kv => ({
         key: isString(kv.key) ? new ConstantExpression(kv.key) : kv.key,
         value: isValueType(kv.value)
           ? new ConstantExpression(kv.value)
           : kv.value
       }));
-      return new ObjectExpression(mappedKvs);
+      return new ObjectExpression(...mappedKvs);
     }
   },
   var: {

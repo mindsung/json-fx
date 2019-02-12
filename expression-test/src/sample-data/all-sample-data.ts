@@ -9,16 +9,16 @@ export function foo() {
   const template = {
     "$books": "$.books",
     "somethingAboutBooks": {
-      "$booksWithRatings": "$books:filter($.ratings != $null && $.ratings:count > 0))",
+      "$booksWithRatings": "$books:filter($.ratings != $null && $.ratings:count > 0)",
       // Above equivalent to:
-      // "$booksWithRatings": "$books:filter($.ratings):neq($null):and($.ratings:count:gt(0)))",
+      // "$booksWithRatings": "$books:filter($.ratings:neq($null):and($.ratings:count:gt(0)))",
       "$booksAndRatings": {
+        // Need a clean intuitive abbreviated syntax for indicating an array mapping,
+        // e.g. something that includes [*] somewhere?
         "$booksWithRatings:map": {
-          "@0": {
-            ":object": {
-              "book": "$",
-              "avgRating": "$.ratings:avg($.rating)"
-            }
+          "$": {
+            "book": "$.title",
+            "avgRating": "[$].ratings:avg([$].rating)"
           }
         }
       },
@@ -30,29 +30,40 @@ export function foo() {
   const expr = $fx("_transform", allSampleData.bookLibrary,
     $withVars(
       { name: "$books", value: $f("prop", "books") }
-    ).$f("object", [
-      { key: "somethingAboutBooks", value: $withVars(
-        { name: "$booksWithRatings", value: $fx("filter", $f("var", "$books"),
+    )
+    .$f("object", {
+      key: "somethingAboutBooks",
+      value: $withVars({
+        name: "$booksWithRatings",
+        value: $fx("filter", $f("var", "$books"),
           $fx("and",
             $fx("neq", $fx("prop", $f("var", "$"), "ratings"), $f("var", "$null")),
             $fx("gt", $fx("count", $fx("prop", $f("var", "$"), "ratings")), 0)
           ))
-        },
-        { name: "$booksAndRatings", value: $fx("map", $f("var", "$booksWithRatings"), $withVars(
-            { name: "$book", value: $f("var", "$") }
-          ).$f("object",
-          [
-            { key: "book", value: $f("var", "$") },
-            { key: "avgRating", value: $fx("avg", $f("prop", "ratings"), $f("prop", "rating")) }
-          ]))
+        }, {
+          name: "$booksAndRatings",
+          value: $fx("map", $f("var", "$booksWithRatings"),
+            $withVars(
+              { name: "$book", value: $f("var", "$") }
+            )
+            .$f("object",
+              { key: "book", value: $f("var", "$") },
+              { key: "avgRating", value: $fx("avg", $f("prop", "ratings"), $f("prop", "rating")) }
+            )
+          )
         }
-      ).$f("object", [
-        { key: "bestToWorst", value: $fx("sort", $f("var", "$booksAndRatings"),
-          $f("prop", "avgRating"), "desc") },
-        { key: "worstToBest", value: $fx("sort", $f("var", "$booksAndRatings"),
-          $f("prop", "avgRating")) }
-      ])
-    }])
+      )
+      .$f("object", {
+        key: "bestToWorst",
+        value: $fx("sort", $f("var", "$booksAndRatings"),
+          $f("prop", "avgRating"), "desc"
+        )
+      }, {
+        key: "worstToBest",
+        value: $fx("sort", $f("var", "$booksAndRatings"),
+          $f("prop", "avgRating"))
+      })
+    })
   );
 
   return expr.evaluate();
