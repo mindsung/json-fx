@@ -7,23 +7,23 @@ export const allSampleData = {
 
 export function foo() {
   const template = {
-    "$books": "$:prop(books)",
+    "$books": "$.books",
     "somethingAboutBooks": {
-      "$booksWithRatings": "$books:filter($:prop(ratings) != $null && $:prop(ratings):count > 0))",
+      "$booksWithRatings": "$books:filter($.ratings != $null && $.ratings:count > 0))",
       // Above equivalent to:
-      // "$booksWithRatings": "$books:filter($:prop(ratings):neq($null):and($:prop(ratings):count:gt(0)))",
+      // "$booksWithRatings": "$books:filter($.ratings):neq($null):and($.ratings:count:gt(0)))",
       "$booksAndRatings": {
         "$booksWithRatings:map": {
           "@0": {
             ":object": {
               "book": "$",
-              "avgRating": "$:prop(ratings):avg(:prop(rating))"
+              "avgRating": "$.ratings:avg($.rating)"
             }
           }
         }
       },
-      "bestToWorst": "$booksAndRatings:sort($:prop(avgRating), desc)",
-      "worstToBest": "$booksAndRatings:sort($:prop(avgRating))"
+      "bestToWorst": "$booksAndRatings:sort($.avgRating, desc)",
+      "worstToBest": "$booksAndRatings:sort($.avgRating)"
     }
   }
 
