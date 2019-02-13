@@ -16,9 +16,9 @@ export class OutputTransformExpression extends TransformExpression<any, any> {
       // Set special constant variables.
       this.scope.addVariableExpression("$null", new ConstantExpression(null));
     }
-  
+
     transform() {
       return this.output.evaluate();
     }
   }
-  
+

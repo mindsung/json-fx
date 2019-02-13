@@ -212,7 +212,7 @@ function withScopeVariables(
 }
 
 export const $withVars = (...vars: ExpressionVariable[]) => {
-  vars
+  vars;
     return {
       $f: (...params: any[]) => withScopeVariables(vars, createExpression(params[0],
         params.length > 1 ? params.slice(1) : [])),

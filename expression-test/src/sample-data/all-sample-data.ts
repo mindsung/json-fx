@@ -25,7 +25,7 @@ export function foo() {
       "bestToWorst": "$booksAndRatings:sort($.avgRating, desc)",
       "worstToBest": "$booksAndRatings:sort($.avgRating)"
     }
-  }
+  };
 
   const expr = $fx("_transform", allSampleData.bookLibrary,
     $withVars(

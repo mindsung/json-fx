@@ -15,8 +15,8 @@ export class ArraySortExpression<TIn extends Array<TItem>, TItem, TValue extends
     // inputValue.concat() will clone the array. Array.sort mutates the existing array, not what we want.
     return inputValue.concat().sort((item1, item2) => {
       return this.evaluateForItem(item1, this.itemValue) < this.evaluateForItem(item2, this.itemValue)
-        ? (directionValue == "asc" ? -1 : 1)
-        : (directionValue == "asc" ? 1 : -1);
+        ? (directionValue === "asc" ? -1 : 1)
+        : (directionValue === "asc" ? 1 : -1);
     });
   }
 }

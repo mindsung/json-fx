@@ -1,8 +1,8 @@
 import { Expression } from "../core/expression";
 
 export interface KeyValueExpressionPair {
-  key: Expression<string>,
-  value: Expression<any>
+  key: Expression<string>;
+  value: Expression<any>;
 }
 
 export class ObjectExpression extends Expression<{}> {
