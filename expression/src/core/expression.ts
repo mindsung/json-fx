@@ -26,7 +26,7 @@ export abstract class Expression<TOut> {
     });
     return this;
   }
-  
+
   protected abstract out(): TOut;
 
   public evaluate() {
@@ -75,10 +75,10 @@ export class ExpressionScope {
   public setInputExpression(input: Expression<any>) {
     this.inputCache = input != null ? new ExpressionValueCache(input) : null;
   }
-  private inputCache: ExpressionValueCache<any>
+  private inputCache: ExpressionValueCache<any>;
 
   public addExpression(expr: Expression<any>) {
-    var exprCache = new ExpressionValueCache(expr);
+    const exprCache = new ExpressionValueCache(expr);
     this.expressions.push(exprCache);
     return exprCache;
   }
@@ -90,7 +90,7 @@ export class ExpressionScope {
     if (!name || !name.startsWith("$")) {
       throw new Error(`Invalid expression variable name "${name}": variable names must begin with "$".`);
     }
-    var exprCache = this.addExpression(expr);
+    const exprCache = this.addExpression(expr);
     this.variables[name] = exprCache;
     return exprCache;
   }
@@ -104,7 +104,7 @@ export class ExpressionScope {
   }
 
   private traverseScopeForVariable(name: string, occurrence: number): ExpressionValueCache<any> {
-    const ref = name == "$" ? (this.inputCache != null ? this.inputCache : null) : this.variables[name];
+    const ref = name === "$" ? (this.inputCache != null ? this.inputCache : null) : this.variables[name];
     return ref != null
       ? occurrence <= 1
         ? ref
@@ -116,7 +116,7 @@ export class ExpressionScope {
   }
 
   public static isInputVariableName(name: string) {
-    return [].every.call(name, (c: string) => c == "$");
+    return [].every.call(name, (c: string) => c === "$");
   }
 
   private getVariable(name: string): ExpressionValueCache<any> {
