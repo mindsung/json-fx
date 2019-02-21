@@ -1,5 +1,5 @@
-import { PxNode } from "./px-node";
-var PxTokenizer = /** @class */ (function () {
+import { FxNode } from "./fx-node";
+var FxTokenizer = /** @class */ (function () {
     function PxTokenizer() {
     }
     PxTokenizer.classify = function (token) {
@@ -48,7 +48,7 @@ var PxTokenizer = /** @class */ (function () {
         }
     };
     PxTokenizer.prototype.evaluate = function (expr) {
-        var tokens = [new PxNode()];
+        var tokens = [new FxNode()];
         var lastToken = tokens[0];
         var split = function (next) {
             lastToken = next;
@@ -56,11 +56,11 @@ var PxTokenizer = /** @class */ (function () {
         };
         var isLiteral = false;
         for (var i = 0; i < expr.length; i++) {
-            var nextToken = new PxNode(expr[i]);
+            var nextToken = new FxNode(expr[i]);
             PxTokenizer.classify(nextToken);
             if (nextToken.isTagged('literal')) {
                 isLiteral = !isLiteral;
-                split(new PxNode());
+                split(new FxNode());
             }
             else if (PxTokenizer.canMergeTokens(lastToken, nextToken) || isLiteral) {
                 PxTokenizer.mergeTokens(lastToken, nextToken);
@@ -73,5 +73,5 @@ var PxTokenizer = /** @class */ (function () {
     };
     return PxTokenizer;
 }());
-export { PxTokenizer };
-//# sourceMappingURL=px-tokenizer.js.map
+export { FxTokenizer };
+//# sourceMappingURL=fx-tokenizer.js.map

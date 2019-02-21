@@ -1,9 +1,9 @@
-import { PxNode } from "./px-node";
-var PxExpressionParser = /** @class */ (function () {
+import { FxNode } from "./fx-node";
+var FxExpressionParser = /** @class */ (function () {
     function PxExpressionParser() {
     }
     PxExpressionParser.nestParameters = function (root, buffer) {
-        var paramGroup = new PxNode('@param', 'parameter', 'group');
+        var paramGroup = new FxNode('@param', 'parameter', 'group');
         while (buffer.length > 0) {
             paramGroup.addChild(buffer.shift());
         }
@@ -34,5 +34,5 @@ var PxExpressionParser = /** @class */ (function () {
     };
     return PxExpressionParser;
 }());
-export { PxExpressionParser };
-//# sourceMappingURL=px-expression-parser.js.map
+export { FxExpressionParser };
+//# sourceMappingURL=fx-expression-parser.js.map

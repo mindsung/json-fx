@@ -1,5 +1,5 @@
-import { PxNode } from "./px-node";
-var PxGrouper = /** @class */ (function () {
+import { FxNode } from "./fx-node";
+var FxGrouper = /** @class */ (function () {
     function PxGrouper() {
     }
     PxGrouper.bracketsMatch = function (open, close) {
@@ -30,7 +30,7 @@ var PxGrouper = /** @class */ (function () {
         }
     };
     PxGrouper.prototype.evaluate = function (tokens) {
-        var global = new PxNode('global', 'global');
+        var global = new FxNode('global', 'global');
         var root = global;
         var lastToken = null;
         var bracketStack = [];
@@ -59,5 +59,5 @@ var PxGrouper = /** @class */ (function () {
     };
     return PxGrouper;
 }());
-export { PxGrouper };
-//# sourceMappingURL=px-grouper.js.map
+export { FxGrouper };
+//# sourceMappingURL=fx-grouper.js.map

@@ -1,4 +1,4 @@
-var PxOperator = /** @class */ (function () {
+var FxOperator = /** @class */ (function () {
     function PxOperator(symbol, expr, precedence, assoc) {
         if (assoc === void 0) { assoc = 'left'; }
         this.symbol = symbol;
@@ -8,5 +8,5 @@ var PxOperator = /** @class */ (function () {
     }
     return PxOperator;
 }());
-export { PxOperator };
-//# sourceMappingURL=px-operator.js.map
+export { FxOperator };
+//# sourceMappingURL=fx-addOperator.js.map

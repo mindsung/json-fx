@@ -1,12 +1,12 @@
-import { PxNode } from "./px-node";
-import { PxOperator } from "./px-operator";
-var PxOperatorParser = /** @class */ (function () {
+import { FxNode } from "./fx-node";
+import { FxOperator } from "./fx-operator";
+var FxOperatorParser = /** @class */ (function () {
     function PxOperatorParser() {
     }
     PxOperatorParser.shiftOperatorStack = function (operatorStack, terms) {
         var item = operatorStack.shift();
         if (terms.length !== 2) {
-            throw new Error("Expected two arguments to operator \"" + item.op.symbol + "\"");
+            throw new Error("Expected two arguments to addOperator \"" + item.op.symbol + "\"");
         }
         if (item.op.symbol === '=') {
             terms.shift().addChild(terms.shift());
@@ -14,7 +14,7 @@ var PxOperatorParser = /** @class */ (function () {
         }
         else {
             for (var i = 0; i < 2; i++) {
-                var param = new PxNode('@param', 'parameter');
+                var param = new FxNode('@param', 'parameter');
                 item.node.addChild(param).addChild(terms.shift());
             }
         }
@@ -28,7 +28,7 @@ var PxOperatorParser = /** @class */ (function () {
         var terms = [];
         root.forEachChild(function (index, node) {
             if (node.isTagged('operator')) {
-                var op = PxOperatorParser.operators[node.value] || new PxOperator(node.value, ':undefined', 99);
+                var op = PxOperatorParser.operators[node.value] || new FxOperator(node.value, ':undefined', 99);
                 while (operatorStack.length > 0 && operatorStack[0].op.precedence > op.precedence) {
                     PxOperatorParser.shiftOperatorStack(operatorStack, terms);
                 }
@@ -43,21 +43,21 @@ var PxOperatorParser = /** @class */ (function () {
         }
     };
     PxOperatorParser.operators = {
-        '=': new PxOperator('=', ':set', 0),
-        '&&': new PxOperator('&&', ':and', 1),
-        '||': new PxOperator('||', ':or', 1),
-        '==': new PxOperator('==', ':equalTo', 2),
-        '!=': new PxOperator('!=', ':notEqualTo', 2),
-        '<': new PxOperator('<', ':lessThan', 2),
-        '<=': new PxOperator('<=', ':lessThanOrEqualTo', 2),
-        '>': new PxOperator('>', ':greaterThan', 2),
-        '>=': new PxOperator('>=', ':greaterThanOrEqualTo', 2),
-        '+': new PxOperator('+', ':add', 3),
-        '-': new PxOperator('-', ':sub', 3),
-        '*': new PxOperator('*', ':mul', 4),
-        '/': new PxOperator('/', ':div', 4)
+        '=': new FxOperator('=', ':set', 0),
+        '&&': new FxOperator('&&', ':and', 1),
+        '||': new FxOperator('||', ':or', 1),
+        '==': new FxOperator('==', ':equalTo', 2),
+        '!=': new FxOperator('!=', ':notEqualTo', 2),
+        '<': new FxOperator('<', ':lessThan', 2),
+        '<=': new FxOperator('<=', ':lessThanOrEqualTo', 2),
+        '>': new FxOperator('>', ':greaterThan', 2),
+        '>=': new FxOperator('>=', ':greaterThanOrEqualTo', 2),
+        '+': new FxOperator('+', ':add', 3),
+        '-': new FxOperator('-', ':sub', 3),
+        '*': new FxOperator('*', ':mul', 4),
+        '/': new FxOperator('/', ':div', 4)
     };
     return PxOperatorParser;
 }());
-export { PxOperatorParser };
-//# sourceMappingURL=px-operator-parser.js.map
+export { FxOperatorParser };
+//# sourceMappingURL=fx-addOperator-parser.js.map

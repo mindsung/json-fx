@@ -1,4 +1,4 @@
-var PxNode = /** @class */ (function () {
+var FxNode = /** @class */ (function () {
     function PxNode(value) {
         if (value === void 0) { value = ""; }
         var tags = [];
@@ -159,5 +159,5 @@ var PxNode = /** @class */ (function () {
     };
     return PxNode;
 }());
-export { PxNode };
-//# sourceMappingURL=px-node.js.map
+export { FxNode };
+//# sourceMappingURL=fx-node.js.map

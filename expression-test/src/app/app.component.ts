@@ -4,11 +4,11 @@ import {
   $f,
   $fx,
   $withVars,
-  PxExpressionParser,
-  PxGrouper,
-  PxNodeParser,
-  PxOperatorParser,
-  PxTokenizer
+  FxExpressionParser,
+  FxGrouper,
+  FxNodeParser,
+  FxOperatorParser,
+  FxTokenizer
 } from "@mindsung/expression";
 
 @Component({
@@ -18,17 +18,17 @@ import {
 })
 export class AppComponent implements OnInit {
   ngOnInit() {
-    const tokens = new PxTokenizer().evaluate("$.books:filter($$.type == `paperback`)");
-    const root = new PxGrouper().evaluate(tokens);
+    const tokens = new FxTokenizer().evaluate("$.books:filter($$.type == `paperback`)");
+    const root = new FxGrouper().evaluate(tokens);
 
-    // PxNodeParser accepts a list of sub-parsers of type PxParser<PxNode, void>
-    // - PxNodeParser is responsible for traversing the expression tree recursively; sub-parsers do not implement recursion
+    // FxNodeParser accepts a list of sub-parsers of type FxParser<FxNode, void>
+    // - FxNodeParser is responsible for traversing the expression tree recursively; sub-parsers do not implement recursion
     // - Sub-parsers execute in a particular order, the order in which they are defined within the constructor
     //   - The order is NOT arbitrary
 
-    const parser = new PxNodeParser(
-      new PxExpressionParser(),
-      new PxOperatorParser());
+    const parser = new FxNodeParser(
+      new FxExpressionParser(),
+      new FxOperatorParser());
 
     parser.evaluate(root);
     console.log(root);

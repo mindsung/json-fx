@@ -1,4 +1,4 @@
-var PxNodeParser = /** @class */ (function () {
+var FxNodeParser = /** @class */ (function () {
     function PxNodeParser() {
         var parsers = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -21,5 +21,5 @@ var PxNodeParser = /** @class */ (function () {
     };
     return PxNodeParser;
 }());
-export { PxNodeParser };
-//# sourceMappingURL=px-node-parser.js.map
+export { FxNodeParser };
+//# sourceMappingURL=fx-node-parser.js.map
