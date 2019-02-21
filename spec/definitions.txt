@@ -1,0 +1,3 @@
+Array Handling:
+
+By default, a path that contains arrays within arrays (e.g. $books.ratings) evaluates to a flattened array of values

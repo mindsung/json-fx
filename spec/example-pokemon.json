@@ -1,0 +1,7 @@
+// :import(`../data/pokemon.json`).pokemon => $poke
+
+{
+  "evolutions": {
+    "[]": "$poke.next_evolution.name:filter(#:count == 3)"
+  }
+}

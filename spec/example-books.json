@@ -1,0 +1,30 @@
+// import ../data/books.json -> $books
+
+[
+  // Array w/ title and author of every book
+  {
+    "[] = $books": {
+      "title": "#.title",
+      "author": "#.author"
+    }
+  },
+
+  // Object w/ total page count per language
+  {
+    "{$books.language:unique => $lang}": "$books:filter(#.language == $lang).pages:sum"
+  },
+
+  // Original data w/ meta
+  {
+    "meta": {
+      "$languages": "$books.languages:unique",
+      "languages": "$languages",
+      "count": {
+        "all": "$books:count",
+        "{$languages => $lang}": "$books:filter(#.language == $lang):count"
+      },
+      "dateRange": ":str($books.year:min) + `-` + :str($books.year:max)"
+    },
+    "data": "$books"
+  }
+]
