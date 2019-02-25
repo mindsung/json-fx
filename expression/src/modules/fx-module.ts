@@ -1,7 +1,7 @@
 import {FxOperator} from "../parser/fx-operator";
 
 export class FxModule {
-  private operators: {} = {};
+  protected operators: {} = {};
 
   public addOperators(...operators: Array<FxOperator>): FxModule {
     for (const op of operators) {

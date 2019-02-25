@@ -93,8 +93,10 @@ export class FxNode {
   }
 
   forEachChild(callback: (index: number, node: FxNode) => void): void {
-    for (let i = 0; i < this.children.length; i++) {
-      callback(i, this.children[i]);
+    const children = [...this.children];
+
+    for (let i = 0; i < children.length; i++) {
+      callback(i, children[i]);
     }
   }
 

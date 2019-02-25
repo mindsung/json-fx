@@ -1,4 +1,4 @@
-[
+export const $BOOKS = [
   {
     "author": "Chinua Achebe",
     "country": "Nigeria",
@@ -999,4 +999,4 @@
     "title": "Memoirs of Hadrian",
     "year": 1951
   }
-]
+];

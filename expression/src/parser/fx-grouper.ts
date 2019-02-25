@@ -48,10 +48,10 @@ export class FxGrouper extends FxParser<FxNode[], FxNode> {
           root = child;
           break;
         case "close":
-          root = root.getParent();
           if (!FxGrouper.bracketsMatch(root.value, child.value)) {
             throw new Error("Brackets do not match");
           }
+          root = root.getParent();
           break;
         case "value":
           root.addChild(child);

@@ -1,4 +1,5 @@
 import {Component, OnInit} from "@angular/core";
+import {$BOOKS} from "../sample-data/books-2";
 import {allSampleData, foo} from "../sample-data/all-sample-data";
 import {
   $f,
@@ -8,8 +9,12 @@ import {
   FxGrouper,
   FxNodeParser,
   FxOperatorParser,
-  FxTokenizer
+  FxTokenizer,
+  FxCoreModule,
+  FxCompiler,
+  TransformExpression
 } from "@mindsung/expression";
+import {$POKEMON} from "../spec/data/pokemon";
 
 @Component({
   selector: "app-root",
@@ -18,20 +23,29 @@ import {
 })
 export class AppComponent implements OnInit {
   ngOnInit() {
-    const tokens = new FxTokenizer().evaluate("$.books:filter($$.type == `paperback`)");
-    const root = new FxGrouper().evaluate(tokens);
+    const tokenizer = new FxTokenizer();
+    const grouper = new FxGrouper();
 
-    // FxNodeParser accepts a list of sub-parsers of type FxParser<FxNode, void>
-    // - FxNodeParser is responsible for traversing the expression tree recursively; sub-parsers do not implement recursion
-    // - Sub-parsers execute in a particular order, the order in which they are defined within the constructor
-    //   - The order is NOT arbitrary
+    const module = new FxCoreModule();
 
-    const parser = new FxNodeParser(
-      new FxExpressionParser(),
-      new FxOperatorParser());
+    const parser = new FxNodeParser(module,
+      new FxExpressionParser(module),
+      new FxOperatorParser(module));
 
-    parser.evaluate(root);
-    console.log(root);
+    const compiler = new FxCompiler(module);
+
+    window["$eval"] = (data: any, expr: string) => {
+      const tokens = tokenizer.evaluate(expr);
+      const root = grouper.evaluate(tokens);
+
+      parser.evaluate(root);
+      const fx = compiler.evaluate(root);
+
+      console.log($fx("_transform", data, fx).evaluate());
+    };
+
+    window["$BOOKS"] = $BOOKS;
+    window["$POKEMON"] = $POKEMON;
 
     window["$f"] = $f;
     window["$fx"] = $fx;

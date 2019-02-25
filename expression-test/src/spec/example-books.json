@@ -1,4 +1,4 @@
-// import ../data/books.json -> $books
+// import ../data/books-2.ts -> $books
 
 [
   // Array w/ title and author of every book

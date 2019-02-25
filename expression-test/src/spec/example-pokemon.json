@@ -1,4 +1,4 @@
-// :import(`../data/pokemon.json`).pokemon => $poke
+// :import(`../data/pokemon.ts`).pokemon => $poke
 
 {
   "evolutions": {

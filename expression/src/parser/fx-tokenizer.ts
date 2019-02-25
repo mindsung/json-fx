@@ -63,7 +63,11 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
 
       if (nextToken.isTagged("literal")) {
         isLiteral = !isLiteral;
-        split(new FxNode());
+        if (isLiteral) {
+          split(new FxNode("", "literal"));
+        } else {
+          split(new FxNode());
+        }
       } else if (FxTokenizer.canMergeTokens(lastToken, nextToken) || isLiteral) {
         FxTokenizer.mergeTokens(lastToken, nextToken);
       } else {

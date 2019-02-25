@@ -27,6 +27,12 @@ export class FxExpressionParser extends FxParser<FxNode, void> {
         node.transferChildren(lastNode);
         node.orphan();
         paramBuffer.push(lastNode);
+      } else if (node.isTagged("expression")) {
+        if (lastNode && lastNode.isTagged("identifier")) {
+          lastNode.setParent(node);
+        }
+        node.value = node.value.substr(1);
+        lastNode = node;
       } else if (isGroup && node.isTagged("delimiter")) {
         lastNode = FxExpressionParser.nestParameters(root, paramBuffer);
       } else {
