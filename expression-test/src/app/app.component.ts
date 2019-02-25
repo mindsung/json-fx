@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
       parser.evaluate(root);
       const fx = compiler.evaluate(root);
 
+      console.log(root);
       console.log($fx("_transform", data, fx).evaluate());
     };
 

@@ -28,7 +28,7 @@ export class FxExpressionParser extends FxParser<FxNode, void> {
         node.orphan();
         paramBuffer.push(lastNode);
       } else if (node.isTagged("expression")) {
-        if (lastNode && lastNode.isTagged("identifier")) {
+        if (lastNode && lastNode.isTaggedAny("identifier", "expression")) {
           lastNode.setParent(node);
         }
         node.value = node.value.substr(1);
