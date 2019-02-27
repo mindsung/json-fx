@@ -1,1 +1,84 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    margin: 20px 10px;
+}
+
+h2 {
+    margin: 20px 10px;
+}
+
+body {
+    font: 12pt sans-serif;
+    background: #222;
+    color: #677;
+    padding: 20px;
+    min-height: 100%;
+}
+
+input, button {
+    font: inherit;
+    background: none;
+    border: 1px solid #344;
+    padding: 10px;
+    border-radius: 4px;
+    color: inherit;
+    margin: 10px;
+    outline: none;
+}
+
+input:focus, button:focus {
+    border-color: #677;
+}
+
+button {
+    min-width: 100px;
+}
+
+input {
+    width: 400px;
+    font-family: 'Fira Code', monospace;
+}
+
+.row {
+    display: flex;
+}
+
+.row-cell {
+    flex: 1 1 400px;
+    margin: 10px;
+}
+
+.scrollbox {
+    padding: 10px;
+    height: 600px;
+    overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+    background: #333;
+    border-radius: 4px;
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    min-height: 48px;
+    min-width: 48px;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5b83c4;
+}
+
+::-webkit-scrollbar-corner {
+    background: #444;
+    border-radius: 4px;
+    border: 3px solid #222;
+}

@@ -1,0 +1,103 @@
+:host {
+  font-family: 'Fira Code', monospace;
+}
+
+.json-value {
+  display: inline;
+}
+
+.json-item-wrapper {
+  display: flex;
+  margin: 0.2em;
+}
+
+.item-expander {
+  width: 5px;
+  flex: 0 0 auto;
+  border-left: 0.1em dotted #344;
+  padding: 0 10px;
+  margin: 3px 0;
+  cursor: pointer;
+}
+
+.item-expander:hover {
+  border-color: #667;
+  border-left-style: solid;
+}
+
+.json-item-list {
+  flex: 0 0 auto;
+}
+
+.json-item {
+  margin: 5px 0;
+}
+
+.ellipses {
+  color: #677;
+  display: none;
+  padding: 0 0.5em;
+}
+
+.collapsed {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.collapsed .ellipses {
+  display: inline-block;
+}
+
+.collapsed .item-expander {
+  display: none;
+}
+
+.collapsed .json-item {
+  display: none;
+}
+
+.json-key, .json-colon {
+  display: inline-block;
+  color: #5b83c4;
+}
+
+.json-colon {
+  padding-right: 0.5em;
+}
+
+.string {
+  color: #eac45e;
+}
+
+.string:before {
+  content: '"';
+}
+
+.string:after {
+  content: '"';
+}
+
+.number {
+  color: #ec7b54;
+}
+
+.json-item:not(.last):after,
+.json-item:not(.last):after {
+  content: ',';
+  color: #677;
+}
+
+.bracket {
+  color: #677;
+  display: inline-block;
+}
+
+.bracket.open {
+  cursor: pointer;
+}
+
+.bracket.open:hover {
+  color: #fff;
+}

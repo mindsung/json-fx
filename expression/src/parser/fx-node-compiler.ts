@@ -25,6 +25,13 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
     });
 
     params.unshift(node.value);
+
+    // if (node.count() > 0 && !node.firstChild().isTagged("parameter")) {
+    //   return $fx(...params);
+    // } else {
+    //   return $f(...params);
+    // }
+
     return node.value === "object" ? $f(...params) : $fx(...params);
   }
 

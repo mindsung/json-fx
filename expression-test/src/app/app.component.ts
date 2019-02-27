@@ -17,16 +17,23 @@ import {$POKEMON} from "../spec/data/pokemon";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
+  private fxData: any;
+  private fxScript = "$.title";
+
+  private fxBooks: object = $BOOKS;
+
+  private scriptCompiler = new FxScriptCompiler(new FxCoreModule());
+  private objectCompiler = new FxObjectCompiler(new FxCoreModule());
+
   ngOnInit() {
-    const scriptCompiler = new FxScriptCompiler(new FxCoreModule());
-    const objectCompiler = new FxObjectCompiler(new FxCoreModule());
+    this.onEval(null);
 
     window["$fxScript"] = (data: any, expr: string) => {
-      console.log($fx("_transform", data, scriptCompiler.evaluate(expr)).evaluate());
+      console.log($fx("_transform", data, this.scriptCompiler.evaluate(expr)).evaluate());
     };
 
     window["$fxObject"] = (data: any, obj: object) => {
-      console.log($fx("_transform", data, objectCompiler.evaluate(obj)).evaluate());
+      console.log($fx("_transform", data, this.objectCompiler.evaluate(obj)).evaluate());
     };
 
     window["$BOOKS"] = $BOOKS;
@@ -48,5 +55,10 @@ export class AppComponent implements OnInit {
       };
       return JSON.parse(json, reviver);
     };
+  }
+
+  public onEval(event: MouseEvent) {
+    const result = $fx("_transform", $BOOKS, this.scriptCompiler.evaluate(this.fxScript)).evaluate();
+    this.fxData = result;
   }
 }
