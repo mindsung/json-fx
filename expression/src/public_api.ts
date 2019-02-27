@@ -18,13 +18,8 @@ export * from "../../../../js-expression/expression/src/expressions/array-min-ex
 export * from "../../../../js-expression/expression/src/expressions/array-max-expression";
 export * from "../../../../js-expression/expression/src/expressions/array-avg-expression";
 
-export * from "./parser/fx-tokenizer";
-export * from "./parser/fx-grouper";
-export * from "./parser/fx-node";
-export * from "./parser/fx-node-parser";
-export * from "./parser/fx-expression-parser";
-export * from "./parser/fx-operator-parser";
-export * from "./parser/fx-compiler";
+export * from "./parser/fx-object-compiler";
+export * from "./parser/fx-script-compiler";
 export * from "./modules/fx-module";
 export * from "./modules/fx-core-module";
 

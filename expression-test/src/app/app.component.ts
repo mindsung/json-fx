@@ -5,14 +5,9 @@ import {
   $f,
   $fx,
   $withVars,
-  FxExpressionParser,
-  FxGrouper,
-  FxNodeParser,
-  FxOperatorParser,
-  FxTokenizer,
   FxCoreModule,
-  FxCompiler,
-  TransformExpression
+  FxScriptCompiler,
+  FxObjectCompiler
 } from "@mindsung/expression";
 import {$POKEMON} from "../spec/data/pokemon";
 
@@ -23,26 +18,15 @@ import {$POKEMON} from "../spec/data/pokemon";
 })
 export class AppComponent implements OnInit {
   ngOnInit() {
-    const tokenizer = new FxTokenizer();
-    const grouper = new FxGrouper();
+    const scriptCompiler = new FxScriptCompiler(new FxCoreModule());
+    const objectCompiler = new FxObjectCompiler(new FxCoreModule());
 
-    const module = new FxCoreModule();
+    window["$fxScript"] = (data: any, expr: string) => {
+      console.log($fx("_transform", data, scriptCompiler.evaluate(expr)).evaluate());
+    };
 
-    const parser = new FxNodeParser(module,
-      new FxExpressionParser(module),
-      new FxOperatorParser(module));
-
-    const compiler = new FxCompiler(module);
-
-    window["$eval"] = (data: any, expr: string) => {
-      const tokens = tokenizer.evaluate(expr);
-      const root = grouper.evaluate(tokens);
-
-      parser.evaluate(root);
-      const fx = compiler.evaluate(root);
-
-      console.log(root);
-      console.log($fx("_transform", data, fx).evaluate());
+    window["$fxObject"] = (data: any, obj: object) => {
+      console.log($fx("_transform", data, objectCompiler.evaluate(obj)).evaluate());
     };
 
     window["$BOOKS"] = $BOOKS;

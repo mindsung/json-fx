@@ -23,7 +23,7 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
       token.addTags("group", "close");
     } else if (c === ",") {
       token.addTags("delimiter");
-    } else if (/[\w$_]/i.test(c)) {
+    } else if (/[\w_$~]/i.test(c)) {
       token.addTags("identifier");
     } else if (!c || /\s/.test(c)) {
       token.addTags("space");

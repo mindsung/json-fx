@@ -89,7 +89,7 @@ export const $POKEMON = [
     "spawn_chance": 0.017,
     "avg_spawns": 1.7,
     "spawn_time": "11:30",
-    "multipliers": null,
+    "multipliers": 0,
     "weaknesses": [
       "Fire",
       "Ice",
@@ -2557,7 +2557,7 @@ export const $POKEMON = [
     "spawn_chance": 0.0212,
     "avg_spawns": 2.12,
     "spawn_time": "01:09",
-    "multipliers": null,
+    "multipliers": 0,
     "weaknesses": [
       "Electric",
       "Rock"

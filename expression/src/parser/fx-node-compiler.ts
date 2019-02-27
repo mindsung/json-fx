@@ -1,10 +1,9 @@
-import {FxParser} from "./fx-parser";
+import {FxCompiler} from "./fx-parser";
 import {FxNode} from "./fx-node";
 import {Expression} from "../core/expression";
-import {$f, $fx, $withVars} from "../core/expression-factory";
-import {$BOOKS} from "./data/books";
+import {$f, $fx} from "../core/expression-factory";
 
-export class FxCompiler extends FxParser<FxNode, Expression<any>> {
+export class FxNodeCompiler extends FxCompiler<FxNode> {
   evaluate(root: FxNode): Expression<any> {
     if (root.isTagged("global")) {
       return this.evaluate(root.firstChild());
@@ -14,8 +13,6 @@ export class FxCompiler extends FxParser<FxNode, Expression<any>> {
       return this.evaluateExpression(root);
     } else if (root.isTagged("identifier")) {
       return this.evaluateProperty(root.value);
-    } else if (root.isTagged("parameter")) {
-      return this.evaluateParameter(root);
     } else {
       return null;
     }
@@ -24,20 +21,32 @@ export class FxCompiler extends FxParser<FxNode, Expression<any>> {
   private evaluateExpression(node: FxNode) {
     const params: any[] = [];
     node.forEachChild((index, child) => {
-      params.push(this.evaluate(child));
+      params.push(this.evaluateParameter(child));
     });
 
     params.unshift(node.value);
-    return $fx(...params);
+    return node.value === "object" ? $f(...params) : $fx(...params);
   }
 
   private evaluateProperty(identifier: string): Expression<any> {
-    const split = identifier.split(".");
+    const dotIndex = identifier.lastIndexOf(".");
+    const mapIndex = identifier.lastIndexOf("~");
 
-    if (split.length === 1) {
+    const min = Math.min(dotIndex, mapIndex);
+    const max = Math.max(dotIndex, mapIndex);
+
+    if (min === -1 && max === -1) {
       return $f("var", identifier);
     } else {
-      return $fx("prop", this.evaluateProperty(split[0]), split[1]);
+      const index = min !== -1 ? min : max;
+      const parent = identifier.substr(0, index);
+      const child = identifier.substr(index + 1);
+
+      if (index === dotIndex) {
+        return $fx("prop", this.evaluateProperty(parent), child);
+      } else {
+        return $fx("map", this.evaluateProperty(parent), this.evaluateProperty("$." + child));
+      }
     }
   }
 

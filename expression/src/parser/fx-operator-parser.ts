@@ -25,7 +25,7 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
       item.node.orphan();
     } else {
       for (let i = 0; i < 2; i++) {
-        const param = new FxNode("@param", "parameter");
+        const param = new FxNode(null, "parameter");
         item.node.addChild(param).addChild(terms.shift());
       }
     }
