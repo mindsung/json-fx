@@ -51,6 +51,14 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
   }
 
   private evaluateParameter(node: FxNode) {
-    return this.evaluate(node.firstChild());
+    if (node.isTagged("parameter")) {
+      if (node.value !== null) {
+        return {key: node.value, value: this.evaluate(node.firstChild())};
+      } else {
+        return this.evaluate(node.firstChild());
+      }
+    } else {
+      return this.evaluate(node);
+    }
   }
 }

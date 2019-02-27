@@ -51,6 +51,10 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
     let lastToken: FxNode = tokens[0];
 
     const split = (next: FxNode) => {
+      if (lastToken.isTagged("parameter")) {
+        lastToken.value = lastToken.value.substr(1);
+      }
+
       lastToken = next;
       tokens.push(lastToken);
     };

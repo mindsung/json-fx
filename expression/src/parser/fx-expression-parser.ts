@@ -8,7 +8,7 @@ export class FxExpressionParser extends FxParser<FxNode, void> {
   }
 
   private static nestParameters(root: FxNode, buffer: FxNode[]): FxNode {
-    const paramGroup = new FxNode("@param", "parameter", "group");
+    const paramGroup = new FxNode(null, "parameter", "group");
     while (buffer.length > 0) {
       paramGroup.addChild(buffer.shift());
     }
@@ -35,6 +35,7 @@ export class FxExpressionParser extends FxParser<FxNode, void> {
         lastNode = node;
       } else if (isGroup && node.isTagged("delimiter")) {
         lastNode = FxExpressionParser.nestParameters(root, paramBuffer);
+        node.orphan();
       } else {
         paramBuffer.push(node);
         lastNode = node;

@@ -110,7 +110,9 @@ export class FxNode {
   insertChild(child: FxNode, target: FxNode, after: boolean = false): FxNode {
     const index = this.children.indexOf(target);
     if (index !== -1) {
+      child.setParent(null);
       this.children.splice(after ? index + 1 : index, 0, child);
+      child.parent = this;
     } else {
       this.addChild(child, !after);
     }
@@ -126,6 +128,10 @@ export class FxNode {
       }
     }
     return target;
+  }
+
+  count(): number {
+    return this.children.length;
   }
 
   orphan(): FxNode {
