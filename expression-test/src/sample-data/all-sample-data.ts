@@ -1,8 +1,13 @@
 import { sampleBookLibrary } from "./books";
-import { $f, $fx, $withVars } from "@mindsung/expression";
+import {$eval, $expr, $const, $f, $fx, $withVars} from "@mindsung/expression";
+import {$BOOKS} from "./books-2";
 
 export const allSampleData = {
-  bookLibrary: sampleBookLibrary
+  bookLibrary: sampleBookLibrary,
+  biggerLibrary: {
+    libraryName: "More Books",
+    books: $BOOKS
+  }
 };
 
 export function foo() {
@@ -67,4 +72,26 @@ export function foo() {
   );
 
   return expr.evaluate();
+}
+
+// export function bar() {
+//   return $eval(allSampleData.bookLibrary,
+//     $expr("avg",
+//       [
+//         $expr("_prop", [$expr("_var", [$const("$")]), $const("books")]),
+//         $expr("_prop", [$expr("_var", [$const("$")]), $const("id")])
+//       ]
+//     )
+//   );
+// }
+
+export function bar() {
+  return $eval(allSampleData.biggerLibrary,
+    $expr("map",
+      [
+        $expr("_prop", [$expr("_var", [$const("$")]), $const("books")]),
+        $expr("_prop", [$expr("_var", [$const("$")]), $const("title")])
+      ]
+    )
+  );
 }

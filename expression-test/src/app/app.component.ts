@@ -1,13 +1,13 @@
 import {Component, OnInit} from "@angular/core";
 import {$BOOKS} from "../sample-data/books-2";
-import {allSampleData, foo} from "../sample-data/all-sample-data";
+import {allSampleData, bar, foo} from "../sample-data/all-sample-data";
 import {
   $f,
   $fx,
   $withVars,
   FxCoreModule,
   FxScriptCompiler,
-  FxObjectCompiler
+  FxObjectCompiler, $expr, $const, $eval
 } from "@mindsung/expression";
 import {$POKEMON} from "../spec/data/pokemon";
 
@@ -43,6 +43,7 @@ export class AppComponent implements OnInit {
     window["$fx"] = $fx;
     window["$withVars"] = $withVars;
     window["$foo"] = foo;
+    window["$bar"] = bar;
     window["$sample"] = allSampleData;
     window["$toJson"] = JSON.stringify;
     window["$fromJson"] = (json: string) => {
@@ -55,6 +56,10 @@ export class AppComponent implements OnInit {
       };
       return JSON.parse(json, reviver);
     };
+
+    window["$expr"] = $expr;
+    window["$const"] = $const;
+    window["$eval"] = $eval;
   }
 
   public onEval(event: MouseEvent) {
