@@ -23,7 +23,11 @@ export function createExpressionLambda(paramVarNames: string[], expr: Expression
 export const coreExpressions: ReadonlyArray<Expression> = [
   {
     key: "_var",
-    expressionFactory: (scope: ExpressionScope) => (varName: string, params?: ExpressionScope[]) => scope.getVariableValue(varName, params)
+    expressionFactory: (scope: ExpressionScope) => (varName: string, ...params: ExpressionScope[]) => scope.getVariableValue(varName, params)
+  },
+  {
+    key: "_varexpr",
+    expressionFactory: (scope: ExpressionScope) => (varName: string, ...params: ExpressionScope[]) => scope.getVariableExpression(varName)
   },
   {
     key: "_prop",

@@ -1,6 +1,6 @@
 import {Expression, ExpressionScope, ScopeVariable} from "./expression";
 import {stockExpressions} from "./stock-expressions";
-import {coreExpressions, createExpressionConstant} from "./expressions/core-expressions";
+import {coreExpressions, createExpressionConstant, createExpressionLambda} from "./expressions/core-expressions";
 import {ExpressionEvaluator} from "./expression-evaluator";
 
 export class ExpressionParser {
@@ -57,7 +57,10 @@ export function $expr(exprKey: string, params?: ReadonlyArray<ExpressionScope>, 
 export function $const(value: any) {
   return createExpressionConstant(value);
 }
-export function $eval(input: any, expr: ExpressionScope) {
-  expr.vars = [{ name: "$", scope: $const(input) }];
+export function $eval(input: any, expr: ExpressionScope, vars?: ScopeVariable[]) {
+  expr.vars = [{ name: "$", scope: $const(input) }].concat(vars ? vars : []);
   return expr.value;
+}
+export function $lambda(params: string[], expr: ExpressionScope) {
+  return createExpressionLambda(params, expr);
 }

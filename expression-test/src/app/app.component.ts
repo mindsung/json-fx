@@ -7,7 +7,7 @@ import {
   $withVars,
   FxCoreModule,
   FxScriptCompiler,
-  FxObjectCompiler, $expr, $const, $eval
+  FxObjectCompiler, $expr, $const, $eval, $lambda
 } from "@mindsung/expression";
 import {$POKEMON} from "../spec/data/pokemon";
 
@@ -60,6 +60,7 @@ export class AppComponent implements OnInit {
     window["$expr"] = $expr;
     window["$const"] = $const;
     window["$eval"] = $eval;
+    window["$lambda"] = $lambda;
   }
 
   public onEval(event: MouseEvent) {

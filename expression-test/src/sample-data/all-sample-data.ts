@@ -1,5 +1,5 @@
 import { sampleBookLibrary } from "./books";
-import {$eval, $expr, $const, $f, $fx, $withVars} from "@mindsung/expression";
+import {$eval, $expr, $const, $f, $fx, $withVars, $lambda} from "@mindsung/expression";
 import {$BOOKS} from "./books-2";
 
 export const allSampleData = {
@@ -85,13 +85,32 @@ export function foo() {
 //   );
 // }
 
+// export function bar() {
+//   return $eval(allSampleData.biggerLibrary,
+//     $expr("map",
+//       [
+//         $expr("_prop", [$expr("_var", [$const("$")]), $const("books")]),
+//         $expr("_prop", [$expr("_var", [$const("$")]), $const("title")])
+//       ]
+//     )
+//   );
+
 export function bar() {
   return $eval(allSampleData.biggerLibrary,
-    $expr("map",
+    $expr("filter",
       [
         $expr("_prop", [$expr("_var", [$const("$")]), $const("books")]),
-        $expr("_prop", [$expr("_var", [$const("$")]), $const("title")])
+        $expr("neq",
+          [$expr("_var", [$const("$lang"), $expr("_varexpr", [$const("$")])]),
+          $const("English")])
       ]
-    )
+    ),
+    [
+      {
+        name: "$lang",
+        scope: $lambda(["@book"],
+          $expr("_prop", [$expr("_var", [$const("@book")]), $const("language")]))
+      }
+    ]
   );
 }
