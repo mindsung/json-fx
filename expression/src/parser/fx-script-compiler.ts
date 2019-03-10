@@ -1,5 +1,5 @@
 import {FxCompiler} from "./fx-parser";
-import {Expression} from "../core/expression";
+import {OldExpression} from "../core/expression";
 import {FxModule} from "../modules/fx-module";
 import {FxTokenizer} from "./fx-tokenizer";
 import {FxGrouper} from "./fx-grouper";
@@ -30,7 +30,7 @@ export class FxScriptCompiler extends FxCompiler<string> {
     this.compiler = new FxNodeCompiler(module);
   }
 
-  evaluate(expr: string): Expression<any> {
+  evaluate(expr: string): OldExpression<any> {
     const tokens = this.tokenizer.evaluate(expr);
     const root = this.grouper.evaluate(tokens);
 

@@ -11,12 +11,12 @@ export function createExpressionConstant(value: any, vars?: ReadonlyArray<ScopeV
 
 export function createExpressionLambda(paramVarNames: string[], expr: ExpressionScope) {
   return new ExpressionScope({
-    key: "__lambda",
+    key: "*_lambda",
     expression: (...params: any[]) => {
-      expr.vars = paramVarNames.map((n, i) => ({ name: n, scope: params[i] }));
+      expr.vars = paramVarNames.map((n, i) => ({ name: n, expr: params[i] }));
       return expr.value;
     },
-    params: paramVarNames.map(n => ({ name: n, requireExpression: true }))
+    params: paramVarNames.map(n => ({ name: n, deferEvaluation: true }))
   });
 }
 
@@ -45,6 +45,21 @@ export const coreExpressions: ReadonlyArray<Expression> = [
         }
       }
       return propValue;
+    },
+    token: {
+      key: "."
     }
+  },
+  {
+    key: "_object",
+    expression: (map: Map<ExpressionScope<string>, ExpressionScope>): {} => {
+      const value = {};
+      map.forEach((v, k) => value[k.value] = v.value);
+      return value;
+    }
+  },
+  {
+    key: "_array",
+    expression: (array: ExpressionScope[]): any[] => array.map(x => x.value)
   }
 ];

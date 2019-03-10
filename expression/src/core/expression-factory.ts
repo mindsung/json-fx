@@ -1,4 +1,4 @@
-import { Expression, isExpression } from "./expression";
+import { OldExpression, isExpression } from "./expression";
 import { ConstantExpression } from "../expressions/constant-expression";
 import { PropertyExpression } from "../expressions/property-expression";
 import { CaseExpression } from "../expressions/case-expression";
@@ -36,7 +36,7 @@ interface ExpressionParamInfo {
 interface ExpressionMapItem {
   type: any;
   isTransform: boolean;
-  factory?: (params: any[]) => Expression<any>;
+  factory?: (params: any[]) => OldExpression<any>;
   paramsInfo?: { [key: string]: ExpressionParamInfo };
 }
 
@@ -151,7 +151,7 @@ function constMapParams(params: any[]) {
 function createExpression(
   typeName: string,
   params: any[]
-): Expression<any> {
+): OldExpression<any> {
   const item = expressionFactoryMap[typeName];
   if (item == null) {
     throw new Error(`Unknown expression type: ${typeName}`);
@@ -166,15 +166,15 @@ function createExpression(
     return new (item.type.bind.apply(
       item.type,
       [item.type].concat(applyParams)
-    ))() as Expression<any>;
+    ))() as OldExpression<any>;
   }
 }
 
 function createExpressionWithInput(
   typeName: string,
-  input: Expression<any>,
+  input: OldExpression<any>,
   params: any[]
-): Expression<any> {
+): OldExpression<any> {
   const item = expressionFactoryMap[typeName];
   if (item == null) {
     throw new Error(`Unknown expression type: ${typeName}`);
@@ -189,18 +189,18 @@ function createExpressionWithInput(
     return new (item.type.bind.apply(
       item.type,
       [item.type].concat(applyParams)
-    ))() as Expression<any>;
+    ))() as OldExpression<any>;
   }
 }
 
 export interface ExpressionVariable {
   name: string;
-  value: ValueType | Expression<any>;
+  value: ValueType | OldExpression<any>;
 }
 
 function withScopeVariables(
   vars: ExpressionVariable[],
-  expr: Expression<any>
+  expr: OldExpression<any>
 ) {
   vars
     .map(v => ({

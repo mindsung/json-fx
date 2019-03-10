@@ -1,7 +1,7 @@
-export interface Expression {
+export interface Expression<T = any> {
   readonly key: string;
-  readonly expression?: (...params: any[]) => any;
-  readonly expressionFactory?: (scope: ExpressionScope) => (...params: any[]) => any;
+  readonly expression?: (...params: any[]) => T;
+  readonly expressionFactory?: (scope: ExpressionScope) => (...params: any[]) => T;
   readonly params?: ReadonlyArray<ExpressionParam>;
   readonly token?: ExpressionToken;
   readonly isOverride?: boolean;
@@ -11,7 +11,7 @@ interface ExpressionParam {
   readonly name: string;
   readonly description?: string;
   readonly valueType?: "string" | "number" | "boolean" | "date" | "object" | "array";
-  readonly requireExpression?: boolean;
+  readonly deferEvaluation?: boolean;
 }
 
 interface ExpressionToken {
@@ -21,11 +21,11 @@ interface ExpressionToken {
 
 export interface ScopeVariable {
   name: string;
-  scope: ExpressionScope;
+  expr: ExpressionScope;
 }
 
-export class ExpressionScope {
-  constructor(public readonly expr: Expression,
+export class ExpressionScope<T = any> {
+  constructor(public readonly expr: Expression<T>,
               params?: ReadonlyArray<ExpressionScope>,
               vars?: ReadonlyArray<ScopeVariable>) {
     if (expr == null) {
@@ -40,10 +40,13 @@ export class ExpressionScope {
   }
 
   public get params() {
-    return this._params;
+    return this._params || [];
   }
 
   public set params(params: ReadonlyArray<ExpressionScope>) {
+    if (this._params) {
+      this._params.forEach(p => this.removeFromScope(p));
+    }
     if (params != null) {
       params.forEach(p => {
         this.addToScope(p);
@@ -56,15 +59,18 @@ export class ExpressionScope {
   private _params: ReadonlyArray<ExpressionScope>;
 
   public get vars() {
-    return this._vars;
+    return this._vars || [];
   }
 
   public set vars(vars: ReadonlyArray<ScopeVariable>) {
+    if (this._vars) {
+      this._vars.forEach(v => this.removeFromScope(v.expr));
+    }
     this.varMap = {};
     if (vars != null) {
       vars.forEach(v => {
-        this.addToScope(v.scope);
-        this.varMap[v.name] = v.scope;
+        this.addToScope(v.expr);
+        this.varMap[v.name] = v.expr;
       });
     }
     this._vars = vars || [];
@@ -74,15 +80,21 @@ export class ExpressionScope {
   private _vars: ReadonlyArray<ScopeVariable> = [];
   private varMap: { [key: string]: ExpressionScope };
 
-  public addToScope(scope: ExpressionScope) {
-    scope.parentScope = this;
+  public addToScope(expr: ExpressionScope) {
+    expr.parentScope = this;
+  }
+
+  public removeFromScope(expr: ExpressionScope) {
+    if (expr.parentScope === this) {
+      expr.parentScope = null;
+    }
   }
 
   private parentScope: ExpressionScope;
 
   private expression: (...params: any[]) => any;
 
-  public get value(): any {
+  public get value(): T {
     if (!this.hasValue) {
       const xInfo = this.expr;
       if (this.expression == null) {
@@ -90,27 +102,27 @@ export class ExpressionScope {
           : xInfo.expressionFactory(this);
       }
       this._value = this.expression(...(this.params || []).map((p, i) =>
-        xInfo.params != null && xInfo.params[i] != null && xInfo.params[i].requireExpression
-          ? p : p.value));
+        xInfo.params == null || xInfo.params[i] == null || !xInfo.params[i].deferEvaluation
+          ? p.value : p));
       this.hasValue = true;
     }
     return this._value;
   }
 
-  private _value: any;
+  private _value: T;
   private hasValue = false;
 
   public reset() {
-    this.vars.forEach(v => v.scope.reset());
+    this.vars.forEach(v => v.expr.reset());
     this.params.forEach(p => p.reset());
     this.hasValue = false;
     this._value = undefined;
   }
 
   public getVariableExpression(name: string): ExpressionScope {
-    const scopeVar = this.varMap[name];
-    if (scopeVar != null) {
-      return scopeVar;
+    const varExpr = this.varMap[name];
+    if (varExpr != null) {
+      return varExpr;
     }
     if (this.parentScope != null) {
       return this.parentScope.getVariableExpression(name);
@@ -119,13 +131,13 @@ export class ExpressionScope {
   }
 
   public getVariableValue(name: string, params?: ExpressionScope[]): any {
-    const scopeVar = this.getVariableExpression(name);
+    const varExpr = this.getVariableExpression(name);
     if (params != null && params.length > 0) {
-      if (scopeVar.expr.key !== "__lambda") {
+      if (varExpr.expr.key !== "*_lambda") {
         throw new Error(`Invalid variable "${name}" was called as an expression. Only variable expressions may be called with parameters.`);
       }
-      scopeVar.params = params;
+      varExpr.params = params;
     }
-    return scopeVar.value;
+    return varExpr.value;
   }
 }

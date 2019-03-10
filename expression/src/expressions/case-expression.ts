@@ -1,9 +1,9 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 
-export class CaseExpression<TOut> extends Expression<TOut> {
+export class CaseExpression<TOut> extends OldExpression<TOut> {
   constructor(
-    protected cases: Array<{ caseIf: Expression<boolean>; caseThen: Expression<TOut> }>,
-    protected caseElse: Expression<TOut>
+    protected cases: Array<{ caseIf: OldExpression<boolean>; caseThen: OldExpression<TOut> }>,
+    protected caseElse: OldExpression<TOut>
   ) {
     super(true, [cases, caseElse]);
   }

@@ -1,9 +1,9 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 import { ArrayExpression } from "../core/array-expression";
 import { TransformExpression } from "../core/transform-expression";
 
 export class ArrayMapExpression<TIn extends Array<TItem>, TItem, TItemOut> extends ArrayExpression<TIn, TItem, Array<TItemOut>> {
-  constructor(input: Expression<TIn>, private itemMap: TransformExpression<TItem, TItemOut>) {
+  constructor(input: OldExpression<TIn>, private itemMap: TransformExpression<TItem, TItemOut>) {
     super(true, input);
   }
 

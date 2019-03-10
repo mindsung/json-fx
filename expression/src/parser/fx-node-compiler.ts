@@ -1,10 +1,10 @@
 import {FxCompiler} from "./fx-parser";
 import {FxNode} from "./fx-node";
-import {Expression} from "../core/expression";
+import {OldExpression} from "../core/expression";
 import {$f, $fx} from "../core/expression-factory";
 
 export class FxNodeCompiler extends FxCompiler<FxNode> {
-  evaluate(root: FxNode): Expression<any> {
+  evaluate(root: FxNode): OldExpression<any> {
     if (root.isTagged("global")) {
       return this.evaluate(root.firstChild());
     } else if (root.isTagged("literal")) {
@@ -35,7 +35,7 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
     return node.value === "object" ? $f(...params) : $fx(...params);
   }
 
-  private evaluateProperty(identifier: string): Expression<any> {
+  private evaluateProperty(identifier: string): OldExpression<any> {
     const dotIndex = identifier.lastIndexOf(".");
     const mapIndex = identifier.lastIndexOf("~");
 

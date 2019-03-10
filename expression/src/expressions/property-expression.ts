@@ -1,8 +1,8 @@
-import {Expression} from "../core/expression";
+import {OldExpression} from "../core/expression";
 import {TransformExpression} from "../core/transform-expression";
 
 export class PropertyExpression<TIn, TOut> extends TransformExpression<TIn, TOut> {
-  constructor(input: Expression<TIn>, private path: Expression<string>) {
+  constructor(input: OldExpression<TIn>, private path: OldExpression<string>) {
     super(false, input, [path]);
   }
 

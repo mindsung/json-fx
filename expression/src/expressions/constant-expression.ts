@@ -1,6 +1,6 @@
-import { Expression, isExpression } from "../core/expression";
+import { OldExpression, isExpression } from "../core/expression";
 
-export class ConstantExpression<TOut> extends Expression<TOut> {
+export class ConstantExpression<TOut> extends OldExpression<TOut> {
   constructor(private value: TOut) {
     super(false);
     if (isExpression(value)) {

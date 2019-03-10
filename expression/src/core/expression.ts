@@ -2,17 +2,17 @@ import { isArray, isObjectLike } from "lodash";
 
 const EXPRESSION_CLASS_TOKEN = "_@@MINDSUNG_EXPRESSION_CLASS";
 
-export abstract class Expression<TOut> {
+export abstract class OldExpression<TOut> {
   private __expression_class_token = EXPRESSION_CLASS_TOKEN;
 
   constructor(private createScope: boolean, scopeParams: any[] = []) {
-    this.scope = new ExpressionScope(!createScope);
+    this.scope = new OldExpressionScope(!createScope);
     this.addToScope(scopeParams);
   }
 
-  public readonly scope: ExpressionScope;
+  public readonly scope: OldExpressionScope;
 
-  public addToScope(vals: any[]): Expression<TOut> {
+  public addToScope(vals: any[]): OldExpression<TOut> {
     vals.forEach(val => {
       if (isExpression(val)) {
         this.scope.addExpression(val);
@@ -35,12 +35,12 @@ export abstract class Expression<TOut> {
   }
 }
 
-export function isExpression(value: any): value is Expression<any> {
+export function isExpression(value: any): value is OldExpression<any> {
   return value != null && value["__expression_class_token"] === EXPRESSION_CLASS_TOKEN;
 }
 
-class ExpressionValueCache<TOut> extends Expression<TOut> {
-  constructor(public expr: Expression<TOut>) {
+class ExpressionValueCache<TOut> extends OldExpression<TOut> {
+  constructor(public expr: OldExpression<TOut>) {
     super(false);
   }
 
@@ -48,7 +48,7 @@ class ExpressionValueCache<TOut> extends Expression<TOut> {
   private isEvaluated = false;
 
   protected out(): TOut {
-    throw new Error("Expression value cache should never call output.");
+    throw new Error("OldExpression value cache should never call output.");
   }
 
   public evaluate() {
@@ -65,25 +65,25 @@ class ExpressionValueCache<TOut> extends Expression<TOut> {
   }
 }
 
-export class ExpressionScope {
+export class OldExpressionScope {
   constructor(private proxyParent: boolean) {}
 
-  public parentScope: ExpressionScope = null;
+  public parentScope: OldExpressionScope = null;
   private expressions: ExpressionValueCache<any>[] = [];
   private variables: { [ key: string ]: ExpressionValueCache<any> } = {};
 
-  public setInputExpression(input: Expression<any>) {
+  public setInputExpression(input: OldExpression<any>) {
     this.inputCache = input != null ? new ExpressionValueCache(input) : null;
   }
   private inputCache: ExpressionValueCache<any>;
 
-  public addExpression(expr: Expression<any>) {
+  public addExpression(expr: OldExpression<any>) {
     const exprCache = new ExpressionValueCache(expr);
     this.expressions.push(exprCache);
     return exprCache;
   }
 
-  public addVariableExpression(name: string, expr: Expression<any>) {
+  public addVariableExpression(name: string, expr: OldExpression<any>) {
     if (this.proxyParent) {
       throw new Error("Variables may only be added to scoped expressions.");
     }
@@ -120,7 +120,7 @@ export class ExpressionScope {
   }
 
   private getVariable(name: string): ExpressionValueCache<any> {
-    if (ExpressionScope.isInputVariableName(name)) {
+    if (OldExpressionScope.isInputVariableName(name)) {
       return this.traverseScopeForVariable("$", name.length);
     }
     else {

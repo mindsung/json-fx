@@ -1,6 +1,24 @@
 import { sampleBookLibrary } from "./books";
-import {$eval, $expr, $const, $f, $fx, $withVars, $lambda} from "@mindsung/expression";
-import {$BOOKS} from "./books-2";
+import { $f, $fx, $withVars, ExpressionScope, ScopeVariable, ExpressionParser, ExpressionEvaluator, createExpressionConstant, createExpressionLambda } from "@mindsung/expression";
+import { $BOOKS } from "./books-2";
+
+const defaultParser = new ExpressionParser();
+
+export function $expr(exprKey: string, params?: ReadonlyArray<ExpressionScope>, vars?: ReadonlyArray<ScopeVariable>) {
+  return defaultParser.createExpressionScope(exprKey, params, vars);
+}
+
+export function $const(value: any) {
+  return createExpressionConstant(value);
+}
+
+export function $lambda(paramNames: string[], expr: ExpressionScope) {
+  return createExpressionLambda(paramNames, expr);
+}
+
+export function $eval($: any, expr: ExpressionScope) {
+  return new ExpressionEvaluator(expr).evaluate([ { name: "$", expr: $const($) }]);
+}
 
 export const allSampleData = {
   bookLibrary: sampleBookLibrary,
@@ -36,39 +54,39 @@ export function foo() {
     $withVars(
       { name: "$books", value: $f("prop", "books") }
     )
-    .$f("object", {
-      key: "somethingAboutBooks",
-      value: $withVars({
-        name: "$booksWithRatings",
-        value: $fx("filter", $f("var", "$books"),
-          $fx("and",
-            $fx("neq", $fx("prop", $f("var", "$"), "ratings"), $f("var", "$null")),
-            $fx("gt", $fx("count", $fx("prop", $f("var", "$"), "ratings")), 0)
-          ))
-        }, {
-          name: "$booksAndRatings",
-          value: $fx("map", $f("var", "$booksWithRatings"),
-            $withVars(
-              { name: "$book", value: $f("var", "$") }
-            )
-            .$f("object",
-              { key: "book", value: $f("var", "$") },
-              { key: "avgRating", value: $fx("avg", $f("prop", "ratings"), $f("prop", "rating")) }
-            )
-          )
-        }
-      )
       .$f("object", {
-        key: "bestToWorst",
-        value: $fx("sort", $f("var", "$booksAndRatings"),
-          $f("prop", "avgRating"), "desc"
+        key: "somethingAboutBooks",
+        value: $withVars({
+            name: "$booksWithRatings",
+            value: $fx("filter", $f("var", "$books"),
+              $fx("and",
+                $fx("neq", $fx("prop", $f("var", "$"), "ratings"), $f("var", "$null")),
+                $fx("gt", $fx("count", $fx("prop", $f("var", "$"), "ratings")), 0)
+              ))
+          }, {
+            name: "$booksAndRatings",
+            value: $fx("map", $f("var", "$booksWithRatings"),
+              $withVars(
+                { name: "$book", value: $f("var", "$") }
+              )
+                .$f("object",
+                  { key: "book", value: $f("var", "$") },
+                  { key: "avgRating", value: $fx("avg", $f("prop", "ratings"), $f("prop", "rating")) }
+                )
+            )
+          }
         )
-      }, {
-        key: "worstToBest",
-        value: $fx("sort", $f("var", "$booksAndRatings"),
-          $f("prop", "avgRating"))
+          .$f("object", {
+            key: "bestToWorst",
+            value: $fx("sort", $f("var", "$booksAndRatings"),
+              $f("prop", "avgRating"), "desc"
+            )
+          }, {
+            key: "worstToBest",
+            value: $fx("sort", $f("var", "$booksAndRatings"),
+              $f("prop", "avgRating"))
+          })
       })
-    })
   );
 
   return expr.evaluate();
@@ -96,21 +114,24 @@ export function foo() {
 //   );
 
 export function bar() {
-  return $eval(allSampleData.biggerLibrary,
+  return new ExpressionEvaluator(
     $expr("filter",
       [
         $expr("_prop", [$expr("_var", [$const("$")]), $const("books")]),
         $expr("neq",
           [$expr("_var", [$const("$lang"), $expr("_varexpr", [$const("$")])]),
-          $const("English")])
+            $const("English")])
       ]
-    ),
-    [
-      {
-        name: "$lang",
-        scope: $lambda(["@book"],
-          $expr("_prop", [$expr("_var", [$const("@book")]), $const("language")]))
-      }
-    ]
-  );
+    )
+  ).evaluate([
+    {
+      name: "$",
+      expr: $const(allSampleData.biggerLibrary)
+    },
+    {
+      name: "$lang",
+      expr: $lambda(["@book"],
+        $expr("_prop", [$expr("_var", [$const("@book")]), $const("language")]))
+    }
+  ]);
 }

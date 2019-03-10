@@ -1,13 +1,13 @@
 import {Component, OnInit} from "@angular/core";
 import {$BOOKS} from "../sample-data/books-2";
-import {allSampleData, bar, foo} from "../sample-data/all-sample-data";
+import { $const, $expr, $lambda, $eval, allSampleData, bar, foo } from "../sample-data/all-sample-data";
 import {
   $f,
   $fx,
   $withVars,
   FxCoreModule,
   FxScriptCompiler,
-  FxObjectCompiler, $expr, $const, $eval, $lambda
+  FxObjectCompiler
 } from "@mindsung/expression";
 import {$POKEMON} from "../spec/data/pokemon";
 
@@ -59,8 +59,8 @@ export class AppComponent implements OnInit {
 
     window["$expr"] = $expr;
     window["$const"] = $const;
-    window["$eval"] = $eval;
     window["$lambda"] = $lambda;
+    window["$eval"] = $eval;
   }
 
   public onEval(event: MouseEvent) {

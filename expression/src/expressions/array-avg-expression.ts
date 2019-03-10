@@ -1,9 +1,9 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 import { ArrayExpression } from "../core/array-expression";
 import { TransformExpression } from "../core/transform-expression";
 
 export class ArrayAvgExpression<TIn extends Array<TItem>, TItem> extends ArrayExpression<TIn, TItem, number> {
-  constructor(input: Expression<TIn>, private itemValue: TransformExpression<TItem, number>) {
+  constructor(input: OldExpression<TIn>, private itemValue: TransformExpression<TItem, number>) {
     super(true, input);
   }
 

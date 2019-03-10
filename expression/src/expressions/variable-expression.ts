@@ -1,6 +1,6 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 
-export class VariableExpression<TOut> extends Expression<TOut> {
+export class VariableExpression<TOut> extends OldExpression<TOut> {
   constructor(private name: string) {
     super(false);
   }

@@ -1,9 +1,9 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 import { ValueType } from "../core/value-type";
 import { TransformExpression } from "../core/transform-expression";
 
 export class LogicalEqualsExpression<TIn extends ValueType> extends TransformExpression<TIn, boolean> {
-  constructor(input: Expression<TIn>, private compareWith: Expression<TIn>) {
+  constructor(input: OldExpression<TIn>, private compareWith: OldExpression<TIn>) {
     super(false, input, [compareWith]);
   }
   transform(inputValue: TIn) {
@@ -12,7 +12,7 @@ export class LogicalEqualsExpression<TIn extends ValueType> extends TransformExp
 }
 
 export class LogicalNotEqualsExpression<TIn extends ValueType> extends TransformExpression<TIn, boolean> {
-  constructor(input: Expression<TIn>, private compareWith: Expression<TIn>) {
+  constructor(input: OldExpression<TIn>, private compareWith: OldExpression<TIn>) {
     super(false, input, [compareWith]);
   }
   transform(inputValue: TIn) {
@@ -21,7 +21,7 @@ export class LogicalNotEqualsExpression<TIn extends ValueType> extends Transform
 }
 
 export class LogicalGreaterThanExpression<TIn extends ValueType> extends TransformExpression<TIn, boolean> {
-  constructor(input: Expression<TIn>, private compareWith: Expression<TIn>) {
+  constructor(input: OldExpression<TIn>, private compareWith: OldExpression<TIn>) {
     super(false, input, [compareWith]);
   }
   transform(inputValue: TIn) {
@@ -30,7 +30,7 @@ export class LogicalGreaterThanExpression<TIn extends ValueType> extends Transfo
 }
 
 export class LogicalGreaterThanOrEqualsExpression<TIn extends ValueType> extends TransformExpression<TIn, boolean> {
-  constructor(input: Expression<TIn>, private compareWith: Expression<TIn>) {
+  constructor(input: OldExpression<TIn>, private compareWith: OldExpression<TIn>) {
     super(false, input, [compareWith]);
   }
   transform(inputValue: TIn) {
@@ -39,7 +39,7 @@ export class LogicalGreaterThanOrEqualsExpression<TIn extends ValueType> extends
 }
 
 export class LogicalLessThanExpression<TIn extends ValueType> extends TransformExpression<TIn, boolean> {
-  constructor(input: Expression<TIn>, private compareWith: Expression<TIn>) {
+  constructor(input: OldExpression<TIn>, private compareWith: OldExpression<TIn>) {
     super(false, input, [compareWith]);
   }
   transform(inputValue: TIn) {
@@ -48,7 +48,7 @@ export class LogicalLessThanExpression<TIn extends ValueType> extends TransformE
 }
 
 export class LogicalLessThanOrEqualsExpression<TIn extends ValueType> extends TransformExpression<TIn, boolean> {
-  constructor(input: Expression<TIn>, private compareWith: Expression<TIn>) {
+  constructor(input: OldExpression<TIn>, private compareWith: OldExpression<TIn>) {
     super(false, input, [compareWith]);
   }
   transform(inputValue: TIn) {
@@ -57,7 +57,7 @@ export class LogicalLessThanOrEqualsExpression<TIn extends ValueType> extends Tr
 }
 
 export class LogicalAndExpression extends TransformExpression<boolean, boolean> {
-  constructor(input: Expression<boolean>, private other: Expression<true>) {
+  constructor(input: OldExpression<boolean>, private other: OldExpression<true>) {
     super(false, input, [other]);
   }
   protected transform(inputValue: boolean) {
@@ -66,7 +66,7 @@ export class LogicalAndExpression extends TransformExpression<boolean, boolean> 
 }
 
 export class LogicalOrExpression extends TransformExpression<boolean, boolean> {
-  constructor(input: Expression<boolean>, private other: Expression<true>) {
+  constructor(input: OldExpression<boolean>, private other: OldExpression<true>) {
     super(false, input, [other]);
   }
   protected transform(inputValue: boolean) {

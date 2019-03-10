@@ -1,5 +1,5 @@
 import {FxModule} from "../modules/fx-module";
-import {Expression} from "../core/expression";
+import {OldExpression} from "../core/expression";
 
 export abstract class FxParser<TIn, TOut = void> {
   constructor(public module: FxModule) {
@@ -8,5 +8,5 @@ export abstract class FxParser<TIn, TOut = void> {
   abstract evaluate(item: TIn): TOut;
 }
 
-export abstract class FxCompiler<TIn> extends FxParser<TIn, Expression<any>> {
+export abstract class FxCompiler<TIn> extends FxParser<TIn, OldExpression<any>> {
 }

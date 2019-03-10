@@ -1,9 +1,9 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 import { ArrayExpression } from "../core/array-expression";
 import { TransformExpression } from "../core/transform-expression";
 
 export class ArrayMinExpression<TIn extends Array<TItem>, TItem, TValue extends number | string | Date> extends ArrayExpression<TIn, TItem, TValue> {
-  constructor(input: Expression<TIn>, private itemValue: TransformExpression<TItem, TValue>) {
+  constructor(input: OldExpression<TIn>, private itemValue: TransformExpression<TItem, TValue>) {
     super(true, input);
   }
 

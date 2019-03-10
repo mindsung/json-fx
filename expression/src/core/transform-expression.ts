@@ -1,11 +1,11 @@
-import { Expression } from "./expression";
+import { OldExpression } from "./expression";
 
 const TRANSFORM_EXPRESSION_CLASS_TOKEN = "_@@MINDSUNG_TRANSFORM_EXPRESSION_CLASS";
 
-export abstract class TransformExpression<TIn, TOut> extends Expression<TOut> {
+export abstract class TransformExpression<TIn, TOut> extends OldExpression<TOut> {
   private __transform_expression_class_token = TRANSFORM_EXPRESSION_CLASS_TOKEN;
 
-  constructor(createScope: boolean, input: Expression<TIn>, scopeParams: Expression<any>[] = []) {
+  constructor(createScope: boolean, input: OldExpression<TIn>, scopeParams: OldExpression<any>[] = []) {
     super(createScope, scopeParams);
     this.scope.setInputExpression(input);
   }

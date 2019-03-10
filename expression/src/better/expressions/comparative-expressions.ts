@@ -1,6 +1,6 @@
 import {Expression} from "../expression";
 
-export const comparativeExpressions: ReadonlyArray<Expression> = [
+export const comparativeExpressions: ReadonlyArray<Expression<boolean>> = [
   {
     key: "eq",
     expression: (a, b) => a === b,

@@ -1,7 +1,6 @@
-import {Expression, ExpressionScope, ScopeVariable} from "./expression";
-import {stockExpressions} from "./stock-expressions";
-import {coreExpressions, createExpressionConstant, createExpressionLambda} from "./expressions/core-expressions";
-import {ExpressionEvaluator} from "./expression-evaluator";
+import { Expression, ExpressionScope, ScopeVariable } from "./expression";
+import { coreExpressions } from "./expressions/core-expressions";
+import { stockExpressions } from "./expressions/stock-expressions";
 
 export class ExpressionParser {
   constructor(expressions: ReadonlyArray<Expression> = ExpressionParser.defaultExpressions) {
@@ -14,6 +13,7 @@ export class ExpressionParser {
   public static setDefaultExpressions(expressions: ReadonlyArray<Expression>) {
     ExpressionParser.defaultExpressions = expressions;
   }
+
   private static defaultExpressions = stockExpressions;
 
   private expressionMap: { [key: string]: Expression } = {};
@@ -50,17 +50,12 @@ export class ExpressionParser {
   }
 }
 
-const tempParser = new ExpressionParser();
-export function $expr(exprKey: string, params?: ReadonlyArray<ExpressionScope>, vars?: ReadonlyArray<ScopeVariable>) {
-  return tempParser.createExpressionScope(exprKey, params, vars);
-}
-export function $const(value: any) {
-  return createExpressionConstant(value);
-}
-export function $eval(input: any, expr: ExpressionScope, vars?: ScopeVariable[]) {
-  expr.vars = [{ name: "$", scope: $const(input) }].concat(vars ? vars : []);
-  return expr.value;
-}
-export function $lambda(params: string[], expr: ExpressionScope) {
-  return createExpressionLambda(params, expr);
+export class ExpressionEvaluator {
+  constructor(public readonly expr: ExpressionScope) {
+  }
+
+  public evaluate(inputVars: ReadonlyArray<ScopeVariable>) {
+    this.expr.vars = inputVars;
+    return this.expr.value;
+  }
 }

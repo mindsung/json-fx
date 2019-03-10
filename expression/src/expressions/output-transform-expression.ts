@@ -1,9 +1,9 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 import { TransformExpression } from "../core/transform-expression";
 import { ConstantExpression } from "./constant-expression";
 
 export class OutputTransformExpression extends TransformExpression<any, any> {
-    constructor(input: Expression<any>, private output: Expression<any>) {
+    constructor(input: OldExpression<any>, private output: OldExpression<any>) {
       super(true, input, [output]);
       if (input == null) {
         throw new Error("Output transform requires an input expression.");

@@ -1,4 +1,4 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 import { ArrayExpression } from "../core/array-expression";
 import { TransformExpression } from "../core/transform-expression";
 import { ValueType } from "../core/value-type";
@@ -6,7 +6,7 @@ import { ValueType } from "../core/value-type";
 export type SortDirection = "asc" | "desc";
 
 export class ArraySortExpression<TIn extends Array<TItem>, TItem, TValue extends ValueType> extends ArrayExpression<TIn, TItem, Array<TItem>> {
-  constructor(input: Expression<TIn>, private itemValue: TransformExpression<TItem, TValue>, private direction?: Expression<SortDirection>) {
+  constructor(input: OldExpression<TIn>, private itemValue: TransformExpression<TItem, TValue>, private direction?: OldExpression<SortDirection>) {
     super(true, input, [direction]);
   }
 

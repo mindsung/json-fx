@@ -1,13 +1,13 @@
-import { Expression } from "../core/expression";
+import { OldExpression } from "../core/expression";
 
 export interface KeyValueExpressionPair {
-  key: Expression<string>;
-  value: Expression<any>;
+  key: OldExpression<string>;
+  value: OldExpression<any>;
 }
 
-export class ObjectExpression extends Expression<{}> {
+export class ObjectExpression extends OldExpression<{}> {
   constructor(...kvs: KeyValueExpressionPair[]) {
-    super(true, kvs.map(kv => kv.key as Expression<any>).concat(kvs.map(kv => kv.value)));
+    super(true, kvs.map(kv => kv.key as OldExpression<any>).concat(kvs.map(kv => kv.value)));
     this.kvs = kvs;
   }
   private kvs: KeyValueExpressionPair[];

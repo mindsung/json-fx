@@ -25,4 +25,6 @@ export * from "./modules/fx-core-module";
 
 export * from "./core/expression-factory";
 
+export * from "./better/expression";
+export * from "./better/expressions";
 export * from "./better/expression-parser";

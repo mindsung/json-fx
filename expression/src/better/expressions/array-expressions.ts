@@ -1,22 +1,24 @@
 import {Expression, ExpressionScope} from "../expression";
 import {createExpressionLambda, createExpressionConstant} from "./core-expressions";
 
-// function createItemScope(parentScope: ExpressionScope, expr: ExpressionScope, item: any): ExpressionScope {
-//   const itemScope = createExpressionConstant(item);
-//   const nullScope = createExpressionConstant(null, [{ name: "$", scope: itemScope}]);
-//   expr.reset();
-//   nullScope.addToScope(expr);
-//   if (parentScope) {
-//     parentScope.addToScope(nullScope);
-//   }
-//   return nullScope;
-// }
-
-function exprItemValue(parentScope: ExpressionScope, expr: ExpressionScope, item: any): any {
-  const itemScope = createExpressionLambda(["$"], expr);
-  parentScope.addToScope(itemScope);
-  itemScope.params = [createExpressionConstant(item)];
-  return itemScope.value;
+function lambdaEvaluator(expr: ExpressionScope, parentScope: ExpressionScope, callback: (evaluator: { evaluate: (item: any) => any }) => any) {
+  const lambda = createExpressionLambda(["$"], expr);
+  if (parentScope) {
+    parentScope.addToScope(lambda);
+  }
+  try {
+    return callback({
+      evaluate: (item: any) => {
+        lambda.params = [createExpressionConstant(item)];
+        return lambda.value;
+      }
+    });
+  }
+  finally {
+    if (parentScope) {
+      parentScope.removeFromScope(lambda);
+    }
+  }
 }
 
 function minOf(val1: any, val2: any) {
@@ -37,48 +39,45 @@ function maxOf(val1: any, val2: any) {
 
 export const arrayExpressions: ReadonlyArray<Expression> = [
   {
-    key: "count",
-    expression: (array: any[]) => array.length
-  },
-  {
     key: "map",
     params: [
       { name: "array" },
-      { name: "mapExpr", requireExpression: true }
+      { name: "mapExpr", deferEvaluation: true }
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], mapExpr: ExpressionScope) =>
-      array.map(item => exprItemValue(scope, mapExpr, item))
+      lambdaEvaluator(mapExpr, scope, fx => array.map(item => fx.evaluate(item)))
   },
   {
     key: "filter",
     params: [
       { name: "array" },
-      { name: "filterExpr", requireExpression: true }
+      { name: "filterExpr", deferEvaluation: true }
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], filterExpr: ExpressionScope) =>
-      array.filter(item => exprItemValue(scope, filterExpr, item))
+      lambdaEvaluator(filterExpr, scope, fx => array.filter(item => fx.evaluate(item)))
   },
   {
     key: "sort",
     params: [
       { name: "array" },
-      { name: "valueExpr", requireExpression: true }
+      { name: "valueExpr", deferEvaluation: true }
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope, direction: "asc" | "desc") =>
-      array.concat().sort((item1, item2) =>
-        exprItemValue(scope, valueExpr, item1) < exprItemValue(scope, valueExpr, item2)
+      lambdaEvaluator(valueExpr, scope, fx => array.concat().sort((item1, item2) =>
+        fx.evaluate(item1) < fx.evaluate(item2)
           ? (direction == null || direction === "asc" ? -1 : 1)
           : (direction == null || direction === "asc" ? 1 : -1))
+      )
   },
   {
     key: "min",
     params: [
       { name: "array" },
-      { name: "valueExpr", requireExpression: true }
+      { name: "valueExpr", deferEvaluation: true }
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope) => {
       let min: any = null;
-      array.forEach(item => min = minOf(min, exprItemValue(scope, valueExpr, item)));
+      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => min =  minOf(min, fx.evaluate(item))));
       return min;
     }
   },
@@ -86,30 +85,30 @@ export const arrayExpressions: ReadonlyArray<Expression> = [
     key: "max",
     params: [
       { name: "array" },
-      { name: "valueExpr", requireExpression: true }
+      { name: "valueExpr", deferEvaluation: true }
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope) => {
-      let min: any = null;
-      array.forEach(item => min = maxOf(min, exprItemValue(scope, valueExpr, item)));
-      return min;
+      let max: any = null;
+      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => max =  maxOf(max, fx.evaluate(item))));
+      return max;
     }
   },
   {
     key: "avg",
     params: [
       { name: "array" },
-      { name: "valueExpr", requireExpression: true }
+      { name: "valueExpr", deferEvaluation: true }
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope) => {
       let count = 0;
       let total = 0;
-      array.forEach(item => {
-        const val = exprItemValue(scope, valueExpr, item);
+      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => {
+        const val = fx.evaluate(item);
         if (val != null) {
           count++;
           total += val;
         }
-      });
+      }));
       return count > 0 ? total / count : null;
     }
   }
