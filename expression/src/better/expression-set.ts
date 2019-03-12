@@ -2,8 +2,8 @@ import { Expression, ExpressionScope, ScopeVariable } from "./expression";
 import { coreExpressions } from "./expressions/core-expressions";
 import { stockExpressions } from "./expressions/stock-expressions";
 
-export class ExpressionParser {
-  constructor(expressions: ReadonlyArray<Expression> = ExpressionParser.defaultExpressions) {
+export class ExpressionSet {
+  constructor(expressions: ReadonlyArray<Expression> = ExpressionSet.defaultExpressions) {
     this.addExpressions(coreExpressions);
     if (expressions != null) {
       this.addExpressions(expressions);
@@ -11,7 +11,7 @@ export class ExpressionParser {
   }
 
   public static setDefaultExpressions(expressions: ReadonlyArray<Expression>) {
-    ExpressionParser.defaultExpressions = expressions;
+    ExpressionSet.defaultExpressions = expressions;
   }
 
   private static defaultExpressions = stockExpressions;

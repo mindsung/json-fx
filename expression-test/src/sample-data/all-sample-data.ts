@@ -1,8 +1,8 @@
 import { sampleBookLibrary } from "./books";
-import { $f, $fx, $withVars, ExpressionScope, ScopeVariable, ExpressionParser, ExpressionEvaluator, createExpressionConstant, createExpressionLambda } from "@mindsung/expression";
+import { $f, $fx, $withVars, ExpressionScope, ScopeVariable, ExpressionSet, ExpressionEvaluator, createExpressionConstant, createExpressionLambda } from "@mindsung/expression";
 import { $BOOKS } from "./books-2";
 
-const defaultParser = new ExpressionParser();
+const defaultParser = new ExpressionSet();
 
 export function $expr(exprKey: string, params?: ReadonlyArray<ExpressionScope>, vars?: ReadonlyArray<ScopeVariable>) {
   return defaultParser.createExpressionScope(exprKey, params, vars);

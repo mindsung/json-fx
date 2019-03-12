@@ -1,6 +1,5 @@
-// https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json
-
 {
+  "contentCredit": "https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json",
   "pokemon": [
     {
       "id": 1,
