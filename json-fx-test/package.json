@@ -6,7 +6,7 @@
     "start": "ng serve --port 4200",
     "build": "ng build",
     "test": "ng test",
-    "linux-link-js-expression": "mkdir -p lib && cd lib && ln -nsf ../../json-fx/src ./json-fx",
+    "linux-link-json-fx": "mkdir -p lib && cd lib && ln -nsf ../../json-fx/src ./json-fx",
     "lint": "tslint src/**/*.ts?(x)",
     "lint-fix": "tslint --fix src/**/*.ts?(x)"
   },

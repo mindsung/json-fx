@@ -15,7 +15,7 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
       token.addTags("expression");
     } else if (c === "@") {
       token.addTags("parameter");
-    } else if (c === "`") {
+    } else if (c === "'" || c === "\"") {
       token.addTags("literal");
     } else if (/[\[({]/.test(c)) {
       token.addTags("group", "open");

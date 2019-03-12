@@ -35,6 +35,25 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
     return this.module.exprSet.createExpressionScope(params[0], params.slice(1));
   }
 
+  private toConstant(identifier: string) {
+    const s = identifier;
+    if (s.toLowerCase() === "null") { return null; }
+    if (s.toLowerCase() === "true") { return true; }
+    if (s.toLowerCase() === "false") { return false; }
+    const n = Number(s);
+    if (!isNaN(n)) { return n; }
+    const d = Date.parse(s);
+    if (!isNaN(d)) {
+      if (s.indexOf(":") >= 0) {
+        // Has a time component, take as is.
+        return new Date(d);
+      }
+      // No time component, interpret as date in local time by add time component 00:00
+      return new Date(Date.parse(s + "T00:00"));
+    }
+    return s;
+  }
+
   private evaluateProperty(identifier: string): ExpressionScope<any> {
     const dotIndex = identifier.lastIndexOf(".");
     const mapIndex = identifier.lastIndexOf("~");
@@ -43,7 +62,12 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
     const max = Math.max(dotIndex, mapIndex);
 
     if (min === -1 && max === -1) {
-      return this.module.exprSet.createExpressionScope("_var", [createExpressionConstant(identifier)]);
+      if (identifier.startsWith("$") || identifier.startsWith("@")) {
+        return this.module.exprSet.createExpressionScope("_var", [createExpressionConstant(identifier)]);
+      }
+      else {
+        return createExpressionConstant(this.toConstant(identifier));
+      }
     } else {
       const index = min !== -1 ? min : max;
       const parent = identifier.substr(0, index);
