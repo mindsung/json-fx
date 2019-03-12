@@ -1,19 +1,19 @@
-import {FxCompiler} from "./fx-parser";
-import {OldExpression} from "../core/expression";
-import {FxModule} from "../modules/fx-module";
-import {$f} from "../core/expression-factory";
-import {FxScriptCompiler} from "./fx-script-compiler";
+import { FxCompiler } from "./fx-parser";
+import { FxModule } from "./fx-module";
+import { FxScriptCompiler } from "./fx-script-compiler";
+import { ExpressionScope } from "../core/expression";
+import { createExpressionConstant } from "../expressions";
 
 export class FxObjectCompiler extends FxCompiler<any> {
 
   private scriptCompiler: FxScriptCompiler;
 
-  constructor(module: FxModule) {
+  constructor(module: FxModule = new FxModule()) {
     super(module);
     this.scriptCompiler = new FxScriptCompiler(module);
   }
 
-  evaluate(obj: any): OldExpression<any> {
+  evaluate(obj: any): ExpressionScope<any> {
     if (obj instanceof Object) {
       return this.evaluateObject(<Object>obj);
     } else {
@@ -21,15 +21,15 @@ export class FxObjectCompiler extends FxCompiler<any> {
     }
   }
 
-  private evaluateObject(obj: object): OldExpression<any> {
-    const keyValues: Array<{ key: string, value: any }> = [];
+  private evaluateObject(obj: object): ExpressionScope<any> {
+    const keyValues = new Map<ExpressionScope<string>, ExpressionScope>();
 
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        keyValues.push({key: key, value: this.evaluate(obj[key])});
+        keyValues.set(createExpressionConstant(key), this.evaluate(obj[key]));
       }
     }
 
-    return $f("object", ...keyValues);
+    return this.module.exprSet.createExpressionScope("_object", [createExpressionConstant(keyValues)]);
   }
 }

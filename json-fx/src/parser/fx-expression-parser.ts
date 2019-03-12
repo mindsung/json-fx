@@ -1,6 +1,6 @@
-import {FxNode} from "./fx-node";
-import {FxParser} from "./fx-parser";
-import {FxModule} from "../modules/fx-module";
+import { FxNode } from "./fx-node";
+import { FxParser } from "./fx-parser";
+import { FxModule } from "./fx-module";
 
 export class FxExpressionParser extends FxParser<FxNode, void> {
   constructor(module: FxModule) {

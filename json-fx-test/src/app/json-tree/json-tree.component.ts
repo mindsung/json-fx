@@ -44,7 +44,7 @@ export class JsonTreeComponent implements OnInit {
 
   public get keys(): string[] {
     if (this.type === "object" || this.type === "array") {
-      return Object.keys(this.node);
+      return this.node == null ? [] : Object.keys(this.node);
     } else {
       return [];
     }

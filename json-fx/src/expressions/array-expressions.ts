@@ -1,4 +1,4 @@
-import {Expression, ExpressionScope} from "../expression";
+import {Expression, ExpressionScope} from "../core/expression";
 import {createExpressionLambda, createExpressionConstant} from "./core-expressions";
 
 function lambdaEvaluator(expr: ExpressionScope, parentScope: ExpressionScope, callback: (evaluator: { evaluate: (item: any) => any }) => any) {
@@ -38,6 +38,10 @@ function maxOf(val1: any, val2: any) {
 }
 
 export const arrayExpressions: ReadonlyArray<Expression> = [
+  {
+    key: "count",
+    expression: (array: any[]) => array.length
+  },
   {
     key: "map",
     params: [

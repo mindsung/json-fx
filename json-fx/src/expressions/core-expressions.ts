@@ -1,4 +1,4 @@
-import {Expression, ExpressionScope, ScopeVariable} from "../expression";
+import {Expression, ExpressionScope, ScopeVariable} from "../core/expression";
 
 // Since all parameters are required to be expression scopes, we need a special
 // case for creating expressions that returns a constant.
@@ -45,9 +45,6 @@ export const coreExpressions: ReadonlyArray<Expression> = [
         }
       }
       return propValue;
-    },
-    token: {
-      key: "."
     }
   },
   {

@@ -1,7 +1,7 @@
-import {FxNode} from "./fx-node";
-import {FxParser} from "./fx-parser";
-import {FxOperator} from "./fx-operator";
-import {FxModule} from "../modules/fx-module";
+import { FxNode } from "./fx-node";
+import { FxParser } from "./fx-parser";
+import { FxOperator } from "./fx-operator";
+import { FxModule } from "./fx-module";
 
 interface OpNode {
   node: FxNode;
@@ -49,7 +49,7 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
           FxOperatorParser.shiftOperatorStack(operatorStack, terms);
         }
 
-        operatorStack.unshift({node: node, op: op});
+        operatorStack.unshift({ node: node, op: op });
       } else {
         terms.push(node);
       }

@@ -1,5 +1,5 @@
-import {FxParser} from "./fx-parser";
-import {FxNode} from "./fx-node";
+import { FxParser } from "./fx-parser";
+import { FxNode } from "./fx-node";
 
 export class FxGrouper extends FxParser<FxNode[], FxNode> {
   constructor() {

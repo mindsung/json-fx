@@ -1,7 +1,7 @@
-import {FxModule} from "./fx-module";
+import {FxModule} from "../parser/fx-module";
 import {FxOperator} from "../parser/fx-operator";
 
-export class FxCoreModule extends FxModule {
+export class OldFxCoreModule extends FxModule {
   constructor() {
     super();
     this.addOperators(

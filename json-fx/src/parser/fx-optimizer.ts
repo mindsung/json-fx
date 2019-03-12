@@ -1,5 +1,5 @@
-import {FxNodeParser} from "./fx-node-parser";
-import {FxNode} from "./fx-node";
+import { FxNodeParser } from "./fx-node-parser";
+import { FxNode } from "./fx-node";
 
 export class FxOptimizer extends FxNodeParser {
   evaluate(root: FxNode): void {

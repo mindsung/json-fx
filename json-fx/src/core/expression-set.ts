@@ -1,6 +1,6 @@
 import { Expression, ExpressionScope, ScopeVariable } from "./expression";
-import { coreExpressions } from "./expressions/core-expressions";
-import { stockExpressions } from "./expressions/stock-expressions";
+import { coreExpressions } from "../expressions/core-expressions";
+import { stockExpressions } from "../expressions";
 
 export class ExpressionSet {
   constructor(expressions: ReadonlyArray<Expression> = ExpressionSet.defaultExpressions) {
@@ -16,8 +16,9 @@ export class ExpressionSet {
 
   private static defaultExpressions = stockExpressions;
 
+  public readonly tokenMap: { [key: string]: Expression } = {};
+
   private expressionMap: { [key: string]: Expression } = {};
-  private tokenMap: { [key: string]: Expression } = {};
 
   public addExpressions(expressions: ReadonlyArray<Expression>) {
     expressions.forEach(expr => {

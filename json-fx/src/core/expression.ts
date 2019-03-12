@@ -1,149 +1,144 @@
-import { isArray, isObjectLike } from "lodash";
-
-const EXPRESSION_CLASS_TOKEN = "_@@MINDSUNG_EXPRESSION_CLASS";
-
-export abstract class OldExpression<TOut> {
-  private __expression_class_token = EXPRESSION_CLASS_TOKEN;
-
-  constructor(private createScope: boolean, scopeParams: any[] = []) {
-    this.scope = new OldExpressionScope(!createScope);
-    this.addToScope(scopeParams);
-  }
-
-  public readonly scope: OldExpressionScope;
-
-  public addToScope(vals: any[]): OldExpression<TOut> {
-    vals.forEach(val => {
-      if (isExpression(val)) {
-        this.scope.addExpression(val);
-      }
-      else if (isArray(val)) {
-        val.forEach(v => this.addToScope(v));
-      }
-      else if (isObjectLike(val)) {
-        this.addToScope(Object.keys(val).map(k => val[k]));
-      }
-    });
-    return this;
-  }
-
-  protected abstract out(): TOut;
-
-  public evaluate() {
-    this.scope.wireScope();
-    return this.out();
-  }
+export interface Expression<T = any> {
+  readonly key: string;
+  readonly expression?: (...params: any[]) => T;
+  readonly expressionFactory?: (scope: ExpressionScope) => (...params: any[]) => T;
+  readonly params?: ReadonlyArray<ExpressionParam>;
+  readonly token?: ExpressionToken;
+  readonly isOverride?: boolean;
 }
 
-export function isExpression(value: any): value is OldExpression<any> {
-  return value != null && value["__expression_class_token"] === EXPRESSION_CLASS_TOKEN;
+interface ExpressionParam {
+  readonly name: string;
+  readonly description?: string;
+  readonly valueType?: "string" | "number" | "boolean" | "date" | "object" | "array";
+  readonly deferEvaluation?: boolean;
 }
 
-class ExpressionValueCache<TOut> extends OldExpression<TOut> {
-  constructor(public expr: OldExpression<TOut>) {
-    super(false);
-  }
-
-  private cachedValue: TOut;
-  private isEvaluated = false;
-
-  protected out(): TOut {
-    throw new Error("OldExpression value cache should never call output.");
-  }
-
-  public evaluate() {
-    if (!this.isEvaluated) {
-      this.cachedValue = this.expr.evaluate();
-      this.isEvaluated = true;
-    }
-    return this.cachedValue;
-  }
-
-  public uncache() {
-    this.isEvaluated = false;
-    this.cachedValue = undefined;
-  }
+interface ExpressionToken {
+  readonly key: string;
+  readonly precedence: number;
+  // TODO: What else needs to be known for token parsing?
 }
 
-export class OldExpressionScope {
-  constructor(private proxyParent: boolean) {}
+export interface ScopeVariable {
+  name: string;
+  expr: ExpressionScope;
+}
 
-  public parentScope: OldExpressionScope = null;
-  private expressions: ExpressionValueCache<any>[] = [];
-  private variables: { [ key: string ]: ExpressionValueCache<any> } = {};
-
-  public setInputExpression(input: OldExpression<any>) {
-    this.inputCache = input != null ? new ExpressionValueCache(input) : null;
-  }
-  private inputCache: ExpressionValueCache<any>;
-
-  public addExpression(expr: OldExpression<any>) {
-    const exprCache = new ExpressionValueCache(expr);
-    this.expressions.push(exprCache);
-    return exprCache;
-  }
-
-  public addVariableExpression(name: string, expr: OldExpression<any>) {
-    if (this.proxyParent) {
-      throw new Error("Variables may only be added to scoped expressions.");
+export class ExpressionScope<T = any> {
+  constructor(public readonly expr: Expression<T>,
+              params?: ReadonlyArray<ExpressionScope>,
+              vars?: ReadonlyArray<ScopeVariable>) {
+    if (expr == null) {
+      throw new Error("Expression scope requires expression info.");
     }
-    if (!name || !name.startsWith("$")) {
-      throw new Error(`Invalid expression variable name "${name}": variable names must begin with "$".`);
+    if (expr.expression == null && expr.expressionFactory == null) {
+      throw new Error("Expression scope requires either an expression or an expression factory.");
     }
-    const exprCache = this.addExpression(expr);
-    this.variables[name] = exprCache;
-    return exprCache;
+
+    this.params = params;
+    this.vars = vars;
   }
 
-  public addVariableAlias(name: string, refName: string) {
-    const ref = this.getVariable(refName);
-    if (ref == null) {
-      throw new Error(`Can't add variable alias "${name}", expression variable "${refName}" was not found in scope.`);
-    }
-    this.variables[name] = ref;
+  public get params() {
+    return this._params || [];
   }
 
-  private traverseScopeForVariable(name: string, occurrence: number): ExpressionValueCache<any> {
-    const ref = name === "$" ? (this.inputCache != null ? this.inputCache : null) : this.variables[name];
-    return ref != null
-      ? occurrence <= 1
-        ? ref
-        : this.parentScope != null
-          ? this.parentScope.traverseScopeForVariable(name, occurrence - 1)
-          : null
-      : this.parentScope != null ? this.parentScope.traverseScopeForVariable(name, occurrence)
-      : null;
+  public set params(params: ReadonlyArray<ExpressionScope>) {
+    if (this._params) {
+      this._params.forEach(p => this.removeFromScope(p));
+    }
+    if (params != null) {
+      params.forEach(p => {
+        this.addToScope(p);
+      });
+    }
+    this._params = params || [];
+    this.reset();
   }
 
-  public static isInputVariableName(name: string) {
-    return [].every.call(name, (c: string) => c === "$");
+  private _params: ReadonlyArray<ExpressionScope>;
+
+  public get vars() {
+    return this._vars || [];
   }
 
-  private getVariable(name: string): ExpressionValueCache<any> {
-    if (OldExpressionScope.isInputVariableName(name)) {
-      return this.traverseScopeForVariable("$", name.length);
+  public set vars(vars: ReadonlyArray<ScopeVariable>) {
+    if (this._vars) {
+      this._vars.forEach(v => this.removeFromScope(v.expr));
     }
-    else {
-      return this.traverseScopeForVariable(name, 1);
+    this.varMap = {};
+    if (vars != null) {
+      vars.forEach(v => {
+        this.addToScope(v.expr);
+        this.varMap[v.name] = v.expr;
+      });
+    }
+    this._vars = vars || [];
+    this.reset();
+  }
+
+  private _vars: ReadonlyArray<ScopeVariable> = [];
+  private varMap: { [key: string]: ExpressionScope };
+
+  public addToScope(expr: ExpressionScope) {
+    expr.parentScope = this;
+  }
+
+  public removeFromScope(expr: ExpressionScope) {
+    if (expr.parentScope === this) {
+      expr.parentScope = null;
     }
   }
 
-  public evaluateVariable(name: string): any {
-    const exprCache = this.getVariable(name);
-    if (exprCache == null) {
-      throw new Error(`Expression variable "${name}" was not found in scope.`);
+  private parentScope: ExpressionScope;
+
+  private expression: (...params: any[]) => any;
+
+  public get value(): T {
+    if (!this.hasValue) {
+      const xInfo = this.expr;
+      if (this.expression == null) {
+        this.expression = xInfo.expression ? xInfo.expression
+          : xInfo.expressionFactory(this);
+      }
+      this._value = this.expression(...(this.params || []).map((p, i) =>
+        xInfo.params == null || xInfo.params[i] == null || !xInfo.params[i].deferEvaluation
+          ? p.value : p));
+      this.hasValue = true;
     }
-    return exprCache.evaluate();
+    return this._value;
   }
 
-  public wireScope() {
-    if (this.inputCache != null) {
-      this.inputCache.expr.scope.parentScope = this.parentScope;
-      this.inputCache.uncache();
+  private _value: T;
+  private hasValue = false;
+
+  public reset() {
+    this.vars.forEach(v => v.expr.reset());
+    this.params.forEach(p => p.reset());
+    this.hasValue = false;
+    this._value = undefined;
+  }
+
+  public getVariableExpression(name: string): ExpressionScope {
+    const varExpr = this.varMap[name];
+    if (varExpr != null) {
+      return varExpr;
     }
-    this.expressions.forEach(exprCache => {
-      exprCache.expr.scope.parentScope = this.proxyParent ? this.parentScope : this;
-      exprCache.uncache();
-    });
+    if (this.parentScope != null) {
+      return this.parentScope.getVariableExpression(name);
+    }
+    throw new Error(`Expression variable "${name}" was not found in scope.`);
+  }
+
+  public getVariableValue(name: string, params?: ExpressionScope[]): any {
+    const varExpr = this.getVariableExpression(name);
+    if (params != null && params.length > 0) {
+      if (varExpr.expr.key !== "*_lambda") {
+        throw new Error(`Invalid variable "${name}" was called as an expression. Only variable expressions may be called with parameters.`);
+      }
+      varExpr.params = params;
+    }
+    return varExpr.value;
   }
 }

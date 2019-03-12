@@ -1,15 +1,8 @@
-import {Component, OnInit} from "@angular/core";
-import {$BOOKS} from "../sample-data/books-2";
-import { $const, $expr, $lambda, $eval, allSampleData, bar, foo } from "../sample-data/all-sample-data";
-import {
-  $f,
-  $fx,
-  $withVars,
-  FxCoreModule,
-  FxScriptCompiler,
-  FxObjectCompiler
-} from "@mindsung/expression";
-import {$POKEMON} from "../spec/data/pokemon";
+import { Component, OnInit } from "@angular/core";
+import { $BOOKS } from "../sample-data/books-2";
+import { $const, $expr, $lambda, $eval, allSampleData, bar } from "../sample-data/all-sample-data";
+import { FxScriptCompiler, FxObjectCompiler, ExpressionEvaluator } from "@mindsung/expression";
+import { $POKEMON } from "../spec/data/pokemon";
 
 @Component({
   selector: "app-root",
@@ -22,27 +15,29 @@ export class AppComponent implements OnInit {
 
   private fxBooks: object = $BOOKS;
 
-  private scriptCompiler = new FxScriptCompiler(new FxCoreModule());
-  private objectCompiler = new FxObjectCompiler(new FxCoreModule());
+  private scriptCompiler = new FxScriptCompiler();
+  private objectCompiler = new FxObjectCompiler();
 
   ngOnInit() {
     this.onEval(null);
 
     window["$fxScript"] = (data: any, expr: string) => {
-      console.log($fx("_transform", data, this.scriptCompiler.evaluate(expr)).evaluate());
+      console.log(new ExpressionEvaluator(this.scriptCompiler.evaluate(expr)).evaluate([{
+        name: "$",
+        expr: $const(data)
+      }]));
     };
 
     window["$fxObject"] = (data: any, obj: object) => {
-      console.log($fx("_transform", data, this.objectCompiler.evaluate(obj)).evaluate());
+      console.log(new ExpressionEvaluator(this.objectCompiler.evaluate(obj)).evaluate([{
+        name: "$",
+        expr: $const(data)
+      }]));
     };
 
     window["$BOOKS"] = $BOOKS;
     window["$POKEMON"] = $POKEMON;
 
-    window["$f"] = $f;
-    window["$fx"] = $fx;
-    window["$withVars"] = $withVars;
-    window["$foo"] = foo;
     window["$bar"] = bar;
     window["$sample"] = allSampleData;
     window["$toJson"] = JSON.stringify;
@@ -64,7 +59,10 @@ export class AppComponent implements OnInit {
   }
 
   public onEval(event: MouseEvent) {
-    const result = $fx("_transform", $BOOKS, this.scriptCompiler.evaluate(this.fxScript)).evaluate();
+    const result = new ExpressionEvaluator(this.scriptCompiler.evaluate(this.fxScript)).evaluate([{
+      name: "$",
+      expr: $const($BOOKS)
+    }]);
     this.fxData = result;
   }
 }

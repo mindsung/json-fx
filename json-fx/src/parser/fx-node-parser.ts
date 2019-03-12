@@ -1,6 +1,6 @@
-import {FxParser} from "./fx-parser";
-import {FxNode} from "./fx-node";
-import {FxModule} from "../modules/fx-module";
+import { FxParser } from "./fx-parser";
+import { FxNode } from "./fx-node";
+import { FxModule } from "./fx-module";
 
 export class FxNodeParser extends FxParser<FxNode, void> {
   public parsers: FxParser<FxNode, void>[];

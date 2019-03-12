@@ -1,5 +1,5 @@
-import {FxNode} from "./fx-node";
-import {FxParser} from "./fx-parser";
+import { FxNode } from "./fx-node";
+import { FxParser } from "./fx-parser";
 
 export class FxTokenizer extends FxParser<string, FxNode[]> {
   constructor() {
