@@ -1,5 +1,5 @@
 {
-  "name": "@mindsung/expression-test",
+  "name": "@mindsung/json-fx-test",
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
