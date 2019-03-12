@@ -148,7 +148,10 @@ export class FxNode {
     return this.orphan();
   }
 
-  public toString(): string {
-    return this.value.toString();
+  public  toString(): string {
+    const childrenString = (this.children || []).map(c =>
+      c.toString()).filter(s => s).join(",");
+    const valString = (this.value || "").toString();
+    return valString + (valString && childrenString ? `(${childrenString})` : childrenString);
   }
 }

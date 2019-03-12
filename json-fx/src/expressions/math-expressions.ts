@@ -14,11 +14,11 @@ export const mathExpressions: ReadonlyArray<Expression> = [
   {
     key: "mul",
     expression: (a, b) => a * b,
-    token: { key: "*", precedence: 4 }
+    token: { key: "*", precedence: 3.1 }
   },
   {
     key: "div",
     expression: (a, b) => a / b,
-    token: { key: "/", precedence: 4 }
+    token: { key: "/", precedence: 3.1 }
   }
 ];
