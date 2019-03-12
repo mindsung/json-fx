@@ -1,5 +1,5 @@
 {
-  "extends": "../../ts-core/tsconfig.json",
+  "extends": "../tsconfig.json",
   "include": ["lib/**/*.ts", "src/**/*.ts"],
   "compilerOptions": {
     "baseUrl": "./",
@@ -9,7 +9,7 @@
     ],
     "paths": {
       "@mindsung/expression": [
-        "lib/expression/public_api"
+        "lib/json-fx/public_api"
       ]
     }
   }
