@@ -23,7 +23,7 @@ export class FxExpressionParser extends FxParser<FxNode, void> {
     const isGroup = root.isTagged("group");
 
     root.forEachChild((index, node) => {
-      if (node.isTagged("group", "open") && lastNode.isTagged("expression")) {
+      if (node.isTagged("group", "open") && lastNode && lastNode.isTagged("expression")) {
         node.transferChildren(lastNode);
         node.orphan();
         paramBuffer.push(lastNode);
