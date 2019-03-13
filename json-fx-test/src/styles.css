@@ -19,7 +19,7 @@ body {
     min-height: 100%;
 }
 
-input, button {
+input, button, textarea {
     font: inherit;
     background: none;
     border: 1px solid #344;

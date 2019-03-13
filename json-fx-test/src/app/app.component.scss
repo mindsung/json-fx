@@ -6,7 +6,11 @@
     margin: 0.25em 0;
     background-color: lightgray;
   }
-  input {
+  textarea {
     width: 80%;
+    height: 4em;
+  }
+  button {
+    vertical-align: text-bottom;
   }
 }

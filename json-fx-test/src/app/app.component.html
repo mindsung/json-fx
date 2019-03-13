@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="row-cell">
-        <input [(ngModel)]="fxScript"/>
+        <textarea [(ngModel)]="fxScript"></textarea>
         <button (click)="onEval($event)">Evaluate</button>
         <div class="scrollbox">
             <app-json-tree [node]="fxData"></app-json-tree>
