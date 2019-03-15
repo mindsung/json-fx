@@ -33,11 +33,15 @@ export class JsonTreeComponent implements OnInit {
   }
 
   public getValueType(item: any): string {
-    if (Array.isArray(item)) {
+    if (item == null) {
+      return "null";
+    }
+    else if (Array.isArray(item)) {
       console.log("is array");
       console.log(item);
       return "array";
-    } else {
+    }
+    else {
       return typeof item;
     }
   }

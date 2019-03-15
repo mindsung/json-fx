@@ -39,10 +39,10 @@ export const coreExpressions: ReadonlyArray<Expression> = [
       }
       const parts = path.split(".").filter(p => p.length > 0);
       for (let i = 0; i < parts.length; i++) {
-        propValue = propValue[parts[i]];
         if (propValue == null) {
-          return null;
+          throw new Error(`Cannot evaluate property "${parts[i]}" of null.`);
         }
+        propValue = propValue[parts[i]];
       }
       return propValue;
     }

@@ -22,7 +22,8 @@ export class ExpressionSet {
 
   public addExpressions(expressions: ReadonlyArray<Expression>) {
     expressions.forEach(expr => {
-      if (this.expressionMap[expr.key] != null && !expr.isOverride) {
+      const mapKey = expr.key.toLowerCase();
+      if (this.expressionMap[mapKey] != null && !expr.isOverride) {
         throw new Error(`Duplicate expression key "${expr.key}". Set "isOverride = true" to allow override of a previously mapped expression.`);
       }
       if (expr.token != null) {
@@ -31,14 +32,14 @@ export class ExpressionSet {
         }
         this.tokenMap[expr.token.key] = expr;
       }
-      this.expressionMap[expr.key] = expr;
+      this.expressionMap[mapKey] = expr;
     });
   }
 
   public createExpressionScope(exprKey: string,
                                params?: ReadonlyArray<ExpressionScope>,
                                vars?: ReadonlyArray<ScopeVariable>) {
-    const exprInfo = this.expressionMap[exprKey];
+    const exprInfo = this.expressionMap[exprKey.toLowerCase()];
     if (exprInfo == null) {
       throw new Error(`Expression "${exprKey}" is not defined.`);
     }

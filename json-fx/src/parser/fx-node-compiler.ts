@@ -66,7 +66,7 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
         return this.module.exprSet.createExpressionScope("_var", [createExpressionConstant(identifier)]);
       }
       else {
-        return createExpressionConstant(this.toConstant(identifier));
+        return createExpressionConstant(identifier.length > 0 ? this.toConstant(identifier) : null);
       }
     } else {
       const index = min !== -1 ? min : max;
@@ -74,7 +74,8 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
       const child = identifier.substr(index + 1);
 
       if (index === dotIndex) {
-        return this.module.exprSet.createExpressionScope("_prop", [this.evaluateProperty(parent), createExpressionConstant(child)]);
+        return this.module.exprSet.createExpressionScope("_prop",
+          parent ? [this.evaluateProperty(parent), createExpressionConstant(child)] : [createExpressionConstant(child)]);
       } else {
         return this.module.exprSet.createExpressionScope("map", [this.evaluateProperty(parent), this.evaluateProperty("$." + child)]);
       }
