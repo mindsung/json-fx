@@ -31,7 +31,7 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
         || n.op.precedence > nodeInfo[iop].op.precedence) ? i : iop);
       // if (iop < 0) { break; }
       if (iop < 0) {
-        /*if (hadOps)*/ { console.log("post-ops", root.toString()); }
+        if (hadOps) { console.log("post-ops", root.toString()); }
         break;
       }
       else if (!hadOps) {

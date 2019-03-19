@@ -8,6 +8,7 @@ import { FxExpressionParser } from "./fx-expression-parser";
 import { FxOperatorParser } from "./fx-operator-parser";
 import { FxOptimizer } from "./fx-optimizer";
 import { ExpressionScope } from "../core/expression";
+import { FxDelimiterParser } from "./fx-delimiter-parser";
 
 export class FxScriptCompiler extends FxCompiler<string> {
 
@@ -23,6 +24,7 @@ export class FxScriptCompiler extends FxCompiler<string> {
     this.grouper = new FxGrouper();
 
     this.parser = new FxNodeParser(module,
+      new FxDelimiterParser(module),
       new FxExpressionParser(module),
       new FxOperatorParser(module),
       new FxOptimizer(module));
@@ -35,6 +37,7 @@ export class FxScriptCompiler extends FxCompiler<string> {
     const root = this.grouper.evaluate(tokens);
 
     this.parser.evaluate(root);
+    console.log("post-parser", root.toString());
     return this.compiler.evaluate(root);
   }
 }
