@@ -4,6 +4,7 @@ import { mathExpressions } from "./math-expressions";
 import { comparativeExpressions } from "./comparative-expressions";
 import { logicalExpressions } from "./logical-expressions";
 import { conditionalExpressions } from "./conditional-expressions";
+import { errorExpressions } from "./error-expressions";
 
 export * from "./core-expressions";
 export * from "./array-expressions";
@@ -16,4 +17,5 @@ export const stockExpressions: ReadonlyArray<Expression> = []
   .concat(mathExpressions)
   .concat(comparativeExpressions)
   .concat(logicalExpressions)
-  .concat(conditionalExpressions);
+  .concat(conditionalExpressions)
+  .concat(errorExpressions);

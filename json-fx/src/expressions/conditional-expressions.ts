@@ -9,10 +9,11 @@ export const conditionalExpressions: ReadonlyArray<Expression<boolean>> = [
       { name: "thenExpr", deferEvaluation: true },
       { name: "elseExpr", deferEvaluation: true }
     ],
-    expression: (cond: any, thenExpr: ExpressionScope, elseExpr: ExpressionScope) => cond ? thenExpr.value : elseExpr.value
+    expression: (cond: any, thenExpr: ExpressionScope, elseExpr: ExpressionScope) =>
+      cond ? thenExpr.value : elseExpr != null ? elseExpr.value : null
   },
   {
-    key: "nullcond",
+    key: "nullor",
     params: [
       { name: "value" },
       { name: "thenExpr", deferEvaluation: true }

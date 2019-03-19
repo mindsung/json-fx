@@ -61,6 +61,19 @@ export const arrayExpressions: ReadonlyArray<Expression> = [
       lambdaEvaluator(filterExpr, scope, fx => array.filter(item => fx.evaluate(item)))
   },
   {
+    key: "find",
+    params: [
+      { name: "array" },
+      { name: "findExpr", deferEvaluation: true }
+    ],
+    expressionFactory: (scope: ExpressionScope) => (array: any[], findExpr: ExpressionScope) =>
+      lambdaEvaluator(findExpr, scope, fx => {
+        const found = array.filter(item => fx.evaluate(item));
+        if (found.length > 1) { throw new Error(":find expression resulted in more than one matching item."); }
+        return found.length == 1 ? found[0] : null;
+      })
+  },
+  {
     key: "sort",
     params: [
       { name: "array" },
