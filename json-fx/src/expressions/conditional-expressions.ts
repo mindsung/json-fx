@@ -3,18 +3,27 @@ import { createExpressionConstant } from "./core-expressions";
 
 export const conditionalExpressions: ReadonlyArray<Expression<boolean>> = [
   {
+    key: "ifelse",
+    params: [
+      { name: "cond" },
+      { name: "thenExpr", deferEvaluation: true },
+      { name: "elseExpr", deferEvaluation: true }
+    ],
+    expression: (cond: any, thenExpr: ExpressionScope, elseExpr: ExpressionScope) => cond ? thenExpr.value : elseExpr.value
+  },
+  {
     key: "nullcond",
     params: [
-      { name: "nullEval" },
+      { name: "value" },
       { name: "thenExpr", deferEvaluation: true }
     ],
-    expression: (nullEval: any, thenExpr: ExpressionScope) => {
-      if (nullEval == null) { return null; }
+    expression: (value: any, thenExpr: ExpressionScope) => {
+      if (value == null) { return null; }
       let origParams = thenExpr["_orig_params"];
       if (origParams == null) {
         thenExpr["_orig_params"] = origParams = thenExpr.params;
       }
-      thenExpr.params = [createExpressionConstant(nullEval)].concat(origParams);
+      thenExpr.params = [createExpressionConstant(value)].concat(origParams);
       return thenExpr.value;
     },
     token: { key: "?", precedence: 0.1 }

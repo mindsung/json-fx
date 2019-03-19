@@ -26,10 +26,12 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
     while (true) {
       // Find the next operator to by precedence and original order until there are no more operators left.
       iop = -1;
-      nodeInfo.forEach((n, i) => iop = n.op != null && (iop < 0 || n.op.precedence > nodeInfo[iop].op.precedence) ? i : iop);
+      nodeInfo.forEach((n, i) => iop = n.op != null && (iop < 0
+        || (n.op.assoc === "right" && n.op.precedence >= nodeInfo[iop].op.precedence)
+        || n.op.precedence > nodeInfo[iop].op.precedence) ? i : iop);
       // if (iop < 0) { break; }
       if (iop < 0) {
-        if (hadOps) { console.log("post-ops", root.toString()); }
+        /*if (hadOps)*/ { console.log("post-ops", root.toString()); }
         break;
       }
       else if (!hadOps) {
@@ -61,7 +63,7 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
       item.op = null;
       // Update the working array replacing the operator and args with the new single expression.
       nodeInfo.splice(iop - 1, 3, item);
-    };
+    }
   }
 
   private static _shiftOperatorStack(operatorStack: Array<OpNode>, terms: Array<FxNode>) {

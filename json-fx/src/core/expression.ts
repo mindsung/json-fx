@@ -17,6 +17,7 @@ interface ExpressionParam {
 interface ExpressionToken {
   readonly key: string;
   readonly precedence: number;
+  readonly assoc?: "left" | "right";
   // TODO: What else needs to be known for token parsing?
 }
 
