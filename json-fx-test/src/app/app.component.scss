@@ -1,5 +1,8 @@
 :host ::ng-deep {
   font-family: sans-serif;
+  .json-source, .json-out {
+    width: 49%;
+  }
   code {
     display: inline-block;
     padding: 0.25em;

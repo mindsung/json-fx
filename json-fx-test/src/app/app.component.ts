@@ -3,6 +3,7 @@ import { $BOOKS } from "../sample-data/books-2";
 import { $const, $expr, $lambda, $eval, allSampleData, bar } from "../sample-data/all-sample-data";
 import { FxTemplateCompiler, ExpressionEvaluator } from "@mindsung/expression";
 import { $POKEMON } from "../spec/data/pokemon";
+import { $DSP } from "../sample-data/dsp";
 
 @Component({
   selector: "app-root",
@@ -10,10 +11,10 @@ import { $POKEMON } from "../spec/data/pokemon";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  private fxData: any;
-  private fxScript = "$";
+  public fxData: any;
+  public fxScript = "$";
 
-  private fxBooks: object = $BOOKS;
+  public fxSource: object = $BOOKS;
 
   private templateCompiler = new FxTemplateCompiler();
 
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit {
 
     window["$BOOKS"] = $BOOKS;
     window["$POKEMON"] = $POKEMON;
+    window["$DSP"] = $DSP;
 
     window["$bar"] = bar;
     window["$sample"] = allSampleData;
@@ -55,8 +57,9 @@ export class AppComponent implements OnInit {
       this.templateCompiler.evaluate(this.fxScript.startsWith("{") ? JSON.parse(this.fxScript) : this.fxScript)
     ).evaluate([{
       name: "$",
-      expr: $const($BOOKS)
+      expr: $const(this.fxSource)
     }]);
+    console.log(result);
     this.fxData = result;
   }
 }

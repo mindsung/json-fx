@@ -32,6 +32,7 @@ export class FxTemplateCompiler extends FxCompiler<any> {
       Object.keys(template).forEach(key => {
         if (key.startsWith("//")) { return; }
 
+        const fullKey = key;
         const keyAsExpr = key.startsWith("*");
         if (keyAsExpr) {
           key = key.substring(1);
@@ -42,7 +43,7 @@ export class FxTemplateCompiler extends FxCompiler<any> {
         }
 
         const keyExpr = this.scriptCompiler.evaluate(key);
-        const value = template[key];
+        const value = template[fullKey];
         if (keyExpr.expr.key === "_var") {
           vars.push({ name: key, expr: this.evaluate(value) });
         }

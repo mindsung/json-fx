@@ -3,9 +3,7 @@ import { createExpressionLambda, createExpressionConstant } from "./core-express
 
 function lambdaEvaluator(expr: ExpressionScope, parentScope: ExpressionScope, callback: (evaluator: { evaluate: (item: any) => any }) => any) {
   const lambda = createExpressionLambda(["$"], expr);
-  if (parentScope) {
-    parentScope.addToScope(lambda);
-  }
+  if (parentScope) { parentScope.addToScope(lambda); }
   return callback({
     evaluate: (item: any) => {
       lambda.params = [createExpressionConstant(item)];

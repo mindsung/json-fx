@@ -11,10 +11,11 @@ export function createExpressionConstant(value: any, vars: ScopeVariable[] = [])
 }
 
 export function createExpressionLambda(paramVarNames: string[], expr: ExpressionScope) {
+  const origScopeVars = expr.vars.concat();
   return new ExpressionScope({
     key: "*_lambda",
     expression: (...params: any[]) => {
-      expr.vars = paramVarNames.map((n, i) => ({ name: n, expr: params[i] }));
+      expr.vars = origScopeVars.concat(paramVarNames.map((n, i) => ({ name: n, expr: params[i] })));
       return expr.value;
     },
     params: paramVarNames.map(n => ({ name: n, deferEvaluation: true }))

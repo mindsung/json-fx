@@ -2,13 +2,13 @@
 
 
 <div class="row">
-    <div class="row-cell">
-        <h2>Books (Sample JSON)</h2>
+    <div class="json-source row-cell">
+        <h2>Source</h2>
         <div class="scrollbox">
-            <app-json-tree [node]="fxBooks"></app-json-tree>
+            <app-json-tree [node]="fxSource"></app-json-tree>
         </div>
     </div>
-    <div class="row-cell">
+    <div class="json-out row-cell">
         <textarea [(ngModel)]="fxScript"></textarea>
         <button (click)="onEval($event)">Evaluate</button>
         <div class="scrollbox">
