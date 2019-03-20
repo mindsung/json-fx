@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
 
   public onEval(event: MouseEvent) {
     const result = new ExpressionEvaluator(
-      this.templateCompiler.evaluate(this.fxScript.startsWith("{") ? JSON.parse(this.fxScript) : this.fxScript)
+      this.templateCompiler.evaluate(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript)
     ).evaluate([{
       name: "$",
       expr: $const(this.fxSource)

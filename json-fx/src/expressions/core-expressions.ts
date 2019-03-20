@@ -1,4 +1,4 @@
-import {Expression, ExpressionScope, ScopeVariable} from "../core/expression";
+import { Expression, ExpressionScope, ScopeVariable } from "../core/expression";
 import { isObject, isEmpty } from "lodash";
 
 // Since all parameters are required to be expression scopes, we need a special

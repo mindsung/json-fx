@@ -1,4 +1,4 @@
-import {Expression} from "../core/expression";
+import { Expression } from "../core/expression";
 
 export const mathExpressions: ReadonlyArray<Expression> = [
   {
