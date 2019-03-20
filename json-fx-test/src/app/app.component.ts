@@ -52,10 +52,16 @@ export class AppComponent implements OnInit {
     window["$eval"] = $eval;
   }
 
+  private lastScript: string;
+  private lastEvaluator: ExpressionEvaluator;
+
   public onEval(event: MouseEvent) {
-    const result = new ExpressionEvaluator(
-      this.templateCompiler.evaluate(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript)
-    ).evaluate([{
+    if (this.lastEvaluator == null || this.fxScript !== this.lastScript) {
+      this.lastEvaluator = new ExpressionEvaluator(
+        this.templateCompiler.evaluate(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript)
+      );
+    }
+    const result = this.lastEvaluator.evaluate([{
       name: "$",
       expr: $const(this.fxSource)
     }]);

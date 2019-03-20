@@ -10,7 +10,7 @@
     "module": "es2015",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
     "lib": ["es2016", "dom"]
   }

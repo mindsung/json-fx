@@ -2,7 +2,7 @@
   "name": "@mindsung/json-fx",
   "version": "0.1.0",
   "description": "MindSung JSON-Fx Library",
-  "main": "public_api.js",
+  "main": "index.js",
   "author": "Robb Eads",
   "contributors": [
     "Aaron Eads"
