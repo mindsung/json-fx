@@ -1,24 +1,17 @@
-import {Expression, ExpressionScope} from "../core/expression";
-import {createExpressionLambda, createExpressionConstant} from "./core-expressions";
+import { Expression, ExpressionScope } from "../core/expression";
+import { createExpressionLambda, createExpressionConstant } from "./core-expressions";
 
 function lambdaEvaluator(expr: ExpressionScope, parentScope: ExpressionScope, callback: (evaluator: { evaluate: (item: any) => any }) => any) {
   const lambda = createExpressionLambda(["$"], expr);
   if (parentScope) {
     parentScope.addToScope(lambda);
   }
-  try {
-    return callback({
-      evaluate: (item: any) => {
-        lambda.params = [createExpressionConstant(item)];
-        return lambda.value;
-      }
-    });
-  }
-  finally {
-    if (parentScope) {
-      parentScope.removeFromScope(lambda);
+  return callback({
+    evaluate: (item: any) => {
+      lambda.params = [createExpressionConstant(item)];
+      return lambda.value;
     }
-  }
+  });
 }
 
 function minOf(val1: any, val2: any) {
@@ -70,7 +63,7 @@ export const arrayExpressions: ReadonlyArray<Expression> = [
       lambdaEvaluator(findExpr, scope, fx => {
         const found = array.filter(item => fx.evaluate(item));
         if (found.length > 1) { throw new Error(":find expression resulted in more than one matching item."); }
-        return found.length == 1 ? found[0] : null;
+        return found.length === 1 ? found[0] : null;
       })
   },
   {
@@ -94,7 +87,7 @@ export const arrayExpressions: ReadonlyArray<Expression> = [
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope) => {
       let min: any = null;
-      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => min =  minOf(min, fx.evaluate(item))));
+      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => min = minOf(min, fx.evaluate(item))));
       return min;
     }
   },
@@ -106,7 +99,7 @@ export const arrayExpressions: ReadonlyArray<Expression> = [
     ],
     expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope) => {
       let max: any = null;
-      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => max =  maxOf(max, fx.evaluate(item))));
+      lambdaEvaluator(valueExpr, scope, fx => array.forEach(item => max = maxOf(max, fx.evaluate(item))));
       return max;
     }
   },

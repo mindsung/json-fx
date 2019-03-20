@@ -37,8 +37,6 @@ export class JsonTreeComponent implements OnInit {
       return "null";
     }
     else if (Array.isArray(item)) {
-      console.log("is array");
-      console.log(item);
       return "array";
     }
     else {

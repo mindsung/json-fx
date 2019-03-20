@@ -4,8 +4,8 @@ import { $BOOKS } from "./books-2";
 
 const defaultParser = new ExpressionSet();
 
-export function $expr(exprKey: string, params?: ReadonlyArray<ExpressionScope>, vars?: ReadonlyArray<ScopeVariable>) {
-  return defaultParser.createExpressionScope(exprKey, params, vars);
+export function $expr(exprKey: string, params?: ExpressionScope[], vars?: ScopeVariable[]) {
+  return defaultParser.createExpressionScope(exprKey).withParams(params).withVars(vars);
 }
 
 export function $const(value: any) {

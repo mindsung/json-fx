@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { $BOOKS } from "../sample-data/books-2";
 import { $const, $expr, $lambda, $eval, allSampleData, bar } from "../sample-data/all-sample-data";
-import { FxScriptCompiler, FxObjectCompiler, ExpressionEvaluator } from "@mindsung/expression";
+import { FxTemplateCompiler, ExpressionEvaluator } from "@mindsung/expression";
 import { $POKEMON } from "../spec/data/pokemon";
 
 @Component({
@@ -11,25 +11,17 @@ import { $POKEMON } from "../spec/data/pokemon";
 })
 export class AppComponent implements OnInit {
   private fxData: any;
-  private fxScript = "$.title";
+  private fxScript = "$";
 
   private fxBooks: object = $BOOKS;
 
-  private scriptCompiler = new FxScriptCompiler();
-  private objectCompiler = new FxObjectCompiler();
+  private templateCompiler = new FxTemplateCompiler();
 
   ngOnInit() {
     this.onEval(null);
 
-    window["$fxScript"] = (data: any, expr: string) => {
-      console.log(new ExpressionEvaluator(this.scriptCompiler.evaluate(expr)).evaluate([{
-        name: "$",
-        expr: $const(data)
-      }]));
-    };
-
-    window["$fxObject"] = (data: any, obj: object) => {
-      console.log(new ExpressionEvaluator(this.objectCompiler.evaluate(obj)).evaluate([{
+    window["$fx"] = (data: any, expr: any) => {
+      console.log(new ExpressionEvaluator(this.templateCompiler.evaluate(expr)).evaluate([{
         name: "$",
         expr: $const(data)
       }]));
@@ -59,7 +51,9 @@ export class AppComponent implements OnInit {
   }
 
   public onEval(event: MouseEvent) {
-    const result = new ExpressionEvaluator(this.scriptCompiler.evaluate(this.fxScript)).evaluate([{
+    const result = new ExpressionEvaluator(
+      this.templateCompiler.evaluate(this.fxScript.startsWith("{") ? JSON.parse(this.fxScript) : this.fxScript)
+    ).evaluate([{
       name: "$",
       expr: $const($BOOKS)
     }]);

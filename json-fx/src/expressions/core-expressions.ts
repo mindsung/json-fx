@@ -1,12 +1,13 @@
 import {Expression, ExpressionScope, ScopeVariable} from "../core/expression";
+import { isObject, isEmpty } from "lodash";
 
 // Since all parameters are required to be expression scopes, we need a special
 // case for creating expressions that returns a constant.
-export function createExpressionConstant(value: any, vars?: ReadonlyArray<ScopeVariable>): ExpressionScope {
+export function createExpressionConstant(value: any, vars: ScopeVariable[] = []): ExpressionScope {
   return new ExpressionScope({
-    key: "__const",
+    key: "_const",
     expression: () => value
-  }, null, vars);
+  }).withVars(vars);
 }
 
 export function createExpressionLambda(paramVarNames: string[], expr: ExpressionScope) {
@@ -49,14 +50,25 @@ export const coreExpressions: ReadonlyArray<Expression> = [
   },
   {
     key: "_object",
-    expression: (map: Map<ExpressionScope<string>, ExpressionScope>): {} => {
-      const value = {};
-      map.forEach((v, k) => value[k.value] = v.value);
-      return value;
+    expression: (props: ObjectExpressionProperty[]): {} => {
+      const obj = {};
+      props.forEach(p => {
+        const value = p.valueExpr.value;
+        if (!p.isOptional || !(value == null || (isObject(value) && isEmpty(value)))) {
+          obj[p.keyExpr.value] = value;
+        }
+      });
+      return obj;
     }
   },
   {
     key: "_array",
-    expression: (array: ExpressionScope[]): any[] => array.map(x => x.value)
+    expression: (exprArray: ExpressionScope[]): any[] => exprArray.map(x => x.value)
   }
 ];
+
+export interface ObjectExpressionProperty {
+  keyExpr: ExpressionScope<string>;
+  valueExpr: ExpressionScope;
+  isOptional: boolean;
+}

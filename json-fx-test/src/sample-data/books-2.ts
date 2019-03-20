@@ -1,3 +1,10 @@
+/*
+{
+  "$books":  { "$:map": { "book": "$.title + ' by ' + $.author", "published": "$.year", "isRecent": "$.year >= 1900" } },
+  "$books:filter": "$.published >= 1800"
+}
+*/
+
 export const $BOOKS = [
   {
     "author": "Chinua Achebe",

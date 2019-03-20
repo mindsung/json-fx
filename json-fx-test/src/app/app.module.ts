@@ -7,6 +7,7 @@ import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [AppComponent, JsonTreeComponent],
+  exports: [JsonTreeComponent],
   imports: [BrowserModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent]

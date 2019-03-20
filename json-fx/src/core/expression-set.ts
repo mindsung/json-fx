@@ -36,14 +36,12 @@ export class ExpressionSet {
     });
   }
 
-  public createExpressionScope(exprKey: string,
-                               params?: ReadonlyArray<ExpressionScope>,
-                               vars?: ReadonlyArray<ScopeVariable>) {
+  public createExpressionScope(exprKey: string) {
     const exprInfo = this.expressionMap[exprKey.toLowerCase()];
     if (exprInfo == null) {
       throw new Error(`Expression "${exprKey}" is not defined.`);
     }
-    return new ExpressionScope(exprInfo, params, vars);
+    return new ExpressionScope(exprInfo);
   }
 
   public parse(template: any): ExpressionEvaluator {
@@ -56,8 +54,7 @@ export class ExpressionEvaluator {
   constructor(public readonly expr: ExpressionScope) {
   }
 
-  public evaluate(inputVars: ReadonlyArray<ScopeVariable>) {
-    this.expr.vars = inputVars;
-    return this.expr.value;
+  public evaluate(inputVars: ScopeVariable[]) {
+    return this.expr.withVars(inputVars).value;
   }
 }

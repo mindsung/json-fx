@@ -27,70 +27,91 @@ export interface ScopeVariable {
 }
 
 export class ExpressionScope<T = any> {
-  constructor(public readonly expr: Expression<T>,
-              params?: ReadonlyArray<ExpressionScope>,
-              vars?: ReadonlyArray<ScopeVariable>) {
+  constructor(public readonly expr: Expression<T>) {
     if (expr == null) {
       throw new Error("Expression scope requires expression info.");
     }
     if (expr.expression == null && expr.expressionFactory == null) {
       throw new Error("Expression scope requires either an expression or an expression factory.");
     }
-
-    this.params = params;
-    this.vars = vars;
   }
 
   public get params() {
-    return this._params || [];
+    return this._params;
   }
 
-  public set params(params: ReadonlyArray<ExpressionScope>) {
-    if (this._params) {
-      this._params.forEach(p => this.removeFromScope(p));
-    }
-    if (params != null) {
+  public set params(params: ExpressionScope[]) {
+    this._params.forEach(p => this.removeFromScope(p));
+    this._params = [];
+    this.withParams(params);
+  }
+
+  public withParams(params: ExpressionScope[]) {
+    if (params != null && params.length > 0) {
       params.forEach(p => {
         this.addToScope(p);
       });
+      this._params.push(...params);
+      this.reset();
     }
-    this._params = params || [];
-    this.reset();
+    return this;
   }
 
-  private _params: ReadonlyArray<ExpressionScope>;
+  private _params: ExpressionScope[] = [];
 
   public get vars() {
-    return this._vars || [];
+    return this._vars;
   }
 
-  public set vars(vars: ReadonlyArray<ScopeVariable>) {
-    if (this._vars) {
-      this._vars.forEach(v => this.removeFromScope(v.expr));
-    }
+  public set vars(vars: ScopeVariable[]) {
+    this._vars.forEach(v => this.removeFromScope(v.expr));
+    this._vars = [];
     this.varMap = {};
-    if (vars != null) {
+    this.withVars(vars);
+  }
+
+  public withVars(vars: ScopeVariable[]) {
+    if (vars != null && vars.length > 0) {
       vars.forEach(v => {
         this.addToScope(v.expr);
         this.varMap[v.name] = v.expr;
       });
+      this._vars.push(...vars);
+      this.reset();
     }
-    this._vars = vars || [];
-    this.reset();
+    return this;
   }
 
-  private _vars: ReadonlyArray<ScopeVariable> = [];
-  private varMap: { [key: string]: ExpressionScope };
+  private _vars: ScopeVariable[] = [];
+  private varMap: { [key: string]: ExpressionScope } = {};
 
-  public addToScope(expr: ExpressionScope) {
-    expr.parentScope = this;
+  public addToScope(...expr: ExpressionScope[]) {
+    expr.forEach(x => {
+      if (this.scopeExprs.indexOf(x) < 0) {
+        x.parentScope = this;
+        this.scopeExprs.push(x);
+      }
+    });
   }
 
-  public removeFromScope(expr: ExpressionScope) {
-    if (expr.parentScope === this) {
-      expr.parentScope = null;
-    }
+  public removeFromScope(...expr: ExpressionScope[]) {
+    expr.forEach(x => {
+      if (x.parentScope === this) {
+        x.parentScope = null;
+      }
+      const i = this.scopeExprs.indexOf(x);
+      if (i >= 0) {
+        this.scopeExprs.splice(i, 1);
+      }
+    });
   }
+
+  public withScopeExprs(exprs: ExpressionScope[]) {
+    this.addToScope(...exprs);
+    return this;
+  }
+
+  private scopeExprs: ExpressionScope[] = [];
 
   private parentScope: ExpressionScope;
 
@@ -115,8 +136,7 @@ export class ExpressionScope<T = any> {
   private hasValue = false;
 
   public reset() {
-    this.vars.forEach(v => v.expr.reset());
-    this.params.forEach(p => p.reset());
+    this.scopeExprs.forEach(x => x.reset());
     this.hasValue = false;
     this._value = undefined;
   }
