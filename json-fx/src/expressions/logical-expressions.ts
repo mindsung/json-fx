@@ -1,4 +1,4 @@
-import { Expression } from "../core/expression";
+import { Expression } from "..";
 
 export const logicalExpressions: ReadonlyArray<Expression<boolean>> = [
   {

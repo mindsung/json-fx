@@ -1,9 +1,9 @@
-import { Component, OnInit } from "@angular/core";
-import { $BOOKS } from "../sample-data/books-2";
-import { $const, $expr, $lambda, $eval, allSampleData, bar } from "../sample-data/all-sample-data";
-import { FxTemplateCompiler, ExpressionEvaluator } from "@mindsung/expression";
-import { $POKEMON } from "../spec/data/pokemon";
-import { $DSP } from "../sample-data/dsp";
+import {Component, OnInit} from "@angular/core";
+import {$BOOKS} from "../sample-data/books-2";
+import {$const, $eval, $expr, $lambda, allSampleData, bar} from "../sample-data/all-sample-data";
+import {ExpressionEvaluator, FxTemplateCompiler} from "@mindsung/json-fx";
+import {$POKEMON} from "../spec/data/pokemon";
+import {$DSP} from "../sample-data/dsp";
 
 @Component({
   selector: "app-root",
@@ -61,11 +61,10 @@ export class AppComponent implements OnInit {
         this.templateCompiler.evaluate(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript)
       );
     }
-    const result = this.lastEvaluator.evaluate([{
+
+    this.fxData = this.lastEvaluator.evaluate([{
       name: "$",
       expr: $const(this.fxSource)
     }]);
-    console.log(result);
-    this.fxData = result;
   }
 }

@@ -8,8 +8,8 @@
       "node_modules/@types"
     ],
     "paths": {
-      "@mindsung/expression": [
-        "lib/json-fx/public_api"
+      "@mindsung/json-fx": [
+        "lib/json-fx/index"
       ]
     }
   }

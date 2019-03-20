@@ -30,7 +30,7 @@ function maxOf(val1: any, val2: any) {
 
 export const arrayExpressions: ReadonlyArray<Expression> = [
   {
-    key: "count",
+    key: "length",
     expression: (array: any[]) => array.length
   },
   {
