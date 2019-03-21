@@ -1,5 +1,4 @@
 import { Expression } from "..";
-import { isLowerCase, isUpperCase } from "tslint/lib/utils";
 
 function wordSplit(str: string): string[] {
   const words = [""];
@@ -9,7 +8,7 @@ function wordSplit(str: string): string[] {
     const char = str[i];
     const isDelimiter = /[^a-zA-Z0-9]/.test(char);
 
-    if (words[words.length - 1] && (isDelimiter || lastChar && isLowerCase(lastChar) && isUpperCase(char))) {
+    if (words[words.length - 1] && (isDelimiter || lastChar && (lastChar === lastChar.toLowerCase()) && (char === char.toUpperCase()))) {
       words.push("");
     }
 

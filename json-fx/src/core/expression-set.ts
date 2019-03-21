@@ -1,4 +1,4 @@
-import { Expression, ExpressionScope, ScopeVariable } from "./expression";
+import { Expression, ExpressionScope } from "./expression";
 import { fxCoreExpressions } from "../expressions/fx-core-expressions";
 import { stockExpressions } from "../expressions";
 
