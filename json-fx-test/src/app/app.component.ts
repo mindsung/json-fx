@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   public fxData: any;
   public fxScript = "$";
 
-  public fxSource: object = $DSP;
+  public fxSource: object = $BOOKS;
 
   private templateCompiler = new FxTemplateCompiler();
 
