@@ -1,7 +1,0 @@
-// :import(`../data/pokemon.ts`).pokemon => $poke
-
-{
-  "evolutions": {
-    "[]": "$poke.next_evolution.name:filter(#:count == 3)"
-  }
-}

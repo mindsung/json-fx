@@ -1,4 +1,4 @@
-{
+export const $WESTWORLD = {
   "id": 1371,
   "url": "http://www.tvmaze.com/shows/1371/westworld",
   "name": "Westworld",

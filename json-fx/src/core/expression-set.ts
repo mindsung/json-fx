@@ -47,18 +47,4 @@ export class ExpressionSet {
     }
     return new ExpressionScope(exprInfo);
   }
-
-  public parse(template: any): ExpressionEvaluator {
-    // TODO
-    return null;
-  }
-}
-
-export class ExpressionEvaluator {
-  constructor(public readonly expr: ExpressionScope) {
-  }
-
-  public evaluate(inputVars: ScopeVariable[]) {
-    return this.expr.withVars(inputVars).value;
-  }
 }

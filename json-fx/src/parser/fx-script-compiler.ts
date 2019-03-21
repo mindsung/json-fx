@@ -37,7 +37,6 @@ export class FxScriptCompiler extends FxCompiler<string> {
     const root = this.grouper.evaluate(tokens);
 
     this.parser.evaluate(root);
-    console.log("post-parser", root.toString());
     return this.compiler.evaluate(root);
   }
 }

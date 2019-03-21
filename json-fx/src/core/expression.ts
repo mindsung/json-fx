@@ -42,8 +42,13 @@ export class ExpressionScope<T = any> {
   }
 
   public set params(params: ExpressionScope[]) {
-    this._params.forEach(p => this.removeFromScope(p));
-    this._params = [];
+    if (this._params.length === this.scopeExprs.length) {
+      this.clearScope();
+    }
+    else {
+      this._params.forEach(p => this.removeFromScope(p));
+      this._params = [];
+    }
     this.withParams(params);
   }
 
@@ -61,29 +66,33 @@ export class ExpressionScope<T = any> {
   private _params: ExpressionScope[] = [];
 
   public get vars() {
-    return this._vars;
+    return Object.keys(this.varMap).map(v => ({ name: v, expr: this.varMap[v] }));
   }
 
   public set vars(vars: ScopeVariable[]) {
-    this._vars.forEach(v => this.removeFromScope(v.expr));
-    this._vars = [];
-    this.varMap = {};
+    if (Object.keys(this.varMap).length === this.scopeExprs.length) {
+      this.clearScope();
+    }
+    else {
+      Object.keys(this.varMap).forEach(v => this.removeFromScope(this.varMap[v]));
+      this.varMap = {};
+    }
     this.withVars(vars);
   }
 
   public withVars(vars: ScopeVariable[]) {
     if (vars != null && vars.length > 0) {
       vars.forEach(v => {
+        const found = this.varMap[v.name];
+        if (found) { this.removeFromScope(found); }
         this.addToScope(v.expr);
         this.varMap[v.name] = v.expr;
       });
-      this._vars.push(...vars);
       this.reset();
     }
     return this;
   }
 
-  private _vars: ScopeVariable[] = [];
   private varMap: { [key: string]: ExpressionScope } = {};
 
   public addToScope(...expr: ExpressionScope[]) {
@@ -99,12 +108,20 @@ export class ExpressionScope<T = any> {
     expr.forEach(x => {
       if (x.parentScope === this) {
         x.parentScope = null;
-      }
-      const i = this.scopeExprs.indexOf(x);
-      if (i >= 0) {
-        this.scopeExprs.splice(i, 1);
+        const i = this.scopeExprs.indexOf(x);
+        if (i >= 0) {
+          this.scopeExprs.splice(i, 1);
+        }
       }
     });
+  }
+
+  private clearScope() {
+    this.scopeExprs.forEach(x => x.parentScope = null);
+    this.scopeExprs = [];
+    this.varMap = {};
+    this._params = [];
+    this.reset();
   }
 
   public withScopeExprs(exprs: ExpressionScope[]) {
