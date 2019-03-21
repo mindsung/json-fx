@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { $BOOKS } from "../sample-data/books-2";
 import { $const, $expr, $lambda, $eval, allSampleData, bar } from "../sample-data/all-sample-data";
-import { FxTemplateCompiler, ExpressionEvaluator } from "@mindsung/expression";
+import { FxTemplateCompiler, ExpressionEvaluator } from "@mindsung/json-fx";
 import { $POKEMON } from "../spec/data/pokemon";
 import { $DSP } from "../sample-data/dsp";
 
@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   public fxData: any;
   public fxScript = "$";
 
-  public fxSource: object = $BOOKS;
+  public fxSource: object = $DSP;
 
   private templateCompiler = new FxTemplateCompiler();
 

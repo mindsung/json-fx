@@ -1,5 +1,5 @@
 import { sampleBookLibrary } from "./books";
-import { ExpressionScope, ScopeVariable, ExpressionSet, ExpressionEvaluator, createExpressionConstant, createExpressionLambda } from "@mindsung/expression";
+import { ExpressionScope, ScopeVariable, ExpressionSet, ExpressionEvaluator, createExpressionConstant, createExpressionLambda } from "@mindsung/json-fx";
 import { $BOOKS } from "./books-2";
 
 const defaultParser = new ExpressionSet();
