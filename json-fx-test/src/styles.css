@@ -20,7 +20,8 @@ body {
 }
 
 input, button, textarea {
-    font: inherit;
+    font-size: inherit;
+    font-family: 'Fira Code', monospace;
     background: none;
     border: 1px solid #344;
     padding: 10px;

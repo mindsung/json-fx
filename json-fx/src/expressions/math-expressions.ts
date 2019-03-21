@@ -1,24 +1,11 @@
 import { Expression } from "../core/expression";
+import { isFunction, isNumber } from "lodash";
 
-export const mathExpressions: ReadonlyArray<Expression> = [
-  {
-    key: "add",
-    expression: (a, b) => a + b,
-    token: { key: "+", precedence: 3 }
-  },
-  {
-    key: "sub",
-    expression: (a, b) => a - b,
-    token: { key: "-", precedence: 3 }
-  },
-  {
-    key: "mul",
-    expression: (a, b) => a * b,
-    token: { key: "*", precedence: 3.1 }
-  },
-  {
-    key: "div",
-    expression: (a, b) => a / b,
-    token: { key: "/", precedence: 3.1 }
-  }
-];
+export const mathExpressions: ReadonlyArray<Expression> = Object.getOwnPropertyNames(Math).map(key => {
+  const prop = Math[key];
+  const x = isFunction(prop) ? (...params: any[]): any => prop(...params) : isNumber(prop) ? () => prop : null;
+  return {
+    key: "math~" + key,
+    expression: x
+  };
+}).filter(expr => expr.expression != null);

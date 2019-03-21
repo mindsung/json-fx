@@ -61,11 +61,10 @@ export class AppComponent implements OnInit {
         this.templateCompiler.evaluate(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript)
       );
     }
-    const result = this.lastEvaluator.evaluate([{
+
+    this.fxData = this.lastEvaluator.evaluate([{
       name: "$",
       expr: $const(this.fxSource)
     }]);
-    console.log(result);
-    this.fxData = result;
   }
 }

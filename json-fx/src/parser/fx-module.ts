@@ -6,7 +6,7 @@ export class FxModule {
   constructor(public exprSet: ExpressionSet = new ExpressionSet()) {
     this.addOperators(new FxOperator("=", "set", 0));
     this.addOperators(...Object.keys(exprSet.tokenMap).map(k =>
-      new FxOperator(k, exprSet.tokenMap[k].key, exprSet.tokenMap[k].token.precedence, exprSet.tokenMap[k].token.assoc || "left")));
+      new FxOperator(k, exprSet.tokenMap[k].key, exprSet.tokenMap[k].token.precedence, exprSet.tokenMap[k].token.assoc || "left", exprSet.tokenMap[k].token.operandOn || "both")));
   }
 
   protected operators: {} = {};

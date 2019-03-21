@@ -40,29 +40,55 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
       }
       // Validate the operator has both a left and right args and that neither one is another operator.
       const item = nodeInfo[iop];
-      if (iop === 0 || iop >= nodeInfo.length - 1) {
-        throw new Error(`Expected left and right arguments to operator "${item.op.symbol}"`);
+      if (item.op.operandOn === "both") {
+        if (iop === 0 || iop >= nodeInfo.length - 1) {
+          throw new Error(`Expected left and right operands to operator "${item.op.symbol}"`);
+        }
+        const left = nodeInfo[iop - 1];
+        const right = nodeInfo[iop + 1];
+        if (left.op || right.op) {
+          throw new Error(`Operator operands to "${item.op.symbol}" must be expressions.`);
+        }
+        // Convert the operator and args to the corresponding expression with child params.
+        if (item.op.symbol === "=") {
+          left.node.addChild(right.node);
+          item.node.orphan();
+        }
+        else {
+          item.node.addChild(new FxNode(null, "parameter")).addChild(left.node);
+          item.node.addChild(new FxNode(null, "parameter")).addChild(right.node);
+        }
+        // Update the working array replacing the operator and args with the new single expression.
+        nodeInfo.splice(iop - 1, 3, item);
       }
-      const left = nodeInfo[iop - 1];
-      const right = nodeInfo[iop + 1];
-      if (left.op || right.op) {
-        throw new Error(`Left and right arguments to operator "${item.op.symbol}" must be expressions.`);
-      }
-      // Convert the operator and args to the corresponding expression with child params.
-      if (item.op.symbol === "=") {
-        left.node.addChild(right.node);
-        item.node.orphan();
-      }
-      else {
+      else if (item.op.operandOn === "left") {
+        if (iop === 0) {
+          throw new Error(`Expected left operand to operator "${item.op.symbol}"`);
+        }
+        const left = nodeInfo[iop - 1];
+        if (left.op) {
+          throw new Error(`Operator operand to "${item.op.symbol}" must be an expression.`);
+        }
         item.node.addChild(new FxNode(null, "parameter")).addChild(left.node);
+        // Update the working array replacing the operator and args with the new single expression.
+        nodeInfo.splice(iop - 1, 2, item);
+      }
+      else if (item.op.operandOn === "right") {
+        if (iop >= nodeInfo.length - 1) {
+          throw new Error(`Expected right operand to operator "${item.op.symbol}"`);
+        }
+        const right = nodeInfo[iop + 1];
+        if (right.op) {
+          throw new Error(`Operator operand to "${item.op.symbol}" must be an expression.`);
+        }
         item.node.addChild(new FxNode(null, "parameter")).addChild(right.node);
+        // Update the working array replacing the operator and args with the new single expression.
+        nodeInfo.splice(iop, 2, item);
       }
       item.node.value = item.op.expr;
       item.node.removeTags();
       item.node.addTags("expression");
       item.op = null;
-      // Update the working array replacing the operator and args with the new single expression.
-      nodeInfo.splice(iop - 1, 3, item);
     }
   }
 
