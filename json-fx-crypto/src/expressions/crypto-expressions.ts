@@ -1,4 +1,4 @@
-import {Expression} from "..";
+import { Expression } from "@mindsung/json-fx";
 import * as CryptoJS from "crypto-js";
 
 export const cryptoExpressions: ReadonlyArray<Expression<string>> = [

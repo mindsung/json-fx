@@ -7,6 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "linux-link-json-fx": "mkdir -p lib && cd lib && ln -nsf ../../json-fx/src ./json-fx",
+    "linux-link-json-fx-crypto": "mkdir -p lib && cd lib && ln -nsf ../../json-fx-crypto/src ./json-fx-crypto",
     "lint": "tslint src/**/*.ts?(x)",
     "lint-fix": "tslint --fix src/**/*.ts?(x)"
   },

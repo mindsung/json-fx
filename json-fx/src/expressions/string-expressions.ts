@@ -1,6 +1,5 @@
-import {Expression} from "..";
-import {isWhiteSpace} from "tslint";
-import {isLowerCase, isUpperCase} from "tslint/lib/utils";
+import { Expression } from "..";
+import { isLowerCase, isUpperCase } from "tslint/lib/utils";
 
 function wordSplit(str: string): string[] {
   const words = [""];

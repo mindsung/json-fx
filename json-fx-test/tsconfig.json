@@ -10,6 +10,9 @@
     "paths": {
       "@mindsung/json-fx": [
         "lib/json-fx/index"
+      ],
+      "@mindsung/json-fx-crypto": [
+        "lib/json-fx-crypto/index"
       ]
     }
   }

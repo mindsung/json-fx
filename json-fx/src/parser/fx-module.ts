@@ -1,6 +1,5 @@
 import {FxOperator} from "./fx-operator";
 import { ExpressionSet } from "../core/expression-set";
-import { ExpressionScope } from "../core/expression";
 
 export class FxModule {
   constructor(public exprSet: ExpressionSet = new ExpressionSet()) {

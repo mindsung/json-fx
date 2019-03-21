@@ -11,10 +11,14 @@ export class ExpressionSet {
   }
 
   public static setDefaultExpressions(expressions: ReadonlyArray<Expression>) {
-    ExpressionSet.defaultExpressions = expressions;
+    ExpressionSet.defaultExpressions = [].concat(expressions);
   }
 
-  private static defaultExpressions = stockExpressions;
+  public static addDefaultExpressions(expressions: ReadonlyArray<Expression>) {
+    ExpressionSet.defaultExpressions.push(...expressions);
+  }
+
+  private static defaultExpressions: Expression[] = stockExpressions.concat();
 
   public readonly tokenMap: { [key: string]: Expression } = {};
 
