@@ -3,7 +3,7 @@ import { FxModule } from "./fx-module";
 import { FxScriptCompiler } from "./fx-script-compiler";
 import { ExpressionScope, ScopeVariable } from "../core/expression";
 import { createExpressionConstant, ObjectExpressionProperty } from "../expressions";
-import { isString, isArray, isObjectLike } from "lodash";
+import { isArray, isObject, isString } from "../core/common";
 
 export class FxTemplateCompiler extends FxCompiler<any> {
 
@@ -24,7 +24,7 @@ export class FxTemplateCompiler extends FxCompiler<any> {
         .withParams([createExpressionConstant(exprArray)])
         .withScopeExprs(exprArray);
     }
-    else if (isObjectLike(template)) {
+    else if (isObject(template)) {
       const objProps: ObjectExpressionProperty[] = [];
       const vars: ScopeVariable[] = [];
       let expr: ExpressionScope = null;

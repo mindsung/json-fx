@@ -1,6 +1,5 @@
 export * from "./core/expression";
 export * from "./core/expression-set";
-export * from "./core/value-type";
 
 export * from "./expressions";
 

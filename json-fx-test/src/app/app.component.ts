@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   private templateCompiler = new FxTemplateCompiler();
 
   ngOnInit() {
-    this.onEval(null);
+    this.onEval();
 
     window["$fx"] = (data: any, expr: any) => {
       console.log(new ExpressionEvaluator(this.templateCompiler.evaluate(expr)).evaluate([{
@@ -57,7 +57,7 @@ export class AppComponent implements OnInit {
   private lastScript: string;
   private lastEvaluator: ExpressionEvaluator;
 
-  public onEval(event: MouseEvent) {
+  public onEval() {
     if (this.lastEvaluator == null || this.fxScript !== this.lastScript) {
       this.lastEvaluator = new ExpressionEvaluator(
         this.templateCompiler.evaluate(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript)

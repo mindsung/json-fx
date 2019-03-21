@@ -1,5 +1,5 @@
 import { Expression } from "../core/expression";
-import { isFunction, isNumber } from "lodash";
+import { isFunction, isNumber } from "../core/common";
 
 export const mathExpressions: ReadonlyArray<Expression> = Object.getOwnPropertyNames(Math).map(key => {
   const prop = Math[key];

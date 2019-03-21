@@ -10,7 +10,7 @@
     </div>
     <div class="json-out row-cell">
         <textarea [(ngModel)]="fxScript"></textarea>
-        <button (click)="onEval($event)">Evaluate</button>
+        <button (click)="onEval()">Evaluate</button>
         <div class="scrollbox">
             <app-json-tree [node]="fxResult | async"></app-json-tree>
         </div>

@@ -1,5 +1,5 @@
 import { Expression, ExpressionScope, ScopeVariable } from "../core/expression";
-import { isObject, isEmpty } from "lodash";
+import { isEmpty, isObject } from "../core/common";
 
 // Since all parameters are required to be expression scopes, we need a special
 // case for creating expressions that returns a constant.
