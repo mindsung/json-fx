@@ -23,7 +23,7 @@ function wordSplit(str: string): string[] {
   return words;
 }
 
-export const stringExpressions: ReadonlyArray<Expression<string>> = [
+export const fxStringExpressions: ReadonlyArray<Expression<string>> = [
   {
     key: "substr",
     expression: (str: string, from: number, length: number) => str.substr(from, length)

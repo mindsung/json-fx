@@ -1,6 +1,6 @@
 import { Expression, ExpressionScope } from "../core/expression";
 
-export const errorExpressions: ReadonlyArray<Expression<boolean>> = [
+export const fxErrorExpressions: ReadonlyArray<Expression<boolean>> = [
   {
     key: "notnull",
     expression: (value: any) => {

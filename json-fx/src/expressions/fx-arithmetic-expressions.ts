@@ -1,6 +1,6 @@
 import { Expression } from "../core/expression";
 
-export const arithmeticExpressions: ReadonlyArray<Expression> = [
+export const fxArithmeticExpressions: ReadonlyArray<Expression> = [
   {
     key: "add",
     expression: (a, b) => a + b,

@@ -1,28 +1,28 @@
 import { Expression } from "../core/expression";
-import { arrayExpressions } from "./array-expressions";
-import { arithmeticExpressions } from "./arithmetic-expressions";
-import { comparativeExpressions } from "./comparative-expressions";
-import { logicalExpressions } from "./logical-expressions";
-import { conditionalExpressions } from "./conditional-expressions";
-import { errorExpressions } from "./error-expressions";
-import { mathExpressions } from "./math-expressions";
-import { stringExpressions } from "./string-expressions";
+import { fxArrayExpressions } from "./fx-array-expressions";
+import { fxArithmeticExpressions } from "./fx-arithmetic-expressions";
+import { fxComparativeExpressions } from "./fx-comparative-expressions";
+import { fxLogicalExpressions } from "./fx-logical-expressions";
+import { fxConditionalExpressions } from "./fx-conditional-expressions";
+import { fxErrorExpressions } from "./fx-error-expressions";
+import { fxMathExpressions } from "./fx-math-expressions";
+import { fxStringExpressions } from "./fx-string-expressions";
 
-export * from "./core-expressions";
-export * from "./array-expressions";
-export * from "./arithmetic-expressions";
-export * from "./math-expressions";
-export * from "./comparative-expressions";
-export * from "./logical-expressions";
-export * from "./conditional-expressions";
-export * from "./error-expressions";
+export * from "./fx-core-expressions";
+export * from "./fx-array-expressions";
+export * from "./fx-arithmetic-expressions";
+export * from "./fx-math-expressions";
+export * from "./fx-comparative-expressions";
+export * from "./fx-logical-expressions";
+export * from "./fx-conditional-expressions";
+export * from "./fx-error-expressions";
 
 export const stockExpressions: ReadonlyArray<Expression> = []
-.concat(arrayExpressions)
-.concat(arithmeticExpressions)
-.concat(mathExpressions)
-.concat(comparativeExpressions)
-.concat(logicalExpressions)
-.concat(conditionalExpressions)
-.concat(errorExpressions)
-.concat(stringExpressions);
+.concat(fxArrayExpressions)
+.concat(fxArithmeticExpressions)
+.concat(fxMathExpressions)
+.concat(fxComparativeExpressions)
+.concat(fxLogicalExpressions)
+.concat(fxConditionalExpressions)
+.concat(fxErrorExpressions)
+.concat(fxStringExpressions);

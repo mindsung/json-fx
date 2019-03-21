@@ -1,6 +1,6 @@
 import { Expression, ExpressionScope } from "..";
 
-export const logicalExpressions: ReadonlyArray<Expression<boolean>> = [
+export const fxLogicalExpressions: ReadonlyArray<Expression<boolean>> = [
   {
     key: "or",
     params: [{ name: "a" }, { name: "bExpr", deferEvaluation: true }],

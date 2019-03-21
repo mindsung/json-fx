@@ -1,10 +1,10 @@
 import { Expression, ExpressionScope, ScopeVariable } from "./expression";
-import { coreExpressions } from "../expressions/core-expressions";
+import { fxCoreExpressions } from "../expressions/fx-core-expressions";
 import { stockExpressions } from "../expressions";
 
 export class ExpressionSet {
   constructor(expressions: ReadonlyArray<Expression> = ExpressionSet.defaultExpressions) {
-    this.addExpressions(coreExpressions);
+    this.addExpressions(fxCoreExpressions);
     if (expressions != null) {
       this.addExpressions(expressions);
     }

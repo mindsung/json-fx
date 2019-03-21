@@ -22,7 +22,7 @@ export function createExpressionLambda(paramVarNames: string[], expr: Expression
   });
 }
 
-export const coreExpressions: ReadonlyArray<Expression> = [
+export const fxCoreExpressions: ReadonlyArray<Expression> = [
   {
     key: "_var",
     expressionFactory: (scope: ExpressionScope) => (varName: string, ...params: ExpressionScope[]) => scope.getVariableValue(varName, params)

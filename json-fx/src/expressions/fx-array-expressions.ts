@@ -1,5 +1,5 @@
 import { Expression, ExpressionScope } from "../core/expression";
-import { createExpressionLambda, createExpressionConstant } from "./core-expressions";
+import { createExpressionLambda, createExpressionConstant } from "./fx-core-expressions";
 
 function lambdaEvaluator(expr: ExpressionScope, parentScope: ExpressionScope, callback: (evaluator: { evaluate: (item: any) => any }) => any) {
   const lambda = createExpressionLambda(["$"], expr);
@@ -28,7 +28,7 @@ function maxOf(val1: any, val2: any) {
           : val1;
 }
 
-export const arrayExpressions: ReadonlyArray<Expression> = [
+export const fxArrayExpressions: ReadonlyArray<Expression> = [
   {
     key: "length",
     expression: (array: any[]) => array.length

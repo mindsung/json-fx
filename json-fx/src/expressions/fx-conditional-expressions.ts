@@ -1,7 +1,7 @@
 import { Expression, ExpressionScope } from "../core/expression";
-import { createExpressionConstant } from "./core-expressions";
+import { createExpressionConstant } from "./fx-core-expressions";
 
-export const conditionalExpressions: ReadonlyArray<Expression<boolean>> = [
+export const fxConditionalExpressions: ReadonlyArray<Expression<boolean>> = [
   {
     key: "ifelse",
     params: [
