@@ -1,7 +1,6 @@
-import { Expression } from "@mindsung/json-fx";
 import * as CryptoJS from "crypto-js";
 
-export const fxCryptoExpressions: ReadonlyArray<Expression<string>> = [
+export const fxCryptoExpressions = [
   {
     key: "md5",
     expression: (token: string) => CryptoJS.MD5(token).toString()
