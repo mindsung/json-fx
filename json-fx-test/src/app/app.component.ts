@@ -1,20 +1,22 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { $BOOKS } from "../sample-data/books-2";
-import { $const, $expr, $lambda, $eval, allSampleData, bar } from "../sample-data/all-sample-data";
-import { FxTemplateCompiler, ExpressionEvaluator } from "@mindsung/json-fx";
+import { $const, $eval, $expr, $lambda, allSampleData, bar } from "../sample-data/all-sample-data";
+import { ExpressionEvaluator, FxTemplateCompiler } from "@mindsung/json-fx";
 import { $POKEMON } from "../spec/data/pokemon";
 import { $DSP } from "../sample-data/dsp";
+import { BehaviorSubject } from "rxjs";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"]
+  styleUrls: ["./app.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
-  public fxData: any;
   public fxScript = "$";
-
   public fxSource: object = $BOOKS;
+
+  public fxResult = new BehaviorSubject("");
 
   private templateCompiler = new FxTemplateCompiler();
 
@@ -62,9 +64,9 @@ export class AppComponent implements OnInit {
       );
     }
 
-    this.fxData = this.lastEvaluator.evaluate([{
+    this.fxResult.next(this.lastEvaluator.evaluate([{
       name: "$",
       expr: $const(this.fxSource)
-    }]);
+    }]));
   }
 }

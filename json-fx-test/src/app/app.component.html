@@ -12,7 +12,7 @@
         <textarea [(ngModel)]="fxScript"></textarea>
         <button (click)="onEval($event)">Evaluate</button>
         <div class="scrollbox">
-            <app-json-tree [node]="fxData"></app-json-tree>
+            <app-json-tree [node]="fxResult | async"></app-json-tree>
         </div>
     </div>
 </div>

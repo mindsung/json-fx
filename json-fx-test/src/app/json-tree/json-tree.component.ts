@@ -1,9 +1,10 @@
-import {Component, Input, OnInit} from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnInit } from "@angular/core";
 
 @Component({
   selector: "app-json-tree",
   templateUrl: "./json-tree.component.html",
-  styleUrls: ["./json-tree.component.css"]
+  styleUrls: ["./json-tree.component.css"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class JsonTreeComponent implements OnInit {
   private node$: any;
