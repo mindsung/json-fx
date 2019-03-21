@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.onEval();
 
-    window["$compile"] = (template: any) => fxCompile(template);
+    window["fxCompile"] = (template: any) => fxCompile(template);
 
     window["$BOOKS"] = $BOOKS;
     window["$POKEMON"] = $POKEMON;
