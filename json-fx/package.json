@@ -17,8 +17,6 @@
   },
   "scripts": {
     "build": "node_modules/.bin/rimraf dist && tsc && node_modules/.bin/ncp package.json dist/package.json",
-    "build-js": "node_modules/.bin/rimraf dist-js && tsc --declaration false --outDir dist-js && node_modules/.bin/ncp package.json dist-js/package.json",
-    "lint": "tslint src/**/*.ts?(x)",
-    "lint-fix": "tslint --fix src/**/*.ts?(x)"
+    "build:js": "node_modules/.bin/rimraf dist-js && tsc --declaration false --outDir dist-js && node_modules/.bin/ncp package.json dist-js/package.json"
   }
 }
