@@ -6,54 +6,55 @@ Templates are compiled at run-time into expression trees that are very lightweig
 ## A very simple example
 
 Given an input object:
-
-    { "a": 2, "b": 4 }
-
+```json
+{ "a": 2, "b": 4 }
+```
 And a template:
-
-    "$.a + $.b"
-
+```json
+"$.a + $.b"
+```
 Yields the output:
-
-    6
+```json
+6
+```
 ## Another simple example
 
 Given an input object:
-
-    {
-      "organization": { "name": "ACME Coding", "country": "New Zealand" }
-      "people": [
-        { "firstName": "John", "lastName": "Smith", "age": 66 },
-        { "firstName": "Sue", "lastName": "Smith", "age": 34 }
-      ]
-    }
-
+```json
+{
+  "organization": { "name": "ACME Coding", "country": "New Zealand" },
+  "people": [
+    { "firstName": "John", "lastName": "Smith", "age": 66 },
+    { "firstName": "Sue", "lastName": "Smith", "age": 34 }
+  ]
+}
+```
 And a template:
-
-    {
-      "$org": "$.organization",
-      "$.people:map": {
-        "name": "$.firstName + ' ' + $.lastName",
-        "countryOfEmployment": "$org.country",
-        "canRetire": "$.age >= 65"
-      }
-    }
-
+```json
+{
+  "$org": "$.organization",
+  "$.people:map": {
+    "name": "$.firstName + ' ' + $.lastName",
+    "countryOfEmployment": "$org.country",
+    "canRetire": "$.age >= 65"
+  }
+}
+```
 Yields the output:
-
-    [
-      { "name": "John Smith", "countryOfEmployment": "New Zealand", "canRetire": true }
-      { "name": "Sue Smith", "countryOfEmployment": "New Zealand", "canRetire": false }
-    ]
-
+```json
+[
+  { "name": "John Smith", "countryOfEmployment": "New Zealand", "canRetire": true },
+  { "name": "Sue Smith", "countryOfEmployment": "New Zealand", "canRetire": false }
+]
+```
 Or a template:
-
-    { "retirementAgeEmployees": "$.people:filter($.age >= 65):length" }
-
+```json
+{ "retirementAgeEmployees": "$.people:filter($.age >= 65):length" }
+```
 Yields the output:
-
-    { "retirementAgeEmployees": 1 }
-
+```json
+{ "retirementAgeEmployees": 1 }
+```
 # Use cases
 
 **json-fx** may be helpful any time a readable expression syntax is more desirable or practical than writing code for manipulating or extracting elements from JavaScript objects. But it is especially useful when a dynamic, run-time solution is required for transforming or querying into complex JSON objects, when it’s not possible or practical to hard-code the logic into your application. For example:
