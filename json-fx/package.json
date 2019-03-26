@@ -20,9 +20,8 @@
     "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "build": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
-    "build:js": "node_modules/.bin/rimraf dist/js && tsc --declaration false --outDir dist/js && node_modules/.bin/ncp package.json dist/js/package.json",
-    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:js && webpack && node_modules/.bin/ncp package.json dist/webpack/package.json",
-    "build:all": "npm run build && npm run build:webpack"
+    "build": "npm run build:webpack",
+    "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
+    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack && node_modules/.bin/ncp package.json dist/webpack/package.json"
   }
 }
