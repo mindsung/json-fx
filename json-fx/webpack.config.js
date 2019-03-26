@@ -6,7 +6,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "./dist/webpack"),
-    library: "JsonFxLib",
+    library: "jsonFx",
     libraryTarget: "umd",
     filename: "index.js",
     globalObject: "this"
