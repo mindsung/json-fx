@@ -33,20 +33,11 @@ export const fxCoreExpressions: ReadonlyArray<Expression> = [
   },
   {
     key: "_prop",
-    expression: (obj: any, propPath: string) => {
-      let propValue = obj;
-      let path = propPath != null ? (propPath || "") : "";
-      if (path.startsWith(".")) {
-        path = path.substring(1);
+    expression: (obj: any, propName: string) => {
+      if (obj == null) {
+        throw new Error(`Cannot evaluate property "${propName}" of null.`);
       }
-      const parts = path.split(".").filter(p => p.length > 0);
-      for (let i = 0; i < parts.length; i++) {
-        if (propValue == null) {
-          throw new Error(`Cannot evaluate property "${parts[i]}" of null.`);
-        }
-        propValue = propValue[parts[i]];
-      }
-      return propValue;
+      return obj[propName];
     }
   },
   {

@@ -143,7 +143,8 @@ export class ExpressionScope<T = any> {
           : xInfo.expressionFactory(this);
       }
       this._value = this.expression(...(this.params || []).map((p, i) =>
-        xInfo.params == null || xInfo.params[i] == null || !xInfo.params[i].deferEvaluation
+        p == null ? undefined
+          : xInfo.params == null || xInfo.params[i] == null || !xInfo.params[i].deferEvaluation
           ? p.value : p));
       this.hasValue = true;
     }
