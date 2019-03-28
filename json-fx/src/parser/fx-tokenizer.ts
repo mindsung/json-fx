@@ -26,6 +26,8 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
   }
 
   private static canMergeTokens(lastToken: FxNode, nextToken: FxNode): boolean {
+    // FIXME: Revise for clarity
+
     if (lastToken.isTagged("numeric") && nextToken.value === ".") {
       return true;
     }
