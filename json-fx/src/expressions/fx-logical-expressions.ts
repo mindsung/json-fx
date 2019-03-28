@@ -5,22 +5,22 @@ export const fxLogicalExpressions: ReadonlyArray<Expression<boolean>> = [
     key: "or",
     params: [{ name: "a" }, { name: "bExpr", deferEvaluation: true }],
     expression: (a: any, bExpr: ExpressionScope) => a || bExpr.value,
-    token: { key: "||", precedence: 1 }
+    operator: { key: "||", precedence: 1 }
   },
   {
     key: "and",
     params: [{ name: "a" }, { name: "bExpr", deferEvaluation: true }],
     expression: (a: any, bExpr: ExpressionScope) => a && bExpr.value,
-    token: { key: "&&", precedence: 1.1 }
+    operator: { key: "&&", precedence: 1.1 }
   },
   {
     key: "not",
     expression: (a: any) => !a,
-    token: { key: "!", precedence: 1.2, operandOn: "right" }
+    operator: { key: "!", precedence: 1.2, isUnary: true, assoc: "left" }
   },
   {
     key: "notnot",
     expression: (a: any) => !!a,
-    token: { key: "!!", precedence: 1.2, operandOn: "right" }
+    operator: { key: "!!", precedence: 1.2, isUnary: true, assoc: "left" }
   }
 ];

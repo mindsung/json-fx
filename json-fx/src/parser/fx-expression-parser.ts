@@ -1,18 +1,13 @@
 import { FxNode } from "./fx-node";
 import { FxParser } from "./fx-parser";
-import { FxModule } from "./fx-module";
 
 export class FxExpressionParser extends FxParser<FxNode, void> {
-  constructor(module: FxModule) {
-    super(module);
-  }
-
   evaluate(root: FxNode): void {
     let lastNode: FxNode = null;
 
     // const isGroup = root.isTagged("group");
 
-    root.forEachChild((index, node) => {
+    root.forEachChild(node => {
       if (node.isTagged("group", "open") && lastNode && lastNode.isTagged("expression")) {
         node.transferChildren(lastNode);
         node.orphan();

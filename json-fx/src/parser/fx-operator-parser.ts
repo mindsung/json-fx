@@ -1,80 +1,65 @@
 import { FxNode } from "./fx-node";
 import { FxParser } from "./fx-parser";
-import { FxOperator } from "./fx-operator";
-import { FxModule } from "./fx-module";
+import { Operator } from "../core/operator";
+
+interface OperatorNode {
+  op: Operator;
+  node: FxNode;
+}
 
 export class FxOperatorParser extends FxParser<FxNode, void> {
-  constructor(module: FxModule) {
-    super(module);
+  evaluate(root: FxNode): void {
+    // This is based on Dijkstra's Shunting Yard Algorithm
+
+    const operatorStack: OperatorNode[] = [];
+    const outputQueue: OperatorNode[] = [];
+
+    root.forEachChild(node => {
+      const opNode = this.toOperatorNode(node);
+
+      if (opNode.op !== null) {
+        while (operatorStack.length > 0 && (operatorStack[0].op.precedence > opNode.op.precedence || operatorStack[0].op.isUnary)) {
+          FxOperatorParser.shunt(operatorStack, outputQueue);
+        }
+        operatorStack.unshift(opNode);
+      } else {
+        outputQueue.push(opNode);
+      }
+    });
+
+    while (operatorStack.length > 0) {
+      FxOperatorParser.shunt(operatorStack, outputQueue);
+    }
   }
 
-  evaluate(root: FxNode): void {
-    // Create a working array of node info which may contain operator nodes.
-    const nodeInfo: { node: FxNode, op: FxOperator }[] = [];
-    root.forEachChild((index, node) => nodeInfo.push({
-      node: node,
-      op: node.isTagged("operator") ? this.module.getOperator(node.value) : null
-    }));
+  private toOperatorNode(node: FxNode): OperatorNode {
+    let op: Operator = null;
 
-    let iop: number;
-    while (true) {
-      // Find the next operator to by precedence and original order until there are no more operators left.
-      iop = -1;
-      nodeInfo.forEach((n, i) => iop = n.op != null && (iop < 0
-        || (n.op.assoc === "right" && n.op.precedence >= nodeInfo[iop].op.precedence)
-        || n.op.precedence > nodeInfo[iop].op.precedence) ? i : iop);
-      if (iop < 0) { break; }
-      // Validate the operator has both a left and right args and that neither one is another operator.
-      const item = nodeInfo[iop];
-      if (item.op.operandOn === "both") {
-        if (iop === 0 || iop >= nodeInfo.length - 1) {
-          throw new Error(`Expected left and right operands to operator "${item.op.symbol}"`);
-        }
-        const left = nodeInfo[iop - 1];
-        const right = nodeInfo[iop + 1];
-        if (left.op || right.op) {
-          throw new Error(`Operator operands to "${item.op.symbol}" must be expressions.`);
-        }
-        // Convert the operator and args to the corresponding expression with child params.
-        if (item.op.symbol === "=") {
-          left.node.addChild(right.node);
-          item.node.orphan();
-        }
-        else {
-          item.node.addChild(new FxNode(null, "parameter")).addChild(left.node);
-          item.node.addChild(new FxNode(null, "parameter")).addChild(right.node);
-        }
-        // Update the working array replacing the operator and args with the new single expression.
-        nodeInfo.splice(iop - 1, 3, item);
+    if (node.isTagged("operator")) {
+      const expression = this.module.getOperator(node.value);
+
+      if (!expression) {
+        throw new Error(`Operator "${node.value}" is not defined`);
       }
-      else if (item.op.operandOn === "left") {
-        if (iop === 0) {
-          throw new Error(`Expected left operand to operator "${item.op.symbol}"`);
-        }
-        const left = nodeInfo[iop - 1];
-        if (left.op) {
-          throw new Error(`Operator operand to "${item.op.symbol}" must be an expression.`);
-        }
-        item.node.addChild(new FxNode(null, "parameter")).addChild(left.node);
-        // Update the working array replacing the operator and args with the new single expression.
-        nodeInfo.splice(iop - 1, 2, item);
+
+      node.value = expression.key;
+      op = expression.operator;
+    }
+
+    return { op: op, node: node };
+  }
+
+  private static shunt(stack: OperatorNode[], queue: OperatorNode[]) {
+    const stackOpNode = stack.shift();
+    let numOperands = stackOpNode.op.isUnary ? 1 : 2;
+
+    if (queue.length >= numOperands) {
+      while (numOperands--) {
+        stackOpNode.node.addChild(queue.pop().node, true);
       }
-      else if (item.op.operandOn === "right") {
-        if (iop >= nodeInfo.length - 1) {
-          throw new Error(`Expected right operand to operator "${item.op.symbol}"`);
-        }
-        const right = nodeInfo[iop + 1];
-        if (right.op) {
-          throw new Error(`Operator operand to "${item.op.symbol}" must be an expression.`);
-        }
-        item.node.addChild(new FxNode(null, "parameter")).addChild(right.node);
-        // Update the working array replacing the operator and args with the new single expression.
-        nodeInfo.splice(iop, 2, item);
-      }
-      item.node.value = item.op.expr;
-      item.node.removeTags();
-      item.node.addTags("expression");
-      item.op = null;
+      queue.push(stackOpNode);
+    } else {
+      throw new Error(`Operator "${stackOpNode.op.key}" expects ${numOperands} operands, but ${queue.length} are given`);
     }
   }
 }

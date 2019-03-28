@@ -27,6 +27,6 @@ export const fxConditionalExpressions: ReadonlyArray<Expression<boolean>> = [
       thenExpr.params = [createExpressionConstant(value)].concat(origParams);
       return thenExpr.value;
     },
-    token: { key: "?", precedence: 99 }
+    operator: { key: "?", precedence: 99 }
   }
 ];

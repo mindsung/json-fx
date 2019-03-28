@@ -1,11 +1,8 @@
 import { FxNode } from "./fx-node";
 import { FxParser } from "./fx-parser";
+import { FxModule } from "../core/fx-module";
 
 export class FxTokenizer extends FxParser<string, FxNode[]> {
-  constructor() {
-    super(null);
-  }
-
   private static classify(token: FxNode): void {
     const c = token.value;
 

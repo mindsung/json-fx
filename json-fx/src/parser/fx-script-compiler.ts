@@ -1,5 +1,5 @@
 import { FxCompiler } from "./fx-parser";
-import { FxModule } from "./fx-module";
+import { FxModule } from "../core/fx-module";
 import { FxTokenizer } from "./fx-tokenizer";
 import { FxGrouper } from "./fx-grouper";
 import { FxNodeParser } from "./fx-node-parser";
@@ -17,11 +17,11 @@ export class FxScriptCompiler extends FxCompiler<string> {
   private parser: FxNodeParser;
   private compiler: FxNodeCompiler;
 
-  constructor(public module: FxModule = new FxModule()) {
+  constructor(public module: FxModule) {
     super(module);
 
-    this.tokenizer = new FxTokenizer();
-    this.grouper = new FxGrouper();
+    this.tokenizer = new FxTokenizer(module);
+    this.grouper = new FxGrouper(module);
 
     this.parser = new FxNodeParser(module,
       new FxDelimiterParser(module),
@@ -37,6 +37,9 @@ export class FxScriptCompiler extends FxCompiler<string> {
     const root = this.grouper.evaluate(tokens);
 
     this.parser.evaluate(root);
+
+    console.log(root);
+
     return this.compiler.evaluate(root);
   }
 }

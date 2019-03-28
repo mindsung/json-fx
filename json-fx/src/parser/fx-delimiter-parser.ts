@@ -1,12 +1,7 @@
 import { FxNode } from "./fx-node";
 import { FxParser } from "./fx-parser";
-import { FxModule } from "./fx-module";
 
 export class FxDelimiterParser extends FxParser<FxNode, void> {
-  constructor(module: FxModule) {
-    super(module);
-  }
-
   private static nestGroupParameters(root: FxNode, buffer: FxNode[]): FxNode {
     const paramGroup = new FxNode(null, "parameter", "group");
     while (buffer.length > 0) {
@@ -19,9 +14,11 @@ export class FxDelimiterParser extends FxParser<FxNode, void> {
   evaluate(root: FxNode): void {
     const groupParamBuffer: FxNode[] = [];
 
-    if (!root.isTagged("group")) { return; }
+    if (!root.isTagged("group")) {
+      return;
+    }
 
-    root.forEachChild((index, node) => {
+    root.forEachChild(node => {
       if (node.isTagged("delimiter")) {
         FxDelimiterParser.nestGroupParameters(root, groupParamBuffer);
         node.orphan();

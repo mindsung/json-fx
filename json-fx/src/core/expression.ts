@@ -1,9 +1,11 @@
+import { Operator } from "./operator";
+
 export interface Expression<T = any> {
   readonly key: string;
   readonly expression?: (...params: any[]) => T;
   readonly expressionFactory?: (scope: ExpressionScope) => (...params: any[]) => T;
   readonly params?: ReadonlyArray<ExpressionParam>;
-  readonly token?: ExpressionToken;
+  readonly operator?: Operator;
   readonly isOverride?: boolean;
 }
 
@@ -12,14 +14,6 @@ interface ExpressionParam {
   readonly description?: string;
   readonly valueType?: "string" | "number" | "boolean" | "date" | "object" | "array";
   readonly deferEvaluation?: boolean;
-}
-
-interface ExpressionToken {
-  readonly key: string;
-  readonly precedence: number;
-  readonly assoc?: "left" | "right";
-  readonly operandOn?: "left" | "right" | "both";
-  // TODO: What else needs to be known for token parsing?
 }
 
 export interface ScopeVariable {

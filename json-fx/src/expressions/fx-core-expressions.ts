@@ -2,7 +2,7 @@ import { Expression, ExpressionScope, ScopeVariable } from "../core/expression";
 import { isEmpty, isObject } from "../core/common";
 
 // Since all parameters are required to be expression scopes, we need a special
-// case for creating expressions that returns a constant.
+// case for creating module that returns a constant.
 export function createExpressionConstant(value: any, vars: ScopeVariable[] = []): ExpressionScope {
   return new ExpressionScope({
     key: "_const",

@@ -9,7 +9,7 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
       return this.evaluate(root.firstChild());
     } else if (root.isTagged("literal")) {
       return createExpressionConstant(root.value);
-    } else if (root.isTagged("expression")) {
+    } else if (root.isTaggedAny("expression", "operator")) {
       return this.evaluateExpression(root);
     } else if (root.isTagged("identifier")) {
       return this.evaluateProperty(root.value);
@@ -20,28 +20,29 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
 
   private evaluateExpression(node: FxNode) {
     const params: any[] = [];
-    node.forEachChild((index, child) => {
+    node.forEachChild(child => {
       params.push(this.evaluateParameter(child));
     });
 
     params.unshift(node.value);
-
-    // if (node.count() > 0 && !node.firstChild().isTagged("parameter")) {
-    //   return $fx(...params);
-    // } else {
-    //   return $f(...params);
-    // }
-
-    return this.module.exprSet.createExpressionScope(params[0]).withParams(params.slice(1));
+    return this.module.createScope(params[0]).withParams(params.slice(1));
   }
 
   private toConstant(identifier: string) {
     const s = identifier;
-    if (s.toLowerCase() === "null") { return null; }
-    if (s.toLowerCase() === "true") { return true; }
-    if (s.toLowerCase() === "false") { return false; }
+    if (s.toLowerCase() === "null") {
+      return null;
+    }
+    if (s.toLowerCase() === "true") {
+      return true;
+    }
+    if (s.toLowerCase() === "false") {
+      return false;
+    }
     const n = Number(s);
-    if (!isNaN(n)) { return n; }
+    if (!isNaN(n)) {
+      return n;
+    }
     const d = Date.parse(s);
     if (!isNaN(d)) {
       if (s.indexOf(":") >= 0) {
@@ -63,9 +64,8 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
 
     if (min === -1 && max === -1) {
       if (identifier.startsWith("$") || identifier.startsWith("@")) {
-        return this.module.exprSet.createExpressionScope("_var").withParams([createExpressionConstant(identifier)]);
-      }
-      else {
+        return this.module.createScope("_var").withParams([createExpressionConstant(identifier)]);
+      } else {
         return createExpressionConstant(identifier.length > 0 ? this.toConstant(identifier) : null);
       }
     } else {
@@ -74,10 +74,10 @@ export class FxNodeCompiler extends FxCompiler<FxNode> {
       const child = identifier.substr(index + 1);
 
       if (index === dotIndex) {
-        return this.module.exprSet.createExpressionScope("_prop").withParams(
+        return this.module.createScope("_prop").withParams(
           parent ? [this.evaluateProperty(parent), createExpressionConstant(child)] : [createExpressionConstant(child)]);
       } else {
-        return this.module.exprSet.createExpressionScope("map").withParams(
+        return this.module.createScope("map").withParams(
           [this.evaluateProperty(parent), this.evaluateProperty("$." + child)]);
       }
     }

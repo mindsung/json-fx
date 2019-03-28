@@ -1,6 +1,6 @@
 import { FxParser } from "./fx-parser";
 import { FxNode } from "./fx-node";
-import { FxModule } from "./fx-module";
+import { FxModule } from "../core/fx-module";
 
 export class FxNodeParser extends FxParser<FxNode, void> {
   public parsers: FxParser<FxNode, void>[];
@@ -17,9 +17,9 @@ export class FxNodeParser extends FxParser<FxNode, void> {
   }
 
   private evaluateTree(root: FxNode, parser: FxParser<FxNode, void>) {
-    root.forEachChild(((index, node) => {
+    root.forEachChild(node => {
       this.evaluateTree(node, parser);
-    }));
+    });
 
     parser.evaluate(root);
   }
