@@ -18,7 +18,7 @@ export class FxOperatorParser extends FxParser<FxNode, void> {
       const opNode = this.toOperatorNode(node);
 
       if (opNode.op !== null) {
-        while (operatorStack.length > 0 && (operatorStack[0].op.precedence > opNode.op.precedence || operatorStack[0].op.isUnary)) {
+        while (operatorStack.length > 0 && (operatorStack[0].op.precedence >= opNode.op.precedence || operatorStack[0].op.isUnary)) {
           FxOperatorParser.shunt(operatorStack, outputQueue);
         }
         operatorStack.unshift(opNode);

@@ -1,9 +1,12 @@
 import { Expression, ExpressionScope } from "../core/expression";
 import { createExpressionLambda, createExpressionConstant } from "./fx-core-expressions";
+import { isArray } from "../core/common";
 
 function lambdaEvaluator(expr: ExpressionScope, parentScope: ExpressionScope, callback: (evaluator: { evaluate: (item: any) => any }) => any) {
   const lambda = createExpressionLambda(["$"], expr);
-  if (parentScope) { parentScope.addToScope(lambda); }
+  if (parentScope) {
+    parentScope.addToScope(lambda);
+  }
   return callback({
     evaluate: (item: any) => {
       lambda.params = [createExpressionConstant(item)];
@@ -28,10 +31,38 @@ function maxOf(val1: any, val2: any) {
           : val1;
 }
 
+function flatten(arr: any[], recursive?: boolean) {
+  let result = [];
+  recursive = recursive || false;
+
+  for (const item of arr) {
+    if (isArray(item)) {
+      result = result.concat(recursive ? flatten(item, recursive) : item);
+    } else {
+      result.push(item);
+    }
+  }
+
+  return result;
+}
+
+function map(scope: ExpressionScope) {
+  return (array: any[], mapExpr: ExpressionScope) =>
+    lambdaEvaluator(mapExpr, scope, fx => array.map(item => fx.evaluate(item)));
+}
+
 export const fxArrayExpressions: ReadonlyArray<Expression> = [
   {
     key: "length",
     expression: (array: any[]) => array.length
+  },
+  {
+    key: "at",
+    expression: (array: any[], index: number) => array[index]
+  },
+  {
+    key: "flatten",
+    expression: (array: any[], recursive?: boolean) => flatten(array, recursive)
   },
   {
     key: "map",
@@ -39,8 +70,12 @@ export const fxArrayExpressions: ReadonlyArray<Expression> = [
       { name: "array" },
       { name: "mapExpr", deferEvaluation: true }
     ],
-    expressionFactory: (scope: ExpressionScope) => (array: any[], mapExpr: ExpressionScope) =>
-      lambdaEvaluator(mapExpr, scope, fx => array.map(item => fx.evaluate(item)))
+    expressionFactory: map
+  },
+  {
+    key: "field",
+    expression: (array: any[], field: string) => array.map(value => value[field] || null),
+    operator: { key: "..", precedence: 4 }
   },
   {
     key: "filter",
@@ -60,7 +95,9 @@ export const fxArrayExpressions: ReadonlyArray<Expression> = [
     expressionFactory: (scope: ExpressionScope) => (array: any[], findExpr: ExpressionScope) =>
       lambdaEvaluator(findExpr, scope, fx => {
         const found = array.filter(item => fx.evaluate(item));
-        if (found.length > 1) { throw new Error(":find expression resulted in more than one matching item."); }
+        if (found.length > 1) {
+          throw new Error(":find expression resulted in more than one matching item.");
+        }
         return found.length === 1 ? found[0] : null;
       })
   },

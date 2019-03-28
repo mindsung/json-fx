@@ -5,18 +5,11 @@ export class FxExpressionParser extends FxParser<FxNode, void> {
   evaluate(root: FxNode): void {
     let lastNode: FxNode = null;
 
-    // const isGroup = root.isTagged("group");
-
     root.forEachChild(node => {
-      if (node.isTagged("group", "open") && lastNode && lastNode.isTagged("expression")) {
+      if (node.isTagged("group", "open") && lastNode && lastNode.isTagged("identifier")) {
+        lastNode.addTags("expression");
         node.transferChildren(lastNode);
         node.orphan();
-      } else if (node.isTagged("expression")) {
-        if (lastNode && lastNode.isTaggedAny("identifier", "expression")) {
-          lastNode.setParent(node);
-        }
-        node.value = node.value.substr(1);
-        lastNode = node;
       } else {
         lastNode = node;
       }

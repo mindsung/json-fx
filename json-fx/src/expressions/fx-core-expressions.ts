@@ -32,6 +32,18 @@ export const fxCoreExpressions: ReadonlyArray<Expression> = [
     expressionFactory: (scope: ExpressionScope) => (varName: string, ...params: ExpressionScope[]) => scope.getVariableExpression(varName)
   },
   {
+    key: "_expr",
+    params: [
+      { name: "thisArg", deferEvaluation: true },
+      { name: "expr", deferEvaluation: true }
+    ],
+    expression: (thisArg: ExpressionScope, expr: ExpressionScope) => {
+      expr.params = [thisArg, ...expr.params];
+      return expr.value;
+    },
+    operator: { key: ":", precedence: 4 }
+  },
+  {
     key: "_prop",
     expression: (obj: any, propPath: string) => {
       let propValue = obj;
@@ -47,7 +59,8 @@ export const fxCoreExpressions: ReadonlyArray<Expression> = [
         propValue = propValue[parts[i]];
       }
       return propValue;
-    }
+    },
+    operator: { key: ".", precedence: 4 }
   },
   {
     key: "_object",

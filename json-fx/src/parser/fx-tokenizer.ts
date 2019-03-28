@@ -6,13 +6,11 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
   private static classify(token: FxNode): void {
     const c = token.value;
 
-    if (c === "." || /\d/.test(c)) {
+    if (/\d/.test(c)) {
       token.addTags("identifier", "numeric");
-    } else if (c === ":") {
-      token.addTags("expression");
-    } else if (c === "@") {
-      token.addTags("parameter");
-    } else if (c === "'" || c === "\"") {
+    } else if (/[\w_$~]/i.test(c)) {
+      token.addTags("identifier");
+    } else if (c === "`") {
       token.addTags("literal");
     } else if (/[\[({]/.test(c)) {
       token.addTags("group", "open");
@@ -20,8 +18,6 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
       token.addTags("group", "close");
     } else if (c === ",") {
       token.addTags("delimiter");
-    } else if (/[\w_$~]/i.test(c)) {
-      token.addTags("identifier");
     } else if (!c || /\s/.test(c)) {
       token.addTags("space");
     } else {
@@ -30,10 +26,19 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
   }
 
   private static canMergeTokens(lastToken: FxNode, nextToken: FxNode): boolean {
-    return !lastToken.isTaggedAny()
-      || lastToken.isTaggedAny(...nextToken.getTags()) && !lastToken.isTagged("group")
-      || lastToken.isTaggedAny("expression", "parameter") && nextToken.isTagged("identifier")
-      || lastToken.value === "$" && nextToken.value === "*"; // Special case for "$*"
+    if (lastToken.isTagged("numeric") && nextToken.value === ".") {
+      return true;
+    }
+
+    if (lastToken.isTaggedAny(...nextToken.getTags())) {
+      if (lastToken.isTagged("operator")) {
+        return !nextToken.isTagged("numeric");
+      } else {
+        return !lastToken.isTagged("group");
+      }
+    } else {
+      return !lastToken.isTaggedAny();
+    }
   }
 
   private static mergeTokens(lastToken: FxNode, nextToken: FxNode) {

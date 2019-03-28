@@ -38,8 +38,7 @@ export class ExpressionScope<T = any> {
   public set params(params: ExpressionScope[]) {
     if (this._params.length === this.scopeExprs.length) {
       this.clearScope();
-    }
-    else {
+    } else {
       this._params.forEach(p => this.removeFromScope(p));
       this._params = [];
     }
@@ -66,8 +65,7 @@ export class ExpressionScope<T = any> {
   public set vars(vars: ScopeVariable[]) {
     if (Object.keys(this.varMap).length === this.scopeExprs.length) {
       this.clearScope();
-    }
-    else {
+    } else {
       Object.keys(this.varMap).forEach(v => this.removeFromScope(this.varMap[v]));
       this.varMap = {};
     }
@@ -78,7 +76,9 @@ export class ExpressionScope<T = any> {
     if (vars != null && vars.length > 0) {
       vars.forEach(v => {
         const found = this.varMap[v.name];
-        if (found) { this.removeFromScope(found); }
+        if (found) {
+          this.removeFromScope(found);
+        }
         this.addToScope(v.expr);
         this.varMap[v.name] = v.expr;
       });
