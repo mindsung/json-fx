@@ -1,6 +1,5 @@
 import { FxNode } from "./fx-node";
 import { FxParser } from "./fx-parser";
-import { FxModule } from "../core/fx-module";
 
 export class FxTokenizer extends FxParser<string, FxNode[]> {
   private static classify(token: FxNode): void {
@@ -26,21 +25,9 @@ export class FxTokenizer extends FxParser<string, FxNode[]> {
   }
 
   private static canMergeTokens(lastToken: FxNode, nextToken: FxNode): boolean {
-    // FIXME: Revise for clarity
-
-    if (lastToken.isTagged("numeric") && nextToken.value === ".") {
-      return true;
-    }
-
-    if (lastToken.isTaggedAny(...nextToken.getTags())) {
-      if (lastToken.isTagged("operator")) {
-        return !nextToken.isTagged("numeric");
-      } else {
-        return !lastToken.isTagged("group");
-      }
-    } else {
-      return !lastToken.isTaggedAny();
-    }
+    return !lastToken.isTaggedAny()
+      || lastToken.isTagged("numeric") && nextToken.value === "."
+      || lastToken.isTaggedAny(...nextToken.getTags()) && !lastToken.isTagged("group");
   }
 
   private static mergeTokens(lastToken: FxNode, nextToken: FxNode) {
