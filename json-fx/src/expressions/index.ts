@@ -17,6 +17,7 @@ export * from "./fx-comparative-expressions";
 export * from "./fx-logical-expressions";
 export * from "./fx-conditional-expressions";
 export * from "./fx-error-expressions";
+export * from "./fx-string-expressions";
 
 export const stockExpressions: ReadonlyArray<Expression> = []
   .concat(fxCoreExpressions)

@@ -2,6 +2,7 @@
   "name": "@mindsung/json-fx",
   "version": "0.1.0",
   "description": "MindSung JSON-Fx Library",
+  "repository": "https://github.com/mindsung/json-fx",
   "main": "index.js",
   "author": "Robb Eads",
   "contributors": [
@@ -11,14 +12,16 @@
   "devDependencies": {
     "@types/node": "~8.9.4",
     "ncp": "^2.0.0",
+    "path": "^0.12.7",
     "rimraf": "^2.6.3",
     "tslint": "^5.9.1",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.3.4000",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "build": "node_modules/.bin/rimraf dist && tsc && node_modules/.bin/ncp package.json dist/package.json",
-    "build-js": "node_modules/.bin/rimraf dist-js && tsc --declaration false --outDir dist-js && node_modules/.bin/ncp package.json dist-js/package.json",
-    "lint": "tslint src/**/*.ts?(x)",
-    "lint-fix": "tslint --fix src/**/*.ts?(x)"
+    "build": "npm run build:webpack",
+    "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
+    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack && node_modules/.bin/ncp package.json dist/webpack/package.json"
   }
 }

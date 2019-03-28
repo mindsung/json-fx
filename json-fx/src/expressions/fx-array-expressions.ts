@@ -107,11 +107,9 @@ export const fxArrayExpressions: ReadonlyArray<Expression> = [
       { name: "array" },
       { name: "valueExpr", deferEvaluation: true }
     ],
-    expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope, direction: "asc" | "desc") =>
+    expressionFactory: (scope: ExpressionScope) => (array: any[], valueExpr: ExpressionScope, direction: "asc" | "desc" = "asc") =>
       lambdaEvaluator(valueExpr, scope, fx => array.concat().sort((item1, item2) =>
-        fx.evaluate(item1) < fx.evaluate(item2)
-          ? (direction == null || direction === "asc" ? -1 : 1)
-          : (direction == null || direction === "asc" ? 1 : -1))
+        (fx.evaluate(item1) < fx.evaluate(item2) ? -1 : 1) * (direction === "asc" ? 1 : -1))
       )
   },
   {
