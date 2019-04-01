@@ -1,5 +1,5 @@
 import { FxCompiler } from "./fx-parser";
-import { FxModule } from "./fx-module";
+import { FxModule } from "../core/fx-module";
 import { FxScriptCompiler } from "./fx-script-compiler";
 import { ExpressionScope, ScopeVariable } from "../core/expression";
 import { createExpressionConstant, ObjectExpressionProperty } from "../expressions";
@@ -9,7 +9,7 @@ export class FxTemplateCompiler extends FxCompiler<any> {
 
   private scriptCompiler: FxScriptCompiler;
 
-  constructor(module: FxModule = new FxModule()) {
+  constructor(module: FxModule) {
     super(module);
     this.scriptCompiler = new FxScriptCompiler(module);
   }
@@ -17,20 +17,20 @@ export class FxTemplateCompiler extends FxCompiler<any> {
   evaluate(template: any): ExpressionScope<any> {
     if (isString(template)) {
       return this.scriptCompiler.evaluate(template);
-    }
-    else if (isArray(template)) {
+    } else if (isArray(template)) {
       const exprArray = template.map(item => this.evaluate(item));
-      return this.module.exprSet.createExpressionScope("_array")
+      return this.module.createScope("_array")
         .withParams([createExpressionConstant(exprArray)])
         .withScopeExprs(exprArray);
-    }
-    else if (isObject(template)) {
+    } else if (isObject(template)) {
       const objProps: ObjectExpressionProperty[] = [];
       const vars: ScopeVariable[] = [];
       let expr: ExpressionScope = null;
       let exprValue: any = null;
       Object.keys(template).forEach(key => {
-        if (key.startsWith("//")) { return; }
+        if (key.startsWith("//")) {
+          return;
+        }
 
         const fullKey = key;
         const keyAsExpr = key.startsWith("*");
@@ -46,18 +46,15 @@ export class FxTemplateCompiler extends FxCompiler<any> {
         const value = template[fullKey];
         if (keyExpr.expr.key === "_var") {
           vars.push({ name: key, expr: this.evaluate(value) });
-        }
-        else if (keyAsExpr || keyExpr.expr.key === "_const") {
+        } else if (keyAsExpr || keyExpr.expr.key === "_const") {
           if (expr != null) {
             throw new Error("Expression definition cannot include both object keys an expression.");
           }
           objProps.push({ keyExpr, valueExpr: this.evaluate(value), isOptional });
-        }
-        else {
+        } else {
           if (objProps.length > 0) {
             throw new Error("Expression definition cannot include both object keys an expression.");
-          }
-          else if (expr != null) {
+          } else if (expr != null) {
             throw new Error("Expression definition can include only a single expression.");
           }
           expr = keyExpr;
@@ -66,20 +63,17 @@ export class FxTemplateCompiler extends FxCompiler<any> {
       });
 
       if (objProps.length > 0) {
-        return this.module.exprSet.createExpressionScope("_object")
+        return this.module.createScope("_object")
           .withParams([createExpressionConstant(objProps)])
           .withScopeExprs(objProps.map(p => p.keyExpr).concat(objProps.map(p => p.valueExpr)))
           .withVars(vars);
-      }
-      else if (expr != null) {
+      } else if (expr != null) {
         return expr.withParams(isArray(exprValue) ? exprValue.map(item => this.evaluate(item)) : [this.evaluate(exprValue)])
           .withVars(vars);
-      }
-      else {
+      } else {
         throw new Error("Invalid expression definition. Object must contain either object keys or an expression.");
       }
-    }
-    else {
+    } else {
       return createExpressionConstant(template);
     }
   }

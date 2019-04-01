@@ -14,7 +14,7 @@ import { $WESTWORLD } from "../sample-data/westworld";
 })
 export class AppComponent implements OnInit {
   public fxScript = "$";
-  public fxSource: object = $BOOKS;
+  public fxSource: object = $POKEMON;
 
   ngOnInit() {
     this.onEval();
@@ -41,12 +41,12 @@ export class AppComponent implements OnInit {
 
   public fxResult = new BehaviorSubject("");
   private lastScript: string;
-  private xform: (...inputs: any[]) => any;
+  private transform: (...inputs: any[]) => any;
 
   public onEval() {
-    if (this.xform == null || this.fxScript !== this.lastScript) {
-      this.xform = fxCompile(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript);
+    if (this.transform == null || this.fxScript !== this.lastScript) {
+      this.transform = fxCompile(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript);
     }
-    this.fxResult.next(this.xform(this.fxSource));
+    this.fxResult.next(this.transform(this.fxSource));
   }
 }

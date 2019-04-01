@@ -7,6 +7,7 @@ import { fxConditionalExpressions } from "./fx-conditional-expressions";
 import { fxErrorExpressions } from "./fx-error-expressions";
 import { fxMathExpressions } from "./fx-math-expressions";
 import { fxStringExpressions } from "./fx-string-expressions";
+import { fxCoreExpressions } from "./fx-core-expressions";
 
 export * from "./fx-core-expressions";
 export * from "./fx-array-expressions";
@@ -19,11 +20,12 @@ export * from "./fx-error-expressions";
 export * from "./fx-string-expressions";
 
 export const stockExpressions: ReadonlyArray<Expression> = []
-.concat(fxArrayExpressions)
-.concat(fxArithmeticExpressions)
-.concat(fxMathExpressions)
-.concat(fxComparativeExpressions)
-.concat(fxLogicalExpressions)
-.concat(fxConditionalExpressions)
-.concat(fxErrorExpressions)
-.concat(fxStringExpressions);
+  .concat(fxCoreExpressions)
+  .concat(fxArrayExpressions)
+  .concat(fxArithmeticExpressions)
+  .concat(fxMathExpressions)
+  .concat(fxComparativeExpressions)
+  .concat(fxLogicalExpressions)
+  .concat(fxConditionalExpressions)
+  .concat(fxErrorExpressions)
+  .concat(fxStringExpressions);

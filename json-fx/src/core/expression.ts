@@ -1,9 +1,11 @@
+import { Operator } from "./operator";
+
 export interface Expression<T = any> {
   readonly key: string;
   readonly expression?: (...params: any[]) => T;
   readonly expressionFactory?: (scope: ExpressionScope) => (...params: any[]) => T;
   readonly params?: ReadonlyArray<ExpressionParam>;
-  readonly token?: ExpressionToken;
+  readonly operator?: Operator;
   readonly isOverride?: boolean;
 }
 
@@ -12,14 +14,6 @@ interface ExpressionParam {
   readonly description?: string;
   readonly valueType?: "string" | "number" | "boolean" | "date" | "object" | "array";
   readonly deferEvaluation?: boolean;
-}
-
-interface ExpressionToken {
-  readonly key: string;
-  readonly precedence: number;
-  readonly assoc?: "left" | "right";
-  readonly operandOn?: "left" | "right" | "both";
-  // TODO: What else needs to be known for token parsing?
 }
 
 export interface ScopeVariable {
@@ -44,8 +38,7 @@ export class ExpressionScope<T = any> {
   public set params(params: ExpressionScope[]) {
     if (this._params.length === this.scopeExprs.length) {
       this.clearScope();
-    }
-    else {
+    } else {
       this._params.forEach(p => this.removeFromScope(p));
       this._params = [];
     }
@@ -72,8 +65,7 @@ export class ExpressionScope<T = any> {
   public set vars(vars: ScopeVariable[]) {
     if (Object.keys(this.varMap).length === this.scopeExprs.length) {
       this.clearScope();
-    }
-    else {
+    } else {
       Object.keys(this.varMap).forEach(v => this.removeFromScope(this.varMap[v]));
       this.varMap = {};
     }
@@ -84,7 +76,9 @@ export class ExpressionScope<T = any> {
     if (vars != null && vars.length > 0) {
       vars.forEach(v => {
         const found = this.varMap[v.name];
-        if (found) { this.removeFromScope(found); }
+        if (found) {
+          this.removeFromScope(found);
+        }
         this.addToScope(v.expr);
         this.varMap[v.name] = v.expr;
       });
@@ -143,7 +137,8 @@ export class ExpressionScope<T = any> {
           : xInfo.expressionFactory(this);
       }
       this._value = this.expression(...(this.params || []).map((p, i) =>
-        xInfo.params == null || xInfo.params[i] == null || !xInfo.params[i].deferEvaluation
+        p == null ? undefined
+          : xInfo.params == null || xInfo.params[i] == null || !xInfo.params[i].deferEvaluation
           ? p.value : p));
       this.hasValue = true;
     }
