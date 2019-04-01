@@ -22,6 +22,6 @@
   "scripts": {
     "build": "npm run build:webpack",
     "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
-    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack && node_modules/.bin/ncp package.json dist/webpack/package.json"
+    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack"
   }
 }
