@@ -23,6 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import { polyfills } from "./polyfills";
+polyfills();
 import { FxTemplateCompiler } from "./parser/fx-template-compiler";
 import { createExpressionConstant, fxCoreExpressions, stockExpressions } from "./expressions";
 import { FxModule } from "./core/fx-module";
