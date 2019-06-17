@@ -1,4 +1,4 @@
-import { Expression } from "..";
+import { Expression } from "../../index";
 
 function wordSplit(str: string): string[] {
   const words = [""];

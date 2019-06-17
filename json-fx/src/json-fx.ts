@@ -1,6 +1,6 @@
-import { Expression } from "./core/expression";
-import { FxTemplateCompiler } from "./parser/fx-template-compiler";
-import { FxModule } from "./core/fx-module";
+import { Expression } from "./v0/core/expression";
+import { FxTemplateCompiler } from "./v0/parser/fx-template-compiler";
+import { FxModule } from "./v0/core/fx-module";
 
 export class JsonFx {
   private compiler: FxTemplateCompiler;

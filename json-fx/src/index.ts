@@ -25,15 +25,15 @@ SOFTWARE.
 */
 import { polyfills } from "./polyfills";
 polyfills();
-import { FxTemplateCompiler } from "./parser/fx-template-compiler";
-import { createExpressionConstant, fxCoreExpressions, stockExpressions } from "./expressions";
-import { FxModule } from "./core/fx-module";
+import { FxTemplateCompiler } from "./v0/parser/fx-template-compiler";
+import { createExpressionConstant, fxCoreExpressions, stockExpressions } from "./v0/expressions";
+import { FxModule } from "./v0/core/fx-module";
 
-export * from "./core/expression";
+export * from "./v0/core/expression";
 
-export * from "./expressions";
+export * from "./v0/expressions";
 
-export * from "./parser/fx-template-compiler";
+export * from "./v0/parser/fx-template-compiler";
 
 export function fxCompile(template: any) {
   const expr = new FxTemplateCompiler(new FxModule(stockExpressions)).evaluate(template);

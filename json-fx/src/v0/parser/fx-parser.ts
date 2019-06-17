@@ -1,4 +1,4 @@
-import { ExpressionScope } from "..";
+import { ExpressionScope } from "../../index";
 import { FxModule } from "../core/fx-module";
 
 export abstract class FxParser<TIn, TOut = void> {

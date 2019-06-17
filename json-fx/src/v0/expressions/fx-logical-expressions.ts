@@ -1,4 +1,4 @@
-import { Expression, ExpressionScope } from "..";
+import { Expression, ExpressionScope } from "../../index";
 
 export const fxLogicalExpressions: ReadonlyArray<Expression<boolean>> = [
   {
