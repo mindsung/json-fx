@@ -1,3 +1,5 @@
+**Note:** json-fx is in transition to a new and improved parsing engine. Additional reference documentation will be added prior to the 1.0 release.
+
 # json-fx
 **json-fx** is a JSON template syntax parser, ideal for transforming or querying JavaScript objects or JSON documents. It defines an intuitive syntax for expressing an output object as a function of one or more inputs.
 
