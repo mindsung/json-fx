@@ -25,25 +25,6 @@ SOFTWARE.
 */
 import { polyfills } from "./polyfills";
 polyfills();
-import { FxTemplateCompiler } from "./v0/parser/fx-template-compiler";
-import { createExpressionConstant, fxCoreExpressions, stockExpressions } from "./v0/expressions";
-import { FxModule } from "./v0/core/fx-module";
 
-export * from "./v0/core/expression";
-
-export * from "./v0/expressions";
-
-export * from "./v0/parser/fx-template-compiler";
-
-export function fxCompile(template: any) {
-  const expr = new FxTemplateCompiler(new FxModule(stockExpressions)).evaluate(template);
-  const exprVars = expr.vars;
-  return (...inputs: any[]): any => {
-    const vars = inputs.map((input, i) => ({ name: "$" + (i + 1), expr: createExpressionConstant(input) }));
-    if (vars.length > 0) {
-      vars.unshift({ name: "$", expr: vars[0].expr });
-    }
-    expr.vars = exprVars.concat(vars);
-    return expr.value;
-  };
-}
+// TODO: Export Json-fx wrapper class
+export * from "./json-fx/expressions";

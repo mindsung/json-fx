@@ -1,6 +1,6 @@
 /*
 import { Expression, ExpressionScope } from "./expression";
-import { fxCoreExpressions } from "../expressions/fx-core-expressions";
+import { fxCoreExpressions } from "../expressions/json-fx-expressions";
 import { stockExpressions } from "../expressions";
 
 export class ExpressionSet {

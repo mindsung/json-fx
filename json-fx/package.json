@@ -11,13 +11,18 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "~8.9.4",
+    "@types/mocha": "^5.2.7",
+    "@types/chai": "^4.1.7",
     "ncp": "^2.0.0",
     "path": "^0.12.7",
     "rimraf": "^2.6.3",
     "tslint": "^5.9.1",
     "typescript": "^3.3.4000",
+    "ts-node": "^8.3.0",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
+    "webpack-cli": "^3.3.0",
+    "mocha": "^6.1.4",
+    "chai": "^4.2.0"
   },
   "scripts": {
     "build": "npm run build:webpack",
