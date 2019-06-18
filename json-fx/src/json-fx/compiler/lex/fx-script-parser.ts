@@ -31,7 +31,14 @@ export class FxScriptParser extends FxParser<string, FxToken> {
   }
 
   evaluate(expr: string) {
-    const tokens = this.tokenizer.evaluate(expr);
+    let tokens = this.tokenizer.evaluate(expr);
+    // TODO: This is temporary and really ugly and bad code to handle the special case of an "optional" object key.
+    // TODO: Create a separate parser for left values that better handles this case.
+    if (this.lvalue && tokens.length == 2 && tokens[0].tag === "identifier"
+      && tokens[1].tag === "operator" && tokens[1].symbol === "?") {
+      tokens[0].symbol = tokens[0].symbol + "?";
+      tokens = [ tokens[0] ];
+    }
     const root = this.grouper.evaluate(tokens);
 
     root.isLvalue = !!this.lvalue;

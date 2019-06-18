@@ -7,7 +7,10 @@ export const sample1 = {
     }
   },
 
-  "test": "$test.bar.one?.two.three",
+  "test": "$test.bar.two",
+  "test2?": "$test.foo",
+  "test3?": "$test.foobar",
+  "test4": "$test.foobarbaz",
 
   "@user": {
     "firstName": "$names.first:randselect()",

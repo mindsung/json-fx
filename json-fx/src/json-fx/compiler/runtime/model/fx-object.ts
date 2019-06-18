@@ -12,7 +12,11 @@ export class FxObject extends FxExpression {
   evaluate(): any {
     const result = {};
     for (const key of Object.keys(this.items)) {
-      result[key] = this.items[key].evaluate();
+      const val = this.items[key].evaluate();
+      const optional = key.endsWith("?");
+      if (!optional || val != null) {
+        result[!optional ? key : key.substr(0, key.length - 1)] = val;
+      }
     }
     return result;
   }
