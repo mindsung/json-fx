@@ -1,6 +1,5 @@
 import { FxExpressionDefinition, FxLambdaFn } from "../defs";
 import { isArray } from "../common";
-import { ExpressionScope } from "../../v0/core/expression";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
