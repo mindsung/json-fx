@@ -10,7 +10,7 @@ function itReturnsTheseTags(expr: string, expectedTags: string[]) {
   it(`Returns tokens from '${expr}' tagged '${expectedTags.join(", ")}'`, () => {
     const tokens = tokenizeExpression(expr);
 
-    tokens.forEach(t => console.log(t.toString()));
+    // tokens.forEach(t => console.log(t.toString()));
 
     expect(tokens.length).to.equal(expectedTags.length);
 

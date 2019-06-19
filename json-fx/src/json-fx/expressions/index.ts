@@ -1,5 +1,4 @@
 import { FxExpressionDefinition } from "../defs";
-import { exprIntrinsic } from "./expr-intrinsic";
 import { exprArray } from "./expr-array";
 import { exprComparative } from "./expr-comparative";
 import { exprArithmetic } from "./expr-arithmetic";
@@ -16,7 +15,6 @@ export namespace JsonFx {
     .concat(exprArray)
     .concat(exprComparative)
     .concat(exprConditional)
-    .concat(exprIntrinsic)
     .concat(exprLogical)
     .concat(exprMath)
     .concat(exprRandom)

@@ -116,7 +116,7 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
 
   private createProp(root: FxToken) {
     const r = new FxProperty(this.getPropPath(root));
-    console.log(r);
+    // console.log(r);
     return r;
   }
 

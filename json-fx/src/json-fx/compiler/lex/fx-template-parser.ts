@@ -4,7 +4,7 @@ import { FxScriptParser } from "./fx-script-parser";
 import { isArray, isObject, isString } from "../../common";
 import { FxContext } from "./model/fx-context";
 
-export class FxObjectParser extends FxParser<any, FxToken> {
+export class FxTemplateParser extends FxParser<any, FxToken> {
   private scriptParser: FxScriptParser;
 
   constructor(context: FxContext) {

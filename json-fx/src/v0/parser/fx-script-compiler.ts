@@ -35,13 +35,13 @@ export class FxScriptCompiler extends FxCompiler<string> {
   evaluate(expr: string): ExpressionScope<any> {
     const tokens = this.tokenizer.evaluate(expr);
 
-    console.log(tokens);
+    // console.log(tokens);
 
     const root = this.grouper.evaluate(tokens);
 
     this.parser.evaluate(root);
 
-    console.log(root);
+    // console.log(root);
 
     return this.compiler.evaluate(root);
   }

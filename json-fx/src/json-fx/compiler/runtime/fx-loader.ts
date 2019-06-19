@@ -1,14 +1,16 @@
 import { FxExpressionDefinition, FxOperatorDefinition } from "../../defs";
+import { exprIntrinsic } from "../../expressions/expr-intrinsic";
 
 export class FxLoader {
   readonly expressions: Map<string, FxExpressionDefinition>;
   readonly operators: Map<string, FxOperatorDefinition>;
 
-  constructor(expressions: ReadonlyArray<FxExpressionDefinition>) {
+  constructor(...expressions: [ReadonlyArray<FxExpressionDefinition>]) {
     this.expressions = new Map<string, FxExpressionDefinition>();
     this.operators = new Map<string, FxOperatorDefinition>();
 
-    this.define(...expressions);
+    this.define(...exprIntrinsic);
+    expressions.forEach(exp => this.define(...exp));
   }
 
   define(...expressions: FxExpressionDefinition[]) {

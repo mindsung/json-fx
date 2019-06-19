@@ -26,5 +26,4 @@ SOFTWARE.
 import { polyfills } from "./polyfills";
 polyfills();
 
-// TODO: Export Json-fx wrapper class
-export * from "./json-fx/expressions";
+export * from "./json-fx/compiler/runtime/fx-template-compiler";

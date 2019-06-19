@@ -29,4 +29,8 @@ export class FxScope {
       this.variables[key].bindScope(this);
     }
   }
+
+  public clearAll() {
+    this.variables = {};
+  }
 }
