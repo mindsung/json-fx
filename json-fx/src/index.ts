@@ -26,4 +26,5 @@ SOFTWARE.
 import { polyfills } from "./polyfills";
 polyfills();
 
+export * from "./expressions";
 export * from "./compiler/runtime/fx-template-compiler";
