@@ -21,27 +21,25 @@ export const exprConditional: ReadonlyArray<FxExpressionDefinition> = [
 
       return result;
     }
+  },
+  {
+    name: "if",
+    expression: (condition) => !!condition
+  },
+  {
+    name: "then",
+    deferEvaluation: true,
+    expression: (condition: FxExpression, value: FxExpression) => {
+      const evalCondition = condition.evaluate();
+      return evalCondition ? value.evaluate() : evalCondition;
+    }
+  },
+  {
+    name: "else",
+    deferEvaluation: true,
+    expression: (condition: FxExpression, value: FxExpression) => {
+      const evalCondition = condition.evaluate();
+      return evalCondition ? evalCondition : value.evaluate();
+    }
   }
-
-  // Missing: nullor
-
-  /*{
-    name: "nullor",
-    params: [
-      { name: "value" },
-      { name: "thenExpr", deferEvaluation: true }
-    ],
-    expression: (value: any, thenExpr: ExpressionScope) => {
-      if (value == null) {
-        return null;
-      }
-      let origParams = thenExpr["_orig_params"];
-      if (origParams == null) {
-        thenExpr["_orig_params"] = origParams = thenExpr.params;
-      }
-      thenExpr.params = [createExpressionConstant(value)].concat(origParams);
-      return thenExpr.value;
-    },
-    operator: { symbol: "?", precedence: 99 }
-  }*/
 ];
