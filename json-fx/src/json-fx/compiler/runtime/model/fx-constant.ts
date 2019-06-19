@@ -13,6 +13,6 @@ export class FxConstant extends FxExpression {
   }
 
   public toString(): string {
-    return this.value.toString();
+    return this.value == null ? "(null)" : this.value.toString();
   }
 }

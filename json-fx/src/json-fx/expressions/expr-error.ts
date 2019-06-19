@@ -9,8 +9,8 @@ export const exprError: ReadonlyArray<FxExpressionDefinition> = [
       } catch (e) {
       }
     }
-  }
-  /*{
+  },
+  {
     name: "notnull",
     expression: (value: any) => {
       if (value == null) {
@@ -19,7 +19,7 @@ export const exprError: ReadonlyArray<FxExpressionDefinition> = [
       return value;
     }
   },
-  {
+  /*{
     name: "assert",
     params: [
       { name: "assertTrue" },

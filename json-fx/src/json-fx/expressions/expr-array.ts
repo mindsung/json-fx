@@ -1,5 +1,6 @@
 import { FxExpressionDefinition, FxLambdaFn } from "../defs";
 import { isArray } from "../common";
+import { ExpressionScope } from "../../v0/core/expression";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
@@ -62,6 +63,22 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
+    name: "min",
+    expression: (arr: any[], lambda: FxLambdaFn) => {
+      let min: any = null;
+      arr.forEach(item => min = minOf(min, lambda(item)));
+      return min;
+    }
+  },
+  {
+    name: "max",
+    expression: (arr: any[], lambda: FxLambdaFn) => {
+      let max: any = null;
+      arr.forEach(item => max = maxOf(max, lambda(item)));
+      return max;
+    }
+  },
+  {
     name: "length",
     expression: (arr: any[]) => arr.length
   },
@@ -82,3 +99,19 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     }
   }
 ];
+
+function minOf(val1: any, val2: any) {
+  return val1 == null && val2 == null ? null
+    : val1 == null ? val2
+      : val2 == null ? val1
+        : val2 < val1 ? val2
+          : val1;
+}
+
+function maxOf(val1: any, val2: any) {
+  return val1 == null && val2 == null ? null
+    : val1 == null ? val2
+      : val2 == null ? val1
+        : val2 > val1 ? val2
+          : val1;
+}

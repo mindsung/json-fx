@@ -1,9 +1,14 @@
 import { FxExpressionDefinition } from "../defs";
+import { FxExpression } from "../compiler/runtime/model/fx-expression";
 
 export const exprConditional: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "ifelse",
-    expression: (cond, thenReturn, elseReturn) => cond ? thenReturn : elseReturn
+    deferEvaluation: true,
+    expression: (cond: FxExpression, thenReturn: FxExpression, elseReturn: FxExpression) =>
+      cond.evaluate()
+        ? thenReturn == null ? null : thenReturn.evaluate()
+        : elseReturn == null ? null : elseReturn.evaluate()
   },
   {
     name: "for",

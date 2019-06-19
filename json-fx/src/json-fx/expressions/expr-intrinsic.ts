@@ -17,9 +17,7 @@ export const exprIntrinsic: ReadonlyArray<FxExpressionDefinition> = [
     deferEvaluation: true,
     expression: (result: FxFunction) => {
       const evalFirstArg = result.args[0].evaluate();
-      return (evalFirstArg == null || evalFirstArg == undefined)
-        ? null
-        : result.evaluate();
+      return evalFirstArg == null ? null : result.evaluate();
     }
   },
   {

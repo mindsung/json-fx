@@ -1,5 +1,6 @@
 import { FxScope } from "../fx-scope";
 import { FxExpression } from "./fx-expression";
+import { isEmpty, isObject } from "../../../common";
 
 export class FxObject extends FxExpression {
   public items: { [index: string]: FxExpression };
@@ -12,10 +13,10 @@ export class FxObject extends FxExpression {
   evaluate(): any {
     const result = {};
     for (const key of Object.keys(this.items)) {
-      const val = this.items[key].evaluate();
+      const value = this.items[key].evaluate();
       const optional = key.endsWith("?");
-      if (!optional || val != null) {
-        result[!optional ? key : key.substr(0, key.length - 1)] = val;
+      if (!optional || !(value == null || (isObject(value) && isEmpty(value)))) {
+        result[!optional ? key : key.substr(0, key.length - 1)] = value;
       }
     }
     return result;
