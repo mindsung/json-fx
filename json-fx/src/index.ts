@@ -26,4 +26,4 @@ SOFTWARE.
 import { polyfills } from "./polyfills";
 polyfills();
 
-export * from "./json-fx/compiler/runtime/fx-template-compiler";
+export * from "./compiler/runtime/fx-template-compiler";

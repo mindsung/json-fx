@@ -1,17 +1,17 @@
-import { JsonFx } from "./json-fx/expressions";
-import { FxLoader } from "./json-fx/compiler/runtime/fx-loader";
-import { FxCompiler } from "./json-fx/compiler/runtime/fx-compiler";
+import { JsonFx } from "./expressions";
+import { FxLoader } from "./compiler/runtime/fx-loader";
+import { FxCompiler } from "./compiler/runtime/fx-compiler";
 import { describe } from "mocha";
 import { expect } from "chai";
-import { FxContext } from "./json-fx/compiler/lex/model/fx-context";
+import { FxContext } from "./compiler/lex/model/fx-context";
 import { sample1 } from "./sample/template";
-import { FxTemplateParser } from "./json-fx/compiler/lex/fx-template-parser";
-import { FxConstant } from "./json-fx/compiler/runtime/model/fx-constant";
+import { FxTemplateParser } from "./compiler/lex/fx-template-parser";
+import { FxConstant } from "./compiler/runtime/model/fx-constant";
 import { $FIRST_NAMES } from "./sample/sources/first-names";
 import { $LAST_NAMES } from "./sample/sources/last-names";
 import { cableDataTemplate } from "./sample/cable-data-template";
 import { $CABLE_DATA } from "./sample/sources/cable-data";
-import { FxTemplateCompiler } from "./json-fx/compiler/runtime/fx-template-compiler";
+import { FxTemplateCompiler } from "./compiler/runtime/fx-template-compiler";
 
 const context = new FxContext(new FxLoader(JsonFx.expressions));
 const parser = new FxTemplateParser(context);
