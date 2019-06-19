@@ -1,32 +1,32 @@
 import * as CryptoJS from "crypto-js";
 
-export const fxCryptoExpressions = [
+export const exprCrypto = [
   {
-    key: "md5",
+    name: "md5",
     expression: (token: string) => CryptoJS.MD5(token).toString()
   },
   {
-    key: "sha1",
+    name: "sha1",
     expression: (token: string) => CryptoJS.SHA1(token).toString()
   },
   {
-    key: "sha256",
+    name: "sha256",
     expression: (token: string) => CryptoJS.SHA256(token).toString()
   },
   {
-    key: "sha512",
+    name: "sha512",
     expression: (token: string) => CryptoJS.SHA512(token).toString()
   },
   {
-    key: "sha3",
+    name: "sha3",
     expression: (token: string) => CryptoJS.SHA3(token).toString()
   },
   {
-    key: "encrypt",
+    name: "encrypt",
     expression: (token: string, key: string) => CryptoJS.AES.encrypt(token, key).toString()
   },
   {
-    key: "decrypt",
+    name: "decrypt",
     expression: (token: string, key: string) => {
       const hex = CryptoJS.AES.decrypt(token, key).toString();
       let message = "";

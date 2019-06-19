@@ -1,1 +1,1 @@
-export * from "./expressions/fx-crypto-expressions";
+export * from "./expressions/expr-crypto";
