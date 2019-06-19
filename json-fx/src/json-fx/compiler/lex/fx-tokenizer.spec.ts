@@ -20,7 +20,7 @@ function itReturnsTheseTags(expr: string, expectedTags: string[]) {
   });
 }
 
-describe("FxNodeTokenizer (1 token)", () => {
+describe("FxNodeTokenizer (1 Lex)", () => {
   itReturnsTheseTags("12.345", ["numeric"]);
   itReturnsTheseTags("foo", ["identifier"]);
   itReturnsTheseTags("`", ["literal"]);

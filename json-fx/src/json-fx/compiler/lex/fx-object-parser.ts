@@ -33,6 +33,10 @@ export class FxObjectParser extends FxParser<any, FxToken> {
     const root = new FxToken("{}", -1, "object");
 
     for (const key of Object.keys(expr)) {
+      if (key.startsWith("//")) {
+        continue;
+      }
+
       const child = this.evaluateKeyValue(key, expr[key]);
       if (child) {
         root.pushChild(child);

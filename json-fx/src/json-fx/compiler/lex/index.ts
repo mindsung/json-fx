@@ -1,28 +1,9 @@
-import { FxTokenRule } from "./lex/fx-tokenizer";
+import { FxTokenRule } from "./model/fx-token-rule";
 
-export type FxTokenTag =
-  | ""
-  | "global"
-  | "identifier"
-  | "variable"
-  | "numeric"
-  | "group"
-  | "group-close"
-  | "literal"
-  | "delimiter"
-  | "space"
-  | "template"
-  | "template-call"
-  | "array"
-  | "operator"
-  | "expression"
-  | "object"
-  | "lambda";
-
-export namespace JsonFx.token {
+export namespace JsonFx {
   export const literalSymbol = "`";
 
-  export const rules: ReadonlyArray<FxTokenRule> = [
+  export const tokenRules: ReadonlyArray<FxTokenRule> = [
     {
       tag: "identifier",
       test: c => {

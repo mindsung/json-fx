@@ -1,14 +1,8 @@
 import { FxToken } from "./model/fx-token";
 import { FxParser } from "./model/fx-parser";
-import { JsonFx, FxTokenTag } from "../tokens";
+import { JsonFx } from "./index";
 import { isArray } from "../../common";
-
-export interface FxTokenRule {
-  tag: FxTokenTag;
-  test?: (c: string) => boolean;
-  preventMerge?: boolean;
-  mergeWith?: string | string[];
-}
+import { FxTokenRule } from "./model/fx-token-rule";
 
 export class FxTokenizer extends FxParser<string, FxToken[]> {
   private tokens: FxToken[];
@@ -48,7 +42,7 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
       this.mergeBasedOnRule();
     }
 
-    if (this.nextChar === JsonFx.token.literalSymbol) {
+    if (this.nextChar === JsonFx.literalSymbol) {
       this.toggleAsLiteralSequence();
     }
   }
@@ -68,7 +62,7 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
   }
 
   private static getTokenRuleFrom(c: string): FxTokenRule {
-    for (const rule of JsonFx.token.rules) {
+    for (const rule of JsonFx.tokenRules) {
       if (rule.test && rule.test(c)) {
         return this.sanitizeRule(rule);
       }

@@ -21,8 +21,11 @@ export interface FxOperatorDefinition {
 
 export namespace FxIntrinsic {
   export const Invoke = "invoke";
+  export const NullInvoke = "nullinvoke";
   export const Lambda = "lambda";
   export const Tuple = "tuple";
+  export const Prop = "prop";
+  export const NullProp = "nullprop";
 }
 
 export type FxLambdaFn = (...args: any[]) => any;

@@ -1,6 +1,6 @@
 import { FxNode } from "./fx-node";
 import { FxOperatorDefinition } from "../../../defs";
-import { FxTokenTag } from "../../tokens";
+import { FxTokenTag } from "./fx-token-tag";
 
 export class FxToken extends FxNode {
   operator: FxOperatorDefinition = null;

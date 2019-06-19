@@ -18,7 +18,7 @@ const compiler = new FxCompiler(new FxContext(loader));
 describe("Sandbox", () => {
   it("Executes w/o throwing exceptions", function () {
     // The result of the parser is a lexical graph of tokens, optimized
-    const root = parser.evaluate(sample1);
+    const root = parser.evaluate("$names.foo?:length()");
     console.log(root.toString());
 
     // The compiler converts the lexical graph into the executable tree
@@ -28,7 +28,7 @@ describe("Sandbox", () => {
     console.log(expr.toString());
 
     // "expr" is the root node. Set a variable called "$names" at the root scope
-    expr.scope.setVariable("$names", new FxConstant({ first: $FIRST_NAMES, last: $LAST_NAMES }));
+    expr.scope.setVariable("$names", new FxConstant({ first: { names: $FIRST_NAMES }, last: $LAST_NAMES }));
 
     const result = expr.evaluate();
     console.log(result);

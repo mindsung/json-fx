@@ -8,6 +8,7 @@ import { FxFunction } from "./model/fx-function";
 import { FxConstant } from "./model/fx-constant";
 import { FxArray } from "./model/fx-array";
 import { FxLambdaFn } from "../../defs";
+import { FxProperty, FxPropertyPathItem } from "./model/fx-property";
 
 export class FxCompiler extends FxParser<FxToken, FxExpression> {
   evaluate(root: FxToken): FxExpression {
@@ -38,6 +39,10 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
         break;
       case "numeric":
         result = new FxConstant(parseFloat(root.symbol));
+        break;
+      case "nullprop":
+      case "prop":
+        result = this.createProp(root);
         break;
       default:
         result = this.createConstant(root.symbol);
@@ -107,5 +112,34 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
     }
 
     return new FxConstant(value);
+  }
+
+  private createProp(root: FxToken) {
+    const r = new FxProperty(this.getPropPath(root));
+    console.log(r);
+    return r;
+  }
+
+  private getPropPath(root: FxToken): FxPropertyPathItem[] {
+    if (root.tag == "prop" || root.tag == "nullprop") {
+      const last = {
+        value: this.createConstant(root.lastChild.symbol),
+        interrupts: false
+      };
+
+      const path = [...this.getPropPath(root.firstChild), last];
+
+      if (root.tag == "nullprop") {
+        path[path.length - 2].interrupts = true;
+      }
+
+      return path;
+
+    } else {
+      return [{
+        value: this.evaluate(root),
+        interrupts: false
+      }];
+    }
   }
 }

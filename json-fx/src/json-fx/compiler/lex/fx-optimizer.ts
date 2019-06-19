@@ -11,39 +11,73 @@ export class FxOptimizer extends FxParser<FxToken, void> {
         this.child.unwrap();
 
       } else if (this.child.operator) {
-        this.evaluateIntrinsics();
+        this.optimizeIntrinsics();
       }
     }
   }
 
-  private evaluateIntrinsics() {
-    const child = this.child;
-
-    switch (child.operator.symbol) {
+  private optimizeIntrinsics() {
+    switch (this.child.operator.symbol) {
       case FxIntrinsic.Tuple:
-        child.unwrap();
+        this.optimizeTuple();
         break;
 
       case FxIntrinsic.Invoke:
-        child.lastChild.unshiftChild(child.firstChild);
+        this.optimizeInvoke();
+        break;
 
-        if (child.lastChild.tag === "identifier") {
-          child.lastChild.tag = "expression";
-        }
-
-        child.unwrap();
+      case FxIntrinsic.NullInvoke:
+        this.optimizeNullInvoke();
         break;
 
       case FxIntrinsic.Lambda:
-        child.tag = "lambda";
-        if (child.firstChild.tag !== "group") {
-          const wrapper = new FxToken("vars", -1, "group");
-          wrapper.isLvalue = true;
-          child.firstChild.wrap(wrapper);
-        } else {
-          child.firstChild.symbol = "vars";
-        }
+        this.optimizeLambda();
+        break;
+
+      case FxIntrinsic.Prop:
+        this.child.tag = "prop";
+        break;
+
+      case FxIntrinsic.NullProp:
+        this.child.tag = "nullprop";
         break;
     }
+  }
+
+  private optimizeTuple() {
+    this.child.unwrap();
+  }
+
+  private optimizeInvoke() {
+    this.child.lastChild.unshiftChild(this.child.firstChild);
+
+    if (this.child.lastChild.tag === "identifier") {
+      this.child.lastChild.tag = "expression";
+    }
+
+    this.child.unwrap();
+  }
+
+  private optimizeNullInvoke() {
+    this.child.lastChild.unshiftChild(this.child.firstChild);
+
+    if (this.child.lastChild.tag === "identifier") {
+      this.child.lastChild.tag = "expression";
+    }
+  }
+
+  private optimizeLambda() {
+    this.child.tag = "lambda";
+    if (this.child.firstChild.tag !== "group") {
+      const wrapper = new FxToken("vars", -1, "group");
+      wrapper.isLvalue = true;
+      this.child.firstChild.wrap(wrapper);
+    } else {
+      this.child.firstChild.symbol = "vars";
+    }
+  }
+
+  private optimizeProp() {
+    this.child.tag = "prop";
   }
 }
