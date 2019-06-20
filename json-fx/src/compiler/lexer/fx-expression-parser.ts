@@ -19,6 +19,11 @@ export class FxExpressionParser extends FxParser<FxTokenNode, void> {
     }
   }
 
+  private lastWithNextIsCallable() {
+    return this.nextNode.tag === "group"
+      && this.lastNode && (this.lastNode.tag === "identifier" || this.lastNode.tag === "template");
+  }
+
   private makeLastAnExpression() {
     if (this.lastNode.tag === "identifier") {
       this.lastNode.tag = "expression";
@@ -27,10 +32,5 @@ export class FxExpressionParser extends FxParser<FxTokenNode, void> {
     }
 
     this.nextNode.transferChildrenTo(this.lastNode);
-  }
-
-  private lastWithNextIsCallable() {
-    return this.nextNode.tag === "group"
-      && this.lastNode && (this.lastNode.tag === "identifier" || this.lastNode.tag === "template");
   }
 }

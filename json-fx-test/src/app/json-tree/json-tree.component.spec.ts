@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 
-import { JsonTreeComponent } from './json-tree.component';
+import {JsonTreeComponent} from "./json-tree.component";
 
-describe('JsonTreeComponent', () => {
+describe("JsonTreeComponent", () => {
   let component: JsonTreeComponent;
   let fixture: ComponentFixture<JsonTreeComponent>;
 
@@ -19,7 +19,7 @@ describe('JsonTreeComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

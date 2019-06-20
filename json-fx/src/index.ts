@@ -28,4 +28,4 @@ polyfills();
 
 export * from "./expressions/core";
 export * from "./expressions/math";
-export * from "./compiler/runtime/fx-template-compiler";
+export * from "./compiler/runtime/json-fx";

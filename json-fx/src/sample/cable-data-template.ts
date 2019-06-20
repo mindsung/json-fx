@@ -35,8 +35,9 @@ export const cableDataTemplate = {
       }
     },
 
-    "cdmVersion": "`2.0`",
     "$workflow": "$job?.Workflow || @workflow()",
+
+    "cdmVersion": "`2.0`",
     "workflow?": "$workflow",
     "assetInfo": "$asset",
     "tests": [{

@@ -12,7 +12,8 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     name: "map",
     expression: (arr: any[], lambda: FxLambdaFn) => {
       return arr.map(lambda);
-    }
+    },
+    operator: {symbol: "::", precedence: 4}
   },
   {
     name: "sort",

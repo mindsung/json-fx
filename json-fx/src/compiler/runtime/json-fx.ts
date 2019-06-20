@@ -7,7 +7,7 @@ import {FxExpression} from "./model/fx-expression";
 import {FxConstant} from "./model/fx-constant";
 import {FxScope} from "./fx-scope";
 
-export class FxTemplateCompiler {
+export class JsonFx {
 
   private readonly context: FxContext;
   private readonly parser: FxTemplateParser;
