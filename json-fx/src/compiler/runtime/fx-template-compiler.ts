@@ -25,7 +25,7 @@ export class FxTemplateCompiler {
 }
 
 export interface FxCompiledTemplate {
-  evaluate(input: any): any;
+  evaluate(...inputs: FxInput[]): any;
 }
 
 class FxCompiledTemplateImpl implements FxCompiledTemplate {
