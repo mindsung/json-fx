@@ -1,4 +1,4 @@
-import { FxExpression } from "./model/fx-expression";
+import {FxExpression} from "./model/fx-expression";
 
 
 export class FxScope {
@@ -21,16 +21,23 @@ export class FxScope {
   }
 
   public setVariable(key: string, value: FxExpression) {
+    if (value != null) {
+      value.bindScope(this);
+    }
     this.variables[key] = value;
+  }
+
+  public deleteVariable(key: string) {
+    delete this.variables[key];
+  }
+
+  public deleteAll() {
+    this.variables = {};
   }
 
   public bind() {
     for (const key of Object.keys(this.variables)) {
       this.variables[key].bindScope(this);
     }
-  }
-
-  public clearAll() {
-    this.variables = {};
   }
 }
