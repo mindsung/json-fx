@@ -1,7 +1,7 @@
-import {FxTokenizer} from "./fx-tokenizer";
-
 import {describe, it} from "mocha";
 import {assert} from "chai";
+
+import {FxTokenizer} from "./fx-tokenizer";
 import {FxToken} from "./model/fx-token";
 
 describe("FxTokenizer", function () {

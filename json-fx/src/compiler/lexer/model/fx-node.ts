@@ -1,6 +1,16 @@
-export class FxNode {
-  private _parent: FxNode = null;
-  private readonly _children: Array<FxNode> = [];
+export class FxNode<T = any> {
+
+  private _parent: FxNode;
+  private readonly _children: Array<FxNode>;
+
+  protected data: T;
+
+  constructor(data?: T) {
+    this._parent = null;
+    this._children = [];
+
+    this.data = data || null;
+  }
 
   public get parent() {
     return <this>this._parent;

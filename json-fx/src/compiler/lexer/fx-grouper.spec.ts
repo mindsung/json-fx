@@ -1,41 +1,20 @@
-import {expect} from "chai";
+import {describe, it} from "mocha";
+import {assert} from "chai";
+
 import {FxTokenizer} from "./fx-tokenizer";
 import {FxGrouper} from "./fx-grouper";
-import * as assert from "assert";
 
-function groupExpression(expr: string) {
-  const tokenizer = new FxTokenizer();
-  const grouper = new FxGrouper();
+describe("FxGrouper", function () {
 
-  return grouper.parse(tokenizer.parse(expr));
-}
+  function tokenize(expr: string) {
+    const tokenizer = new FxTokenizer();
+    return tokenizer.parse(expr);
+  }
 
-describe("FxGrouper", () => {
-  it("Groups at global level", () => {
-    const root = groupExpression("foo(bar)");
+  it("Creates global node w/o groupings", function () {
+    const grouper = new FxGrouper();
+    const result = grouper.parse(tokenize("$foo"));
 
-    expect(root.tag).to.equal("global");
-    expect(root.children[0].tag).to.equal("identifier");
-    expect(root.children[1].tag).to.equal("group");
-    expect(root.children[1].children[0].tag).to.equal("identifier");
-  });
-
-  it("Groups one below global level", () => {
-    const root = groupExpression("foo(bar(baz))");
-
-    expect(root.tag).to.equal("global");
-    expect(root.children[0].tag).to.equal("identifier");
-    expect(root.children[1].tag).to.equal("group");
-    expect(root.children[1].children[0].tag).to.equal("identifier");
-    expect(root.children[1].children[1].tag).to.equal("group");
-    expect(root.children[1].children[1].children[0].tag).to.equal("identifier");
-  });
-
-  it("Throws bracket mismatch error", () => {
-    assert.throws(() => groupExpression("foo(bar]"), err => err.message === "Brackets do not match");
-  });
-
-  it("Throws bracket unclosed error", () => {
-    assert.throws(() => groupExpression("foo(bar"), err => err.message.startsWith("Unclosed"));
+    assert.equal(result.tag, "global");
   });
 });

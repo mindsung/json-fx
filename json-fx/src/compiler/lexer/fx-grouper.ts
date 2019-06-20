@@ -6,12 +6,8 @@ export class FxGrouper extends FxParser<FxToken[], FxTokenNode> {
   private root: FxTokenNode;
   private nextToken: FxTokenNode;
 
-  private static get global() {
-    return new FxTokenNode("global", "global", -1);
-  }
-
   parse(tokens: FxToken[]): FxTokenNode {
-    this.root = FxGrouper.global;
+    this.root = new FxTokenNode("", "global");
 
     for (const t of tokens) {
       this.nextToken = new FxTokenNode(t.symbol, t.tag, t.index);
@@ -29,7 +25,7 @@ export class FxGrouper extends FxParser<FxToken[], FxTokenNode> {
       }
     }
 
-    if (this.rootIsNotClosed()) {
+    if (!this.rootIsClosed()) {
       throw new Error(`Unclosed "${this.root.symbol}"`);
     }
 
@@ -42,22 +38,20 @@ export class FxGrouper extends FxParser<FxToken[], FxTokenNode> {
   }
 
   private ascendRoot() {
-    if (!this.nextBracketMatchesRoot()) {
-      throw new Error("Brackets do not match");
+    if (!this.closeBracketMatchesRoot()) {
+      throw new Error(`Unexpected token "${this.nextToken.symbol}"`);
     }
-
-    this.root.pushChild(this.nextToken);
 
     this.root.symbol += this.nextToken.symbol;
     this.root = this.root.parent;
     this.nextToken.orphan();
   }
 
-  private rootIsNotClosed() {
-    return !!this.root.parent;
+  private rootIsClosed() {
+    return !this.root.parent;
   }
 
-  private nextBracketMatchesRoot() {
+  private closeBracketMatchesRoot() {
     const open = this.root.symbol;
     const close = this.nextToken.symbol;
 

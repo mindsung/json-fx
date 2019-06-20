@@ -3,20 +3,22 @@ import {FxOperatorDefinition} from "../../../defs";
 import {FxTokenTag} from "./fx-token-tag";
 import {FxToken} from "./fx-token";
 
-export class FxTokenNode extends FxNode implements FxToken {
-
-  public symbol: string;
-  public tag: FxTokenTag;
-  public index: number;
+export class FxTokenNode extends FxNode<FxToken> {
 
   operator: FxOperatorDefinition = null;
 
+  public get symbol(): string { return this.data.symbol; }
+  public set symbol(value: string) { this.data.symbol = value; }
+
+  public get tag(): FxTokenTag { return this.data.tag; }
+  public set tag(value: FxTokenTag) { this.data.tag = value; }
+
+  public get index(): number { return this.data.index; }
+  public set index(value: number) { this.data.index = value; }
+
   constructor(symbol?: string, tag?: FxTokenTag, index?: number) {
     super();
-
-    this.symbol = symbol || "";
-    this.tag = tag || "";
-    this.index = index || -1;
+    this.data = {symbol: symbol || "", tag: tag || "", index: index || -1};
   }
 
   private _isLvalue = false;
