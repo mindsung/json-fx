@@ -13,7 +13,7 @@ export class FxTemplateCompiler {
   private readonly parser: FxTemplateParser;
   private readonly compiler: FxCompiler;
 
-  constructor(...expressions: [ReadonlyArray<FxExpressionDefinition>]) {
+  constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
     this.context = new FxContext(new FxLoader(...expressions));
     this.parser = new FxTemplateParser(this.context);
     this.compiler = new FxCompiler(this.context);

@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../defs";
+import { FxExpressionDefinition } from "../../defs";
 
 export const exprComparative: ReadonlyArray<FxExpressionDefinition> = [
   {

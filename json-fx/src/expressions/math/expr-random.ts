@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../defs";
+import { FxExpressionDefinition } from "../../defs";
 
 function randint(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX_SAFE_INTEGER) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -6,15 +6,15 @@ function randint(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX
 
 export const exprRandom: ReadonlyArray<FxExpressionDefinition> = [
   {
-    name: "rand",
+    name: "math~rand",
     expression: (min: number = 0, max: number = 1) => Math.random() * (max - min) + min
   },
   {
-    name: "randint",
+    name: "math~randint",
     expression: randint
   },
   {
-    name: "randselect",
+    name: "math~randselect",
     expression: (arr: any[]) => arr[randint(0, arr.length)]
   }
 ];

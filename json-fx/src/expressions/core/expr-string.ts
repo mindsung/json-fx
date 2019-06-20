@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../defs";
+import { FxExpressionDefinition } from "../../defs";
 
 function wordSplit(str: string): string[] {
   const words = [""];

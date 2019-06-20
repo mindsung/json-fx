@@ -1,5 +1,5 @@
-import { FxExpressionDefinition } from "../defs";
-import { isFunction, isNumber } from "../common";
+import { FxExpressionDefinition } from "../../defs";
+import { isFunction, isNumber } from "../../common";
 
 export const exprMath: ReadonlyArray<FxExpressionDefinition> = Object.getOwnPropertyNames(Math).map(key => {
   const prop = Math[key];

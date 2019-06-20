@@ -1,4 +1,4 @@
-import { FxExpressionDefinition, FxLambdaFn } from "../defs";
+import { FxExpressionDefinition, FxLambdaFn } from "../../defs";
 
 export const exprError: ReadonlyArray<FxExpressionDefinition> = [
   {

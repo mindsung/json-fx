@@ -1,5 +1,5 @@
-import { FxExpressionDefinition, FxLambdaFn } from "../defs";
-import { isArray } from "../common";
+import { FxExpressionDefinition, FxLambdaFn } from "../../defs";
+import { isArray } from "../../common";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {

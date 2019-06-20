@@ -1,5 +1,5 @@
-import { FxExpressionDefinition } from "../defs";
-import { FxExpression } from "../compiler/runtime/model/fx-expression";
+import { FxExpressionDefinition } from "../../defs";
+import { FxExpression } from "../../compiler/runtime/model/fx-expression";
 
 export const exprConditional: ReadonlyArray<FxExpressionDefinition> = [
   {
