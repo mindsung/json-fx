@@ -1,8 +1,8 @@
-import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
-import { FxScriptParser } from "./fx-script-parser";
-import { isArray, isObject, isString } from "../../common";
-import { FxContext } from "./model/fx-context";
+import {FxParser} from "./model/fx-parser";
+import {FxToken} from "./model/fx-token";
+import {FxScriptParser} from "./fx-script-parser";
+import {isArray, isObject, isString} from "../../common";
+import {FxContext} from "./model/fx-context";
 
 export class FxTemplateParser extends FxParser<any, FxToken> {
   private scriptParser: FxScriptParser;
@@ -12,24 +12,24 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
     this.scriptParser = new FxScriptParser(context);
   }
 
-  evaluate(expr: any): FxToken {
+  parse(expr: any): FxToken {
     if (isString(expr)) {
-      return this.evaluateScript(expr);
+      return this.parseScript(expr);
     } else if (isArray(expr)) {
-      return this.evaluateArray(expr);
+      return this.parseArray(expr);
     } else if (isObject(expr)) {
-      return this.evaluateObject(expr);
+      return this.parseObject(expr);
     } else {
       return null;
     }
   }
 
-  private evaluateScript(expr) {
+  private parseScript(expr) {
     this.scriptParser.lvalue = false;
-    return this.scriptParser.evaluate(expr);
+    return this.scriptParser.parse(expr);
   }
 
-  private evaluateObject(expr) {
+  private parseObject(expr) {
     const root = new FxToken("{}", -1, "object");
 
     for (const key of Object.keys(expr)) {
@@ -37,7 +37,7 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
         continue;
       }
 
-      const child = this.evaluateKeyValue(key, expr[key]);
+      const child = this.parseKeyValue(key, expr[key]);
       if (child) {
         root.pushChild(child);
       }
@@ -46,19 +46,19 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
     return root;
   }
 
-  private evaluateArray(expr) {
+  private parseArray(expr) {
     const root = new FxToken("[]", -1, "array");
 
     for (const item of expr) {
-      root.pushChild(this.evaluate(item));
+      root.pushChild(this.parse(item));
     }
 
     return root;
   }
 
-  evaluateKeyValue(key: string, value: any) {
+  parseKeyValue(key: string, value: any) {
     this.scriptParser.lvalue = true;
-    const lvalue = this.scriptParser.evaluate(key);
+    const lvalue = this.scriptParser.parse(key);
 
     if (lvalue.childCount > 0) {
       const group = new FxToken("vars", -1, "group");
@@ -66,7 +66,7 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
       lvalue.pushChild(group);
     }
 
-    const rvalue = this.evaluate(value);
+    const rvalue = this.parse(value);
     lvalue.pushChild(rvalue);
 
     return lvalue;

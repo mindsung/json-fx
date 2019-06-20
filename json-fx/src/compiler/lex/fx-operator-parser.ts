@@ -1,5 +1,5 @@
-import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
+import {FxParser} from "./model/fx-parser";
+import {FxToken} from "./model/fx-token";
 
 
 export class FxOperatorParser extends FxParser<FxToken, void> {
@@ -8,7 +8,7 @@ export class FxOperatorParser extends FxParser<FxToken, void> {
   private operatorStack: FxToken[];
   private outputQueue: FxToken[];
 
-  evaluate(root: FxToken) {
+  parse(root: FxToken) {
     this.operatorStack = [];
     this.outputQueue = [];
 

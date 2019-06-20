@@ -1,8 +1,8 @@
-import { FxToken } from "./model/fx-token";
-import { FxParser } from "./model/fx-parser";
-import { JsonFx } from "./index";
-import { isArray } from "../../common";
-import { FxTokenRule } from "./model/fx-token-rule";
+import {FxToken} from "./model/fx-token";
+import {FxParser} from "./model/fx-parser";
+import {JsonFx} from "./index";
+import {isArray} from "../../common";
+import {FxTokenRule} from "./model/fx-token-rule";
 
 export class FxTokenizer extends FxParser<string, FxToken[]> {
   private tokens: FxToken[];
@@ -14,12 +14,12 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
     return this.tokens[this.tokens.length - 1] || null;
   }
 
-  public evaluate(expr: string): FxToken[] {
+  public parse(expr: string): FxToken[] {
     this.initialize();
 
     while (expr[this.sourceIndex]) {
       this.nextChar = expr[this.sourceIndex];
-      this.evaluateNextCharacter();
+      this.parseNextChar();
 
       this.sourceIndex++;
     }
@@ -35,7 +35,7 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
     this.nextChar = "";
   }
 
-  private evaluateNextCharacter() {
+  private parseNextChar() {
     if (this.isLiteralSequence) {
       this.mergeNextWithLast(null);
     } else {

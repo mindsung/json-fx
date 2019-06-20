@@ -1,9 +1,9 @@
-import { FxTokenizer } from "./fx-tokenizer";
-import { expect } from "chai";
+import {FxTokenizer} from "./fx-tokenizer";
+import {expect} from "chai";
 
 function tokenizeExpression(expr: string) {
   const tokenizer = new FxTokenizer();
-  return tokenizer.evaluate(expr);
+  return tokenizer.parse(expr);
 }
 
 function itReturnsTheseTags(expr: string, expectedTags: string[]) {
@@ -52,7 +52,7 @@ describe("FxNodeTokenizer (performance)", () => {
     const tokenizer = new FxTokenizer();
 
     for (let i = 0; i < iterations; i++) {
-      tokenizer.evaluate("$foo = if($a > $b):then(`hello`):else(`$a = 50`)");
+      tokenizer.parse("$foo = if($a > $b):then(`hello`):else(`$a = 50`)");
     }
   });
 });

@@ -1,22 +1,29 @@
-import { FxParser } from "../lex/model/fx-parser";
-import { FxToken } from "../lex/model/fx-token";
-import { FxExpression } from "./model/fx-expression";
-import { FxObject } from "./model/fx-object";
-import { FxLambda } from "./model/fx-lambda";
-import { FxVariable } from "./model/fx-variable";
-import { FxFunction } from "./model/fx-function";
-import { FxConstant } from "./model/fx-constant";
-import { FxArray } from "./model/fx-array";
-import { FxLambdaFn } from "../../defs";
-import { FxProperty, FxPropertyPathItem } from "./model/fx-property";
+import {FxToken} from "../lex/model/fx-token";
+import {FxExpression} from "./model/fx-expression";
+import {FxObject} from "./model/fx-object";
+import {FxLambda} from "./model/fx-lambda";
+import {FxVariable} from "./model/fx-variable";
+import {FxFunction} from "./model/fx-function";
+import {FxConstant} from "./model/fx-constant";
+import {FxArray} from "./model/fx-array";
+import {FxLambdaFn} from "../../defs";
+import {FxProperty, FxPropertyPathItem} from "./model/fx-property";
+import {FxContext} from "../lex/model/fx-context";
 
-export class FxCompiler extends FxParser<FxToken, FxExpression> {
-  evaluate(root: FxToken): FxExpression {
+export class FxCompiler {
+
+  private readonly context: FxContext;
+
+  constructor(context: FxContext) {
+    this.context = context;
+  }
+
+  public compile(root: FxToken): FxExpression {
     let result: FxExpression;
 
     switch (root.tag) {
       case "global":
-        return this.evaluate(root.firstChild);
+        return this.compile(root.firstChild);
       case "operator":
       case "expression":
         result = this.createExpression(root);
@@ -49,7 +56,7 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
         break;
     }
 
-    result.sourceRef = { symbol: root.symbol, index: root.sourceIndex };
+    result.sourceRef = {symbol: root.symbol, index: root.sourceIndex};
     return result;
   }
 
@@ -57,21 +64,21 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
     const exprDef = this.context.loader.getExpression(root.symbol);
 
     const result = new FxFunction(exprDef.expression);
-    result.args = root.children.map(child => this.evaluate(child));
+    result.args = root.children.map(child => this.compile(child));
     result.deferEvaluation = exprDef.deferEvaluation;
 
     return result;
   }
 
   private createLambda(root: FxToken) {
-    return new FxLambda(this.getLambdaVarNames(root), this.evaluate(root.lastChild));
+    return new FxLambda(this.getLambdaVarNames(root), this.compile(root.lastChild));
   }
 
   private createFunction(root: FxToken) {
     const result: FxExpression = new FxVariable(root.symbol);
     return new FxFunction((lambda: FxLambdaFn, ...args: any[]) => {
       return lambda(...args);
-    }, [result].concat(root.children.map(child => this.evaluate(child))));
+    }, [result].concat(root.children.map(child => this.compile(child))));
   }
 
   private createObject(root: FxToken) {
@@ -79,10 +86,10 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
 
     root.children.forEach(child => {
       if (child.tag === "identifier") {
-        result.items[child.symbol] = this.evaluate(child.firstChild);
+        result.items[child.symbol] = this.compile(child.firstChild);
 
       } else if (child.tag === "variable") {
-        result.scope.setVariable(child.symbol, this.evaluate(child.firstChild));
+        result.scope.setVariable(child.symbol, this.compile(child.firstChild));
 
       } else if (child.tag === "template") {
         result.scope.setVariable(child.symbol, this.createLambda(child));
@@ -97,7 +104,7 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
   }
 
   private createArray(root: FxToken) {
-    return new FxArray(root.children.map(child => this.evaluate(child)));
+    return new FxArray(root.children.map(child => this.compile(child)));
   }
 
   private createConstant(symbol: string) {
@@ -137,7 +144,7 @@ export class FxCompiler extends FxParser<FxToken, FxExpression> {
 
     } else {
       return [{
-        value: this.evaluate(root),
+        value: this.compile(root),
         interrupts: false
       }];
     }

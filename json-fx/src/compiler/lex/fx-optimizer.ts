@@ -1,11 +1,11 @@
-import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
-import { FxIntrinsic } from "../../defs";
+import {FxParser} from "./model/fx-parser";
+import {FxToken} from "./model/fx-token";
+import {FxIntrinsic} from "../../defs";
 
 export class FxOptimizer extends FxParser<FxToken, void> {
   private child: FxToken;
 
-  evaluate(root: FxToken): void {
+  parse(root: FxToken): void {
     for (this.child of root.children) {
       if (this.child.tag === "group" && this.child.symbol === "()" && this.child.childCount <= 1) {
         this.child.unwrap();

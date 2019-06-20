@@ -1,5 +1,5 @@
-import { FxParser } from "./model/fx-parser";
-import { FxNode } from "./model/fx-node";
+import {FxParser} from "./model/fx-parser";
+import {FxNode} from "./model/fx-node";
 
 export class FxNodeParser extends FxParser<FxNode, void> {
   public parsers: FxParser<FxNode, void>[];
@@ -9,16 +9,16 @@ export class FxNodeParser extends FxParser<FxNode, void> {
     this.parsers = parsers;
   }
 
-  evaluate(root: FxNode): void {
+  parse(root: FxNode): void {
     for (const parser of this.parsers) {
-      this.evaluateTree(root, parser);
+      this.parseTree(root, parser);
     }
   }
 
-  private evaluateTree(root: FxNode, parser: FxParser<FxNode, void>) {
+  private parseTree(root: FxNode, parser: FxParser<FxNode, void>) {
     for (const node of root.children) {
-      this.evaluateTree(node, parser);
+      this.parseTree(node, parser);
     }
-    parser.evaluate(root);
+    parser.parse(root);
   }
 }

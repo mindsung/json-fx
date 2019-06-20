@@ -1,11 +1,11 @@
-import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
+import {FxParser} from "./model/fx-parser";
+import {FxToken} from "./model/fx-token";
 
 export class FxExpressionParser extends FxParser<FxToken, void> {
   private lastNode: FxToken;
   private nextNode: FxToken;
 
-  evaluate(root: FxToken): void {
+  parse(root: FxToken): void {
     this.lastNode = null;
 
     for (this.nextNode of root.children) {

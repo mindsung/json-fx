@@ -1,5 +1,5 @@
-import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
+import {FxParser} from "./model/fx-parser";
+import {FxToken} from "./model/fx-token";
 
 export class FxGrouper extends FxParser<FxToken[], FxToken> {
   private root: FxToken;
@@ -9,7 +9,7 @@ export class FxGrouper extends FxParser<FxToken[], FxToken> {
     return new FxToken("global", -1, "global");
   }
 
-  evaluate(tokens: FxToken[]): FxToken {
+  parse(tokens: FxToken[]): FxToken {
     this.root = FxGrouper.global;
 
     for (this.nextToken of tokens) {

@@ -1,4 +1,4 @@
-import { FxContext } from "./fx-context";
+import {FxContext} from "./fx-context";
 
 export abstract class FxParser<TIn, TOut = void> {
   protected context: FxContext;
@@ -7,6 +7,6 @@ export abstract class FxParser<TIn, TOut = void> {
     this.context = context || null;
   }
 
-  public abstract evaluate(item: TIn): TOut;
+  public abstract parse(item: TIn): TOut;
 }
 

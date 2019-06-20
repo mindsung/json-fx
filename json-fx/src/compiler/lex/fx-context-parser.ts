@@ -1,8 +1,8 @@
-import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
+import {FxParser} from "./model/fx-parser";
+import {FxToken} from "./model/fx-token";
 
 export class FxContextParser extends FxParser<FxToken> {
-  evaluate(item: FxToken) {
+  parse(item: FxToken) {
     if (item.isLvalue) {
       this.makeLValue(item);
     }

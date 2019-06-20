@@ -1,13 +1,13 @@
-import { expect } from "chai";
-import { FxTokenizer } from "./fx-tokenizer";
-import { FxGrouper } from "./fx-grouper";
+import {expect} from "chai";
+import {FxTokenizer} from "./fx-tokenizer";
+import {FxGrouper} from "./fx-grouper";
 import * as assert from "assert";
 
 function groupExpression(expr: string) {
   const tokenizer = new FxTokenizer();
   const grouper = new FxGrouper();
 
-  return grouper.evaluate(tokenizer.evaluate(expr));
+  return grouper.parse(tokenizer.parse(expr));
 }
 
 describe("FxGrouper", () => {
