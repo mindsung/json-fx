@@ -1,10 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { fxCompile } from "@mindsung/json-fx";
-import { $BOOKS } from "../sample-data/books";
-import { $POKEMON } from "../sample-data/pokemon";
-import { $LIBRARY } from "../sample-data/library";
-import { $WESTWORLD } from "../sample-data/westworld";
+import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
+import {BehaviorSubject} from "rxjs";
+import {Fx, JsonFx} from "@mindsung/json-fx";
+import {$POKEMON} from "../sample-data/pokemon";
 
 @Component({
   selector: "app-root",
@@ -13,40 +10,37 @@ import { $WESTWORLD } from "../sample-data/westworld";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit {
-  public fxScript = "$";
+  public fx: JsonFx;
+  public fxScript: string;
+
   public fxSource: object = $POKEMON;
+  public fxResult = new BehaviorSubject("");
 
-  ngOnInit() {
-    this.onEval();
+  constructor() {
+    this.fx = new JsonFx(Fx.expressions);
+    this.fxScript = "$";
 
-    window["fxCompile"] = (template: any) => fxCompile(template);
-
-    window["$BOOKS"] = $BOOKS;
-    window["$POKEMON"] = $POKEMON;
-    window["$LIBRARY"] = $LIBRARY;
-    window["$WESTWORLD"] = $WESTWORLD;
-
-    window["$toJson"] = JSON.stringify;
-    window["$fromJson"] = (json: string) => {
-      const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.000Z$/;
-      const reviver = (key: string, value: string) => {
-        if (typeof value === "string" && dateFormat.test(value)) {
-          return new Date(value);
-        }
-        return value;
-      };
-      return JSON.parse(json, reviver);
+    window["fx"] = (template: any) => {
+      return this.fx.compile(template).evaluate({name: "$", value: this.fxSource});
     };
   }
 
-  public fxResult = new BehaviorSubject("");
-  private lastScript: string;
-  private transform: (...inputs: any[]) => any;
+  ngOnInit() {
+    this.onEval();
+  }
 
   public onEval() {
-    if (this.transform == null || this.fxScript !== this.lastScript) {
-      this.transform = fxCompile(this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript);
-    }
-    this.fxResult.next(this.transform(this.fxSource));
+    this.fxResult.next(this.compileScript());
+  }
+
+  public getInputScript(): any {
+    return this.fxScript.startsWith("{") || this.fxScript.startsWith("[") ? JSON.parse(this.fxScript) : this.fxScript;
+  }
+
+  public compileScript(): any {
+    const input = this.getInputScript();
+    const result = this.fx.compile(input);
+
+    return result.evaluate({name: "$", value: this.fxSource});
   }
 }

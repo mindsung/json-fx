@@ -373,4 +373,4 @@ export const $WESTWORLD = {
       }
     ]
   }
-}
+};
