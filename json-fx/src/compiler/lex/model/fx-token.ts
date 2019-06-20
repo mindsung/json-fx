@@ -1,13 +1,13 @@
-import { FxNode } from "./fx-node";
-import { FxOperatorDefinition } from "../../../defs";
-import { FxTokenTag } from "./fx-token-tag";
+import {FxNode} from "./fx-node";
+import {FxOperatorDefinition} from "../../../defs";
+import {FxTokenTag} from "./fx-token-tag";
 
 export class FxToken extends FxNode {
   operator: FxOperatorDefinition = null;
 
   constructor(public symbol: string = "",
-              public sourceIndex: number = -1,
-              public tag: FxTokenTag = "") {
+              public tag: FxTokenTag = "",
+              public sourceIndex: number = -1) {
     super();
   }
 

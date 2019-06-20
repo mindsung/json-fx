@@ -69,7 +69,7 @@ export class FxOptimizer extends FxParser<FxToken, void> {
   private optimizeLambda() {
     this.child.tag = "lambda";
     if (this.child.firstChild.tag !== "group") {
-      const wrapper = new FxToken("vars", -1, "group");
+      const wrapper = new FxToken("vars", "group", -1);
       wrapper.isLvalue = true;
       this.child.firstChild.wrap(wrapper);
     } else {

@@ -6,7 +6,7 @@ export class FxGrouper extends FxParser<FxToken[], FxToken> {
   private nextToken: FxToken;
 
   private static get global() {
-    return new FxToken("global", -1, "global");
+    return new FxToken("global", "global", -1);
   }
 
   parse(tokens: FxToken[]): FxToken {

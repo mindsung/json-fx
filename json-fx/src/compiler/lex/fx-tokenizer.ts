@@ -29,7 +29,7 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
   }
 
   private initialize() {
-    this.tokens = [new FxToken("", 0)];
+    this.tokens = [new FxToken("", "", 0)];
     this.isLiteralSequence = false;
     this.sourceIndex = 0;
     this.nextChar = "";
@@ -57,7 +57,7 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
     if (this.canMergeNextWithLast(rule)) {
       this.mergeNextWithLast(rule);
     } else {
-      this.tokens.push(new FxToken(this.nextChar, this.sourceIndex, rule.tag));
+      this.tokens.push(new FxToken(this.nextChar, rule.tag, this.sourceIndex));
     }
   }
 

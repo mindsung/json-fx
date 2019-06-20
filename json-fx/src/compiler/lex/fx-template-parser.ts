@@ -30,7 +30,7 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
   }
 
   private parseObject(expr) {
-    const root = new FxToken("{}", -1, "object");
+    const root = new FxToken("{}", "object", -1);
 
     for (const key of Object.keys(expr)) {
       if (key.startsWith("//")) {
@@ -47,7 +47,7 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
   }
 
   private parseArray(expr) {
-    const root = new FxToken("[]", -1, "array");
+    const root = new FxToken("[]", "array", -1);
 
     for (const item of expr) {
       root.pushChild(this.parse(item));
@@ -61,7 +61,7 @@ export class FxTemplateParser extends FxParser<any, FxToken> {
     const lvalue = this.scriptParser.parse(key);
 
     if (lvalue.childCount > 0) {
-      const group = new FxToken("vars", -1, "group");
+      const group = new FxToken("vars", "group", -1);
       lvalue.transferChildrenTo(group);
       lvalue.pushChild(group);
     }
