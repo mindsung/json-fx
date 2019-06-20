@@ -32,7 +32,6 @@ describe("FxTokenizer", function () {
       assert.deepEqual<FxToken[]>(result, [{symbol: "foo 123", tag: "literal", index: 0}]);
     });
 
-
     it("Parses a single number (integer)", function () {
       const tokenizer = new FxTokenizer();
       const result = tokenizer.parse("123");
@@ -62,7 +61,7 @@ describe("FxTokenizer", function () {
     ]);
   });
 
-  it("Filters all whitespace", function () {
+  it("Filters out whitespace", function () {
     const tokenizer = new FxTokenizer();
     const result = tokenizer.parse(" a b c ");
 

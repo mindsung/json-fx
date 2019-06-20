@@ -1,5 +1,5 @@
-import { FxExpressionDefinition, FxLambdaFn } from "../defs";
-import { isArray } from "../common";
+import {FxExpressionDefinition, FxLambdaFn} from "../defs";
+import {isArray} from "../common";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
@@ -12,7 +12,8 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     name: "map",
     expression: (arr: any[], lambda: FxLambdaFn) => {
       return arr.map(lambda);
-    }
+    },
+    operator: {symbol: "::", precedence: 4}
   },
   {
     name: "sort",
@@ -56,7 +57,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "field",
-    operator: { symbol: "..", precedence: 4 },
+    operator: {symbol: "..", precedence: 4},
     expression: (arr: any[], field: string) => {
       return arr.map(item => item[field] || undefined).filter(item => item !== undefined);
     }

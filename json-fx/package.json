@@ -16,7 +16,7 @@
     "ncp": "^2.0.0",
     "path": "^0.12.7",
     "rimraf": "^2.6.3",
-    "tslint": "^5.9.1",
+    "tslint": "^5.17.0",
     "typescript": "^3.3.4000",
     "ts-node": "^8.3.0",
     "webpack": "^4.29.6",
@@ -27,6 +27,8 @@
   "scripts": {
     "build": "npm run build:webpack",
     "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
-    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack"
+    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack",
+    "lint": "tslint src/**/*.ts",
+    "lint-fix": "tslint --fix src/**/*.ts"
   }
 }
