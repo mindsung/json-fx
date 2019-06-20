@@ -1,4 +1,4 @@
-import {FxToken} from "../lex/model/fx-token";
+import {FxTokenNode} from "../lexer/model/fx-token-node";
 import {FxExpression} from "./model/fx-expression";
 import {FxObject} from "./model/fx-object";
 import {FxLambda} from "./model/fx-lambda";
@@ -8,7 +8,7 @@ import {FxConstant} from "./model/fx-constant";
 import {FxArray} from "./model/fx-array";
 import {FxLambdaFn} from "../../defs";
 import {FxProperty, FxPropertyPathItem} from "./model/fx-property";
-import {FxContext} from "../lex/model/fx-context";
+import {FxContext} from "../lexer/model/fx-context";
 
 export class FxCompiler {
 
@@ -18,7 +18,7 @@ export class FxCompiler {
     this.context = context;
   }
 
-  public compile(root: FxToken): FxExpression {
+  public compile(root: FxTokenNode): FxExpression {
     let result: FxExpression;
 
     switch (root.tag) {
@@ -56,11 +56,11 @@ export class FxCompiler {
         break;
     }
 
-    result.sourceRef = {symbol: root.symbol, index: root.sourceIndex};
+    result.sourceRef = {symbol: root.symbol, index: root.index};
     return result;
   }
 
-  private createExpression(root: FxToken) {
+  private createExpression(root: FxTokenNode) {
     const exprDef = this.context.loader.getExpression(root.symbol);
 
     const result = new FxFunction(exprDef.expression);
@@ -70,18 +70,18 @@ export class FxCompiler {
     return result;
   }
 
-  private createLambda(root: FxToken) {
+  private createLambda(root: FxTokenNode) {
     return new FxLambda(this.getLambdaVarNames(root), this.compile(root.lastChild));
   }
 
-  private createFunction(root: FxToken) {
+  private createFunction(root: FxTokenNode) {
     const result: FxExpression = new FxVariable(root.symbol);
     return new FxFunction((lambda: FxLambdaFn, ...args: any[]) => {
       return lambda(...args);
     }, [result].concat(root.children.map(child => this.compile(child))));
   }
 
-  private createObject(root: FxToken) {
+  private createObject(root: FxTokenNode) {
     const result = new FxObject();
 
     root.children.forEach(child => {
@@ -99,11 +99,11 @@ export class FxCompiler {
     return result;
   }
 
-  private getLambdaVarNames(lambda: FxToken) {
+  private getLambdaVarNames(lambda: FxTokenNode) {
     return lambda.firstChild.children.map(child => child.symbol);
   }
 
-  private createArray(root: FxToken) {
+  private createArray(root: FxTokenNode) {
     return new FxArray(root.children.map(child => this.compile(child)));
   }
 
@@ -121,13 +121,13 @@ export class FxCompiler {
     return new FxConstant(value);
   }
 
-  private createProp(root: FxToken) {
+  private createProp(root: FxTokenNode) {
     const r = new FxProperty(this.getPropPath(root));
     // console.log(r);
     return r;
   }
 
-  private getPropPath(root: FxToken): FxPropertyPathItem[] {
+  private getPropPath(root: FxTokenNode): FxPropertyPathItem[] {
     if (root.tag == "prop" || root.tag == "nullprop") {
       const last = {
         value: this.createConstant(root.lastChild.symbol),

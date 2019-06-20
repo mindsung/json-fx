@@ -1,14 +1,14 @@
 import {FxParser} from "./model/fx-parser";
-import {FxToken} from "./model/fx-token";
+import {FxTokenNode} from "./model/fx-token-node";
 
 
-export class FxOperatorParser extends FxParser<FxToken, void> {
-  private nextNode: FxToken;
+export class FxOperatorParser extends FxParser<FxTokenNode, void> {
+  private nextNode: FxTokenNode;
 
-  private operatorStack: FxToken[];
-  private outputQueue: FxToken[];
+  private operatorStack: FxTokenNode[];
+  private outputQueue: FxTokenNode[];
 
-  parse(root: FxToken) {
+  parse(root: FxTokenNode) {
     this.operatorStack = [];
     this.outputQueue = [];
 

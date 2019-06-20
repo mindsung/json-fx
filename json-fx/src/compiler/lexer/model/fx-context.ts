@@ -1,4 +1,4 @@
-import { FxLoader } from "../../runtime/fx-loader";
+import {FxLoader} from "../../runtime/fx-loader";
 
 export class FxContext {
   public readonly loader: FxLoader;

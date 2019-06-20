@@ -1,11 +1,11 @@
 import {FxParser} from "./model/fx-parser";
-import {FxToken} from "./model/fx-token";
+import {FxTokenNode} from "./model/fx-token-node";
 import {FxIntrinsic} from "../../defs";
 
-export class FxOptimizer extends FxParser<FxToken, void> {
-  private child: FxToken;
+export class FxOptimizer extends FxParser<FxTokenNode, void> {
+  private child: FxTokenNode;
 
-  parse(root: FxToken): void {
+  parse(root: FxTokenNode): void {
     for (this.child of root.children) {
       if (this.child.tag === "group" && this.child.symbol === "()" && this.child.childCount <= 1) {
         this.child.unwrap();
@@ -69,7 +69,7 @@ export class FxOptimizer extends FxParser<FxToken, void> {
   private optimizeLambda() {
     this.child.tag = "lambda";
     if (this.child.firstChild.tag !== "group") {
-      const wrapper = new FxToken("vars", "group", -1);
+      const wrapper = new FxTokenNode("vars", "group", -1);
       wrapper.isLvalue = true;
       this.child.firstChild.wrap(wrapper);
     } else {

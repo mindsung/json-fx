@@ -1,5 +1,5 @@
 import {FxParser} from "./model/fx-parser";
-import {FxToken} from "./model/fx-token";
+import {FxTokenNode} from "./model/fx-token-node";
 import {FxTokenizer} from "./fx-tokenizer";
 import {FxGrouper} from "./fx-grouper";
 import {FxExpressionParser} from "./fx-expression-parser";
@@ -9,11 +9,11 @@ import {FxNodeParser} from "./fx-node-parser";
 import {FxContext} from "./model/fx-context";
 import {FxContextParser} from "./fx-context-parser";
 
-export class FxScriptParser extends FxParser<string, FxToken> {
+export class FxScriptParser extends FxParser<string, FxTokenNode> {
   private tokenizer: FxTokenizer;
   private grouper: FxGrouper;
 
-  private parser: FxParser<FxToken>;
+  private parser: FxParser<FxTokenNode>;
 
   public lvalue: boolean;
 
@@ -37,7 +37,7 @@ export class FxScriptParser extends FxParser<string, FxToken> {
     if (this.lvalue && tokens.length == 2 && tokens[0].tag === "identifier"
       && tokens[1].tag === "operator" && tokens[1].symbol === "?") {
       tokens[0].symbol = tokens[0].symbol + "?";
-      tokens = [ tokens[0] ];
+      tokens = [tokens[0]];
     }
     const root = this.grouper.parse(tokens);
 

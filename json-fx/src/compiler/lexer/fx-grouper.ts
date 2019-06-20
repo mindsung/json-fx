@@ -1,18 +1,21 @@
 import {FxParser} from "./model/fx-parser";
+import {FxTokenNode} from "./model/fx-token-node";
 import {FxToken} from "./model/fx-token";
 
-export class FxGrouper extends FxParser<FxToken[], FxToken> {
-  private root: FxToken;
-  private nextToken: FxToken;
+export class FxGrouper extends FxParser<FxToken[], FxTokenNode> {
+  private root: FxTokenNode;
+  private nextToken: FxTokenNode;
 
   private static get global() {
-    return new FxToken("global", "global", -1);
+    return new FxTokenNode("global", "global", -1);
   }
 
-  parse(tokens: FxToken[]): FxToken {
+  parse(tokens: FxToken[]): FxTokenNode {
     this.root = FxGrouper.global;
 
-    for (this.nextToken of tokens) {
+    for (const t of tokens) {
+      this.nextToken = new FxTokenNode(t.symbol, t.tag, t.index);
+
       switch (this.nextToken.tag) {
         case "group":
           this.descendRoot();

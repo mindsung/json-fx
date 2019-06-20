@@ -1,14 +1,22 @@
 import {FxNode} from "./fx-node";
 import {FxOperatorDefinition} from "../../../defs";
 import {FxTokenTag} from "./fx-token-tag";
+import {FxToken} from "./fx-token";
 
-export class FxToken extends FxNode {
+export class FxTokenNode extends FxNode implements FxToken {
+
+  public symbol: string;
+  public tag: FxTokenTag;
+  public index: number;
+
   operator: FxOperatorDefinition = null;
 
-  constructor(public symbol: string = "",
-              public tag: FxTokenTag = "",
-              public sourceIndex: number = -1) {
+  constructor(symbol?: string, tag?: FxTokenTag, index?: number) {
     super();
+
+    this.symbol = symbol || "";
+    this.tag = tag || "";
+    this.index = index || -1;
   }
 
   private _isLvalue = false;

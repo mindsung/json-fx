@@ -1,4 +1,4 @@
-import { FxTokenTag } from "./fx-token-tag";
+import {FxTokenTag} from "./fx-token-tag";
 
 export interface FxTokenRule {
   tag: FxTokenTag;

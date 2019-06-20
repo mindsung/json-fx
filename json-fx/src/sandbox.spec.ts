@@ -2,10 +2,10 @@ import {JsonFx} from "./expressions";
 import {FxLoader} from "./compiler/runtime/fx-loader";
 import {FxCompiler} from "./compiler/runtime/fx-compiler";
 import {describe} from "mocha";
-import {FxContext} from "./compiler/lex/model/fx-context";
-import {FxTemplateParser} from "./compiler/lex/fx-template-parser";
+import {FxContext} from "./compiler/lexer/model/fx-context";
+import {FxTemplateParser} from "./compiler/lexer/fx-template-parser";
 import {cableDataTemplate} from "./sample/cable-data-template";
-import { $CABLE_DATA_1, $CABLE_DATA_2 } from "./sample/sources/cable-data";
+import {$CABLE_DATA_1, $CABLE_DATA_2} from "./sample/sources/cable-data";
 import {FxTemplateCompiler} from "./compiler/runtime/fx-template-compiler";
 
 const context = new FxContext(new FxLoader(JsonFx.expressions));

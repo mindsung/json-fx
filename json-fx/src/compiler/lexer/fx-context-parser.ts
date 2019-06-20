@@ -1,14 +1,14 @@
 import {FxParser} from "./model/fx-parser";
-import {FxToken} from "./model/fx-token";
+import {FxTokenNode} from "./model/fx-token-node";
 
-export class FxContextParser extends FxParser<FxToken> {
-  parse(item: FxToken) {
+export class FxContextParser extends FxParser<FxTokenNode> {
+  parse(item: FxTokenNode) {
     if (item.isLvalue) {
       this.makeLValue(item);
     }
   }
 
-  private makeLValue(lvalue: FxToken) {
+  private makeLValue(lvalue: FxTokenNode) {
     switch (lvalue.tag) {
       case "variable":
         break;
