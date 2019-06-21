@@ -6,6 +6,7 @@ export type FxTokenTag =
   | "numeric"
   | "group"
   | "group-close"
+  | "param-group"
   | "literal"
   | "delimiter"
   | "space"

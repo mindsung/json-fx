@@ -49,13 +49,31 @@ export class Optimizer extends FxParser<FxTokenNode, void> {
   }
 
   private optimizeInvoke() {
-    this.child.last.unshift(this.child.first);
+    // TODO: This is a absolute monstrosity
+    // A quick hack allowing invoke to accept list of parameters, e.g. (5, 10):math~randint
 
-    if (this.child.last.tag == "identifier") {
-      this.child.last.tag = "expression";
+    if (this.child.parent && this.child.parent.parent && this.child.parent.parent.tag == "object") {
+      this.child.first.add(this.child.last);
+      this.child.unwrap();
+
+    } else {
+      if (this.child.first.tag == "group") {
+        while (this.child.first.count) {
+          this.child.last.add(this.child.first.last, 0);
+        }
+
+        this.child.first.orphan();
+
+      } else {
+        this.child.last.unshift(this.child.first);
+      }
+
+      if (this.child.last.tag == "identifier") {
+        this.child.last.tag = "expression";
+      }
+
+      this.child.unwrap();
     }
-
-    this.child.unwrap();
   }
 
   private optimizeNullInvoke() {
@@ -69,7 +87,7 @@ export class Optimizer extends FxParser<FxTokenNode, void> {
   private optimizeLambda() {
     this.child.tag = "lambda";
     if (this.child.first.tag != "group") {
-      const wrapper = new FxTokenNode("group");
+      const wrapper = new FxTokenNode("param-group");
       wrapper.isLvalue = true;
       this.child.first.wrap(wrapper);
     } else {

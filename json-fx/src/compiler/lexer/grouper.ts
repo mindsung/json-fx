@@ -44,6 +44,16 @@ export class Grouper extends FxParser<FxToken[], FxTokenNode> {
     }
 
     this.root.symbol += this.nextToken.symbol;
+
+    switch (this.root.symbol) {
+      case "[]":
+        this.root.tag = "array";
+        break;
+      case "{}":
+        this.root.tag = "object";
+        break;
+    }
+
     this.root = this.root.parent;
     this.nextToken.orphan();
   }

@@ -81,6 +81,7 @@ export class FxCompiler {
 
   private createFunction(root: FxTokenNode) {
     const result: FxExpression = new FxVariable(root.symbol);
+
     return new FxFunction((lambda: FxLambdaFn, ...args: any[]) => {
       return lambda(...args);
     }, [result].concat(root.children.map(child => this.compile(child))));
@@ -105,7 +106,11 @@ export class FxCompiler {
   }
 
   private getLambdaVarNames(lambda: FxTokenNode) {
-    return lambda.first.children.map(child => child.symbol);
+    if (lambda.first.tag == "param-group") {
+      return lambda.first.children.map(child => child.symbol);
+    } else {
+      return [];
+    }
   }
 
   private createArray(root: FxTokenNode) {

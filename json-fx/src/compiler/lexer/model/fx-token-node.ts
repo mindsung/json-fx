@@ -63,10 +63,12 @@ export class FxTokenNode extends FxNode implements FxToken {
   }
 
   private toStringSelf() {
-    if (this.tag != "literal" && this.tag != "object" && this.tag != "group" && this.tag != "numeric") {
-      return `${this.symbol}:${this.tag}`;
-    } else {
-      return this.symbol;
-    }
+    return `${this.symbol}:${this.tag}`;
+
+    // if (this.tag != "literal" && this.tag != "object" && this.tag != "group" && this.tag != "numeric") {
+    //   return `${this.symbol}:${this.tag}`;
+    // } else {
+    //   return this.symbol;
+    // }
   }
 }
