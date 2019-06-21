@@ -2,35 +2,35 @@ import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
 
 export class FxExpressionParser extends FxParser<FxTokenNode, void> {
-  private lastNode: FxTokenNode;
-  private nextNode: FxTokenNode;
+  private last: FxTokenNode;
+  private next: FxTokenNode;
 
   parse(root: FxTokenNode): void {
-    this.lastNode = null;
+    this.last = null;
 
-    for (this.nextNode of root.children) {
+    for (this.next of root.children) {
       if (this.lastWithNextIsCallable()) {
         this.makeLastAnExpression();
-        this.nextNode.orphan();
+        this.next.orphan();
 
       } else {
-        this.lastNode = this.nextNode;
+        this.last = this.next;
       }
     }
   }
 
   private lastWithNextIsCallable() {
-    return this.nextNode.tag === "group"
-      && this.lastNode && (this.lastNode.tag === "identifier" || this.lastNode.tag === "template");
+    return this.next.tag == "group"
+      && this.last && (this.last.tag == "identifier" || this.last.tag == "template");
   }
 
   private makeLastAnExpression() {
-    if (this.lastNode.tag === "identifier") {
-      this.lastNode.tag = "expression";
-    } else if (this.lastNode.tag === "template") {
-      this.lastNode.tag = "template-call";
+    if (this.last.tag === "identifier") {
+      this.last.tag = "expression";
+    } else if (this.last.tag === "template") {
+      this.last.tag = "template-call";
     }
 
-    this.nextNode.transferChildrenTo(this.lastNode);
+    this.next.transferChildrenTo(this.last);
   }
 }

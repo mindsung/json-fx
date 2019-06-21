@@ -3,22 +3,19 @@ import {FxOperatorDefinition} from "../../../defs";
 import {FxTokenTag} from "./fx-token-tag";
 import {FxToken} from "./fx-token";
 
-export class FxTokenNode extends FxNode<FxToken> {
+export class FxTokenNode extends FxNode implements FxToken {
+
+  public tag: FxTokenTag;
+  public symbol: string;
+  public index: number;
 
   operator: FxOperatorDefinition = null;
 
-  public get symbol(): string { return this.data.symbol; }
-  public set symbol(value: string) { this.data.symbol = value; }
-
-  public get tag(): FxTokenTag { return this.data.tag; }
-  public set tag(value: FxTokenTag) { this.data.tag = value; }
-
-  public get index(): number { return this.data.index; }
-  public set index(value: number) { this.data.index = value; }
-
-  constructor(symbol?: string, tag?: FxTokenTag, index?: number) {
+  constructor(tag?: FxTokenTag, symbol?: string, index?: number) {
     super();
-    this.data = {symbol: symbol || "", tag: tag || "", index: index || -1};
+    this.tag = tag || "";
+    this.symbol = symbol || "";
+    this.index = index != undefined ? index : -1;
   }
 
   private _isLvalue = false;
@@ -37,6 +34,18 @@ export class FxTokenNode extends FxNode<FxToken> {
     this._isLvalue = v;
   }
 
+  public static from(root: FxToken): FxTokenNode {
+    const rootNode = new FxTokenNode(root.tag, root.symbol, root.index);
+
+    if (root.children) {
+      for (const child of root.children) {
+        rootNode.add(FxTokenNode.from(child));
+      }
+    }
+
+    return rootNode;
+  }
+
   public toString() {
     return this.toStringIndent();
   }
@@ -46,7 +55,7 @@ export class FxTokenNode extends FxNode<FxToken> {
 
     let result = istr + (`<${this.toStringSelf()}>`);
 
-    if (this.childCount > 0) {
+    if (this.count > 0) {
       result += `\n${this.children.map(v => v.toStringIndent(indent + 1)).join("\n")}`;
     }
 

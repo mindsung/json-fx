@@ -44,6 +44,6 @@ export class FxScriptParser extends FxParser<string, FxTokenNode> {
     root.isLvalue = !!this.lvalue;
 
     this.parser.parse(root);
-    return root.firstChild;
+    return root.first;
   }
 }

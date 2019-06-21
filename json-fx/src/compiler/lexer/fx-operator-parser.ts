@@ -43,7 +43,7 @@ export class FxOperatorParser extends FxParser<FxTokenNode, void> {
 
     if (this.outputQueue.length >= numOperands) {
       while (numOperands--) {
-        stackTop.unshiftChild(this.outputQueue.pop());
+        stackTop.unshift(this.outputQueue.pop());
       }
       this.outputQueue.push(stackTop);
     } else {

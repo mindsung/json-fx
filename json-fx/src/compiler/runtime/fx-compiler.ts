@@ -23,7 +23,7 @@ export class FxCompiler {
 
     switch (root.tag) {
       case "global":
-        return this.compile(root.firstChild);
+        return this.compile(root.first);
       case "operator":
       case "expression":
         result = this.createExpression(root);
@@ -71,7 +71,7 @@ export class FxCompiler {
   }
 
   private createLambda(root: FxTokenNode) {
-    return new FxLambda(this.getLambdaVarNames(root), this.compile(root.lastChild));
+    return new FxLambda(this.getLambdaVarNames(root), this.compile(root.last));
   }
 
   private createFunction(root: FxTokenNode) {
@@ -86,10 +86,10 @@ export class FxCompiler {
 
     root.children.forEach(child => {
       if (child.tag === "identifier") {
-        result.items[child.symbol] = this.compile(child.firstChild);
+        result.items[child.symbol] = this.compile(child.first);
 
       } else if (child.tag === "variable") {
-        result.scope.setVariable(child.symbol, this.compile(child.firstChild));
+        result.scope.setVariable(child.symbol, this.compile(child.first));
 
       } else if (child.tag === "template") {
         result.scope.setVariable(child.symbol, this.createLambda(child));
@@ -100,7 +100,7 @@ export class FxCompiler {
   }
 
   private getLambdaVarNames(lambda: FxTokenNode) {
-    return lambda.firstChild.children.map(child => child.symbol);
+    return lambda.first.children.map(child => child.symbol);
   }
 
   private createArray(root: FxTokenNode) {
@@ -130,11 +130,11 @@ export class FxCompiler {
   private getPropPath(root: FxTokenNode): FxPropertyPathItem[] {
     if (root.tag == "prop" || root.tag == "nullprop") {
       const last = {
-        value: this.createConstant(root.lastChild.symbol),
+        value: this.createConstant(root.last.symbol),
         interrupts: false
       };
 
-      const path = [...this.getPropPath(root.firstChild), last];
+      const path = [...this.getPropPath(root.first), last];
 
       if (root.tag == "nullprop") {
         path[path.length - 2].interrupts = true;
