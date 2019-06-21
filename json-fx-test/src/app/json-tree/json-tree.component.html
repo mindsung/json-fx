@@ -1,12 +1,12 @@
-<ng-container *ngIf="type === 'object' || type === 'array' else valueType">
+<ng-container *ngIf="type == 'object' || type == 'array' else valueType">
 
-  <div class="bracket open" (click)="collapsed = !collapsed;">{{type === 'object' ? '&#123;' : '&#91;' }}</div>
+    <div class="bracket open" (click)="collapsed = !collapsed;">{{type == 'object' ? '&#123;' : '&#91;' }}</div>
 
   <div class="json-item-wrapper" [ngClass]="collapsed ? 'collapsed' : ''">
     <div class="item-expander" (click)="collapsed = !collapsed"></div>
     <div class="json-item-list">
-      <div class="json-item" *ngFor="let k of keys; index as i" [ngClass]="i === keys.length - 1 ? 'last' : null">
-        <ng-container *ngIf="type === 'object'">
+        <div class="json-item" *ngFor="let k of keys; index as i" [ngClass]="i == keys.length - 1 ? 'last' : null">
+            <ng-container *ngIf="type == 'object'">
           <div class="json-key">{{k}}</div>
           <div class="json-colon">:</div>
         </ng-container>
@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div class="bracket close">{{type === 'object' ? '&#125;' : '&#93;' }}</div>
+    <div class="bracket close">{{type == 'object' ? '&#125;' : '&#93;' }}</div>
 
 </ng-container>
 

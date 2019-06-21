@@ -1,7 +1,7 @@
 import {FxExpressionDefinition} from "../../defs";
 import {FxLoader} from "./fx-loader";
 import {FxContext} from "../lexer/model/fx-context";
-import {FxTemplateParser} from "../lexer/fx-template-parser";
+import {TemplateParser} from "../lexer/template-parser";
 import {FxCompiler} from "./fx-compiler";
 import {FxExpression} from "./model/fx-expression";
 import {FxConstant} from "./model/fx-constant";
@@ -10,12 +10,12 @@ import {FxScope} from "./fx-scope";
 export class JsonFx {
 
   private readonly context: FxContext;
-  private readonly parser: FxTemplateParser;
+  private readonly parser: TemplateParser;
   private readonly compiler: FxCompiler;
 
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
     this.context = new FxContext(new FxLoader(...expressions));
-    this.parser = new FxTemplateParser(this.context);
+    this.parser = new TemplateParser(this.context);
     this.compiler = new FxCompiler(this.context);
   }
 

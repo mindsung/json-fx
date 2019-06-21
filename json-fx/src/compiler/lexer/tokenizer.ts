@@ -4,7 +4,7 @@ import {isArray} from "../../common";
 import {FxTokenRule} from "./model/fx-token-rule";
 import {FxToken} from "./model/fx-token";
 
-export class FxTokenizer extends FxParser<string, FxToken[]> {
+export class Tokenizer extends FxParser<string, FxToken[]> {
   private tokens: FxToken[];
   private nextChar: string;
   private isLiteralSequence: boolean;
@@ -17,10 +17,8 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
   public parse(expr: string): FxToken[] {
     this.initialize();
 
-    while (expr[this.sourceIndex]) {
-      this.nextChar = expr[this.sourceIndex];
+    for (this.nextChar of expr) {
       this.parseNextChar();
-
       this.sourceIndex++;
     }
 
@@ -48,11 +46,11 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
   }
 
   private removeWhitespaceTokens() {
-    this.tokens = this.tokens.filter(token => !(token.tag === "space"));
+    this.tokens = this.tokens.filter(token => token.tag != "space" && token.tag != "");
   }
 
   private mergeBasedOnRule() {
-    const rule = this.getNextCharRule();
+    const rule = this.getNextRule();
 
     if (this.canMergeNextWithLast(rule)) {
       this.mergeNextWithLast(rule);
@@ -65,31 +63,18 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
     }
   }
 
-  private getNextCharRule(): FxTokenRule {
+  private getNextRule(): FxTokenRule {
     for (const rule of JsonFx.tokenRules) {
       if (rule.test && rule.test(this.nextChar)) {
-        return FxTokenizer.sanitizeRule(rule);
+        return Tokenizer.sanitizeRule(rule);
       }
     }
     return null;
   }
 
-  private static sanitizeRule(rule: FxTokenRule): FxTokenRule {
-    rule.tag = rule.tag || "";
-    rule.preventMerge = !!rule.preventMerge;
-
-    if (rule.mergeWith) {
-      rule.mergeWith = isArray(rule.mergeWith) ? rule.mergeWith : [rule.mergeWith];
-    } else {
-      rule.mergeWith = [];
-    }
-
-    return rule;
-  }
-
   private canMergeNextWithLast(rule: FxTokenRule): boolean {
     return !this.lastToken.tag
-      || !rule.preventMerge && (rule.tag === this.lastToken.tag || rule.mergeWith.includes(this.lastToken.tag));
+      || !rule.preventMerge && (rule.tag == this.lastToken.tag || rule.mergeWith.includes(this.lastToken.tag));
   }
 
   private mergeNextWithLast(rule: FxTokenRule) {
@@ -104,5 +89,18 @@ export class FxTokenizer extends FxParser<string, FxToken[]> {
     this.isLiteralSequence = !this.isLiteralSequence;
     this.lastToken.tag = "literal";
     this.lastToken.symbol = this.lastToken.symbol.replace("`", "");
+  }
+
+  private static sanitizeRule(rule: FxTokenRule): FxTokenRule {
+    rule.tag = rule.tag || "";
+    rule.preventMerge = !!rule.preventMerge;
+
+    if (rule.mergeWith) {
+      rule.mergeWith = isArray(rule.mergeWith) ? rule.mergeWith : [rule.mergeWith];
+    } else {
+      rule.mergeWith = [];
+    }
+
+    return rule;
   }
 }

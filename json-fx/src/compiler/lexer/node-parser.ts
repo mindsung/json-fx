@@ -1,7 +1,7 @@
 import {FxParser} from "./model/fx-parser";
 import {FxNode} from "./model/fx-node";
 
-export class FxNodeParser extends FxParser<FxNode, void> {
+export class NodeParser extends FxParser<FxNode, void> {
   public parsers: FxParser<FxNode, void>[];
 
   constructor(...parsers: FxParser<FxNode, void>[]) {

@@ -1,4 +1,3 @@
-// noinspection TypeScriptFieldCanBeMadeReadonly
 export class FxNode {
 
   private _parent: FxNode;
@@ -39,7 +38,8 @@ export class FxNode {
         this._children.push(item);
       }
 
-      this.makeParentTo(item);
+      item.orphan();
+      item._parent = this;
     }
   }
 
@@ -65,34 +65,6 @@ export class FxNode {
     return this.remove(0);
   }
 
-  private makeParentTo(child: FxNode) {
-    child.orphan();
-    child._parent = this;
-  }
-
-  private toIndex(at: number | FxNode): number {
-    if (at == undefined) {
-      return NaN;
-    } else if (at instanceof FxNode) {
-      const i = this._children.indexOf(at);
-      return i == -1 ? NaN : i;
-    } else {
-      return at;
-    }
-  }
-
-  public transferChildrenTo(target: FxNode, unshift: boolean = true) {
-    if (this.count > 0) {
-      while (this.count > 0) {
-        if (unshift) {
-          target.unshift(this.remove());
-        } else {
-          target.add(this.shift());
-        }
-      }
-    }
-  }
-
   public orphan() {
     if (this._parent) {
       this._parent.remove(this);
@@ -115,5 +87,16 @@ export class FxNode {
     }
 
     this.orphan();
+  }
+
+  private toIndex(at: number | FxNode): number {
+    if (at == undefined) {
+      return NaN;
+    } else if (at instanceof FxNode) {
+      const i = this._children.indexOf(at);
+      return i == -1 ? NaN : i;
+    } else {
+      return at;
+    }
   }
 }

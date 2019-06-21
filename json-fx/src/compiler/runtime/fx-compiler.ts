@@ -9,6 +9,7 @@ import {FxArray} from "./model/fx-array";
 import {FxLambdaFn} from "../../defs";
 import {FxProperty, FxPropertyPathItem} from "./model/fx-property";
 import {FxContext} from "../lexer/model/fx-context";
+import {FxCompileError} from "../fx-error";
 
 export class FxCompiler {
 
@@ -63,6 +64,10 @@ export class FxCompiler {
   private createExpression(root: FxTokenNode) {
     const exprDef = this.context.loader.getExpression(root.symbol);
 
+    if (!exprDef) {
+      throw new FxCompileError(`Expression "${root.symbol}" is undefined`, root.index);
+    }
+
     const result = new FxFunction(exprDef.expression);
     result.args = root.children.map(child => this.compile(child));
     result.deferEvaluation = exprDef.deferEvaluation;
@@ -85,13 +90,13 @@ export class FxCompiler {
     const result = new FxObject();
 
     root.children.forEach(child => {
-      if (child.tag === "identifier") {
+      if (child.tag == "identifier") {
         result.items[child.symbol] = this.compile(child.first);
 
-      } else if (child.tag === "variable") {
+      } else if (child.tag == "variable") {
         result.scope.setVariable(child.symbol, this.compile(child.first));
 
-      } else if (child.tag === "template") {
+      } else if (child.tag == "template") {
         result.scope.setVariable(child.symbol, this.createLambda(child));
       }
     });
@@ -110,11 +115,11 @@ export class FxCompiler {
   private createConstant(symbol: string) {
     let value: any = symbol;
 
-    if (symbol === "true") {
+    if (symbol == "true") {
       value = true;
-    } else if (symbol === "false") {
+    } else if (symbol == "false") {
       value = false;
-    } else if (symbol === "null") {
+    } else if (symbol == "null") {
       value = null;
     }
 

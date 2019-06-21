@@ -1,7 +1,7 @@
 import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
 
-export class FxExpressionParser extends FxParser<FxTokenNode, void> {
+export class ExpressionParser extends FxParser<FxTokenNode, void> {
   private last: FxTokenNode;
   private next: FxTokenNode;
 
@@ -25,12 +25,14 @@ export class FxExpressionParser extends FxParser<FxTokenNode, void> {
   }
 
   private makeLastAnExpression() {
-    if (this.last.tag === "identifier") {
+    if (this.last.tag == "identifier") {
       this.last.tag = "expression";
-    } else if (this.last.tag === "template") {
+    } else if (this.last.tag == "template") {
       this.last.tag = "template-call";
     }
 
-    this.next.transferChildrenTo(this.last);
+    while (this.next.count) {
+      this.last.add(this.next.first);
+    }
   }
 }

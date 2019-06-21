@@ -1,9 +1,9 @@
 import {FxTokenTag} from "./fx-token-tag";
 
 export interface FxToken {
-  symbol: string;
   tag: FxTokenTag;
-  index: number;
 
+  symbol?: string;
+  index?: number;
   children?: FxToken[];
 }

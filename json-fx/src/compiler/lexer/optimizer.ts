@@ -2,12 +2,12 @@ import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
 import {FxIntrinsic} from "../../defs";
 
-export class FxOptimizer extends FxParser<FxTokenNode, void> {
+export class Optimizer extends FxParser<FxTokenNode, void> {
   private child: FxTokenNode;
 
   parse(root: FxTokenNode): void {
     for (this.child of root.children) {
-      if (this.child.tag === "group" && this.child.symbol === "()" && this.child.count <= 1) {
+      if (this.child.tag == "group" && this.child.symbol == "()" && this.child.count <= 1) {
         this.child.unwrap();
 
       } else if (this.child.operator) {
@@ -51,7 +51,7 @@ export class FxOptimizer extends FxParser<FxTokenNode, void> {
   private optimizeInvoke() {
     this.child.last.unshift(this.child.first);
 
-    if (this.child.last.tag === "identifier") {
+    if (this.child.last.tag == "identifier") {
       this.child.last.tag = "expression";
     }
 
@@ -61,14 +61,14 @@ export class FxOptimizer extends FxParser<FxTokenNode, void> {
   private optimizeNullInvoke() {
     this.child.last.unshift(this.child.first);
 
-    if (this.child.last.tag === "identifier") {
+    if (this.child.last.tag == "identifier") {
       this.child.last.tag = "expression";
     }
   }
 
   private optimizeLambda() {
     this.child.tag = "lambda";
-    if (this.child.first.tag !== "group") {
+    if (this.child.first.tag != "group") {
       const wrapper = new FxTokenNode("group");
       wrapper.isLvalue = true;
       this.child.first.wrap(wrapper);

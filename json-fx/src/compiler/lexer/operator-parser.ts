@@ -2,7 +2,7 @@ import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
 
 
-export class FxOperatorParser extends FxParser<FxTokenNode, void> {
+export class OperatorParser extends FxParser<FxTokenNode, void> {
   private nextNode: FxTokenNode;
 
   private operatorStack: FxTokenNode[];
@@ -15,7 +15,7 @@ export class FxOperatorParser extends FxParser<FxTokenNode, void> {
     for (this.nextNode of root.children) {
       this.loadOperator();
 
-      if (this.nextNode.tag === "operator") {
+      if (this.nextNode.tag == "operator") {
         while (this.operatorStack.length > 0 && (this.operatorStack[0].operator.precedence >= this.nextNode.operator.precedence || this.operatorStack[0].operator.isUnary)) {
           this.shunt();
         }
@@ -31,7 +31,7 @@ export class FxOperatorParser extends FxParser<FxTokenNode, void> {
   }
 
   private loadOperator() {
-    if (this.nextNode.tag === "operator") {
+    if (this.nextNode.tag == "operator") {
       this.nextNode.operator = this.context.loader.getOperator(this.nextNode.symbol);
       this.nextNode.symbol = this.nextNode.operator.symbol;
     }

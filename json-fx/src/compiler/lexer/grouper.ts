@@ -1,9 +1,9 @@
 import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
 import {FxToken} from "./model/fx-token";
-import {FxSyntaxError} from "./model/fx-error";
+import {FxSyntaxError} from "../fx-error";
 
-export class FxGrouper extends FxParser<FxToken[], FxTokenNode> {
+export class Grouper extends FxParser<FxToken[], FxTokenNode> {
   private root: FxTokenNode;
   private nextToken: FxTokenNode;
 
@@ -56,8 +56,8 @@ export class FxGrouper extends FxParser<FxToken[], FxTokenNode> {
     const open = this.root.symbol;
     const close = this.nextToken.symbol;
 
-    return open === "(" && close === ")"
-      || open === "[" && close === "]"
-      || open === "{" && close === "}";
+    return open == "(" && close == ")"
+      || open == "[" && close == "]"
+      || open == "{" && close == "}";
   }
 }

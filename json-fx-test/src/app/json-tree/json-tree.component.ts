@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from "@angular/core";
+import {ChangeDetectionStrategy, Component, Input, OnInit} from "@angular/core";
 
 @Component({
   selector: "app-json-tree",
@@ -46,7 +46,7 @@ export class JsonTreeComponent implements OnInit {
   }
 
   public get keys(): string[] {
-    if (this.type === "object" || this.type === "array") {
+    if (this.type == "object" || this.type == "array") {
       return this.node == null ? [] : Object.keys(this.node);
     } else {
       return [];
@@ -56,12 +56,12 @@ export class JsonTreeComponent implements OnInit {
   public getEllipses() {
     const MAX_LENGTH = 32;
 
-    if (this.type === "object") {
+    if (this.type == "object") {
       let keys = this.keys.map(item => item + ":").join(", ");
 
       if (keys.length > MAX_LENGTH) {
         keys = keys.substr(0, MAX_LENGTH - 3).trim();
-        if (keys[keys.length - 1] === ",") {
+        if (keys[keys.length - 1] == ",") {
           keys = keys.substr(0, keys.length - 1);
         }
 

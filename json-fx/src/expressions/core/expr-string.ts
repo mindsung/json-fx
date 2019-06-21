@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../defs";
+import {FxExpressionDefinition} from "../../defs";
 
 function wordSplit(str: string): string[] {
   const words = [""];
@@ -8,7 +8,7 @@ function wordSplit(str: string): string[] {
     const char = str[i];
     const isDelimiter = /[^a-zA-Z0-9]/.test(char);
 
-    if (words[words.length - 1] && (isDelimiter || lastChar && (lastChar === lastChar.toLowerCase()) && (char === char.toUpperCase()))) {
+    if (words[words.length - 1] && (isDelimiter || lastChar && (lastChar == lastChar.toLowerCase()) && (char == char.toUpperCase()))) {
       words.push("");
     }
 
@@ -60,7 +60,7 @@ export const exprString: ReadonlyArray<FxExpressionDefinition> = [
           continue;
         }
 
-        if (i !== 0) {
+        if (i != 0) {
           words[i] = words[i][0].toUpperCase() + words[i].substr(1);
         }
         result += words[i];

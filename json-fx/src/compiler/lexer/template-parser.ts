@@ -1,15 +1,15 @@
 import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
-import {FxScriptParser} from "./fx-script-parser";
+import {ScriptParser} from "./script-parser";
 import {isArray, isObject, isString} from "../../common";
 import {FxContext} from "./model/fx-context";
 
-export class FxTemplateParser extends FxParser<any, FxTokenNode> {
-  private scriptParser: FxScriptParser;
+export class TemplateParser extends FxParser<any, FxTokenNode> {
+  private scriptParser: ScriptParser;
 
   constructor(context: FxContext) {
     super(context);
-    this.scriptParser = new FxScriptParser(context);
+    this.scriptParser = new ScriptParser(context);
   }
 
   parse(expr: any): FxTokenNode {
@@ -62,7 +62,11 @@ export class FxTemplateParser extends FxParser<any, FxTokenNode> {
 
     if (lvalue.count > 0) {
       const group = new FxTokenNode("group");
-      lvalue.transferChildrenTo(group);
+
+      while (lvalue.count) {
+        group.add(lvalue.last, 0);
+      }
+
       lvalue.add(group);
     }
 

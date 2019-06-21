@@ -1,6 +1,6 @@
-import { FxScope } from "../fx-scope";
-import { FxExpression } from "./fx-expression";
-import { FxConstant } from "./fx-constant";
+import {FxScope} from "../fx-scope";
+import {FxExpression} from "./fx-expression";
+import {FxConstant} from "./fx-constant";
 
 export class FxLambda extends FxExpression {
   public readonly varNames: string[];
@@ -15,7 +15,7 @@ export class FxLambda extends FxExpression {
   public evaluate() {
     return (...vars: any[]) => {
       for (let i = 0; i < this.varNames.length; i++) {
-        if (vars[i] !== undefined) {
+        if (vars[i] != undefined) {
           this.scope.setVariable(this.varNames[i], new FxConstant(vars[i]));
         } else {
           this.scope.setVariable(this.varNames[i], undefined);

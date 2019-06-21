@@ -9,4 +9,3 @@ export abstract class FxParser<TIn, TOut = void> {
 
   public abstract parse(item: TIn): TOut;
 }
-

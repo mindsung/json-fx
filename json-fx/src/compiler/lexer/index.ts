@@ -9,7 +9,7 @@ export namespace JsonFx {
       test: c => {
         const code = c.charCodeAt(0);
         return code >= 65 && code <= 90 || code >= 97 && code <= 122 // A - Z, a - z
-          || c === "~" || c === "_";
+          || c == "~" || c == "_";
       },
       mergeWith: ["variable", "template"]
     },
@@ -23,20 +23,20 @@ export namespace JsonFx {
     },
     {
       tag: "variable",
-      test: c => c === "$"
+      test: c => c == "$"
     },
     {
       tag: "template",
-      test: c => c === "@"
+      test: c => c == "@"
     },
     {
       tag: "group",
-      test: c => c === "(" || c === "[" || c === "{",
+      test: c => c == "(" || c == "[" || c == "{",
       preventMerge: true
     },
     {
       tag: "group-close",
-      test: c => c === ")" || c === "]" || c === "}",
+      test: c => c == ")" || c == "]" || c == "}",
       preventMerge: true
     },
     {
@@ -45,7 +45,7 @@ export namespace JsonFx {
     },
     {
       tag: "operator",
-      test: c => c === ".",
+      test: c => c == ".",
       mergeWith: "numeric"
     },
     {
