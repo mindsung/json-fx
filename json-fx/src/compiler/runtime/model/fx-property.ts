@@ -1,5 +1,5 @@
-import { FxExpression } from "./fx-expression";
-import { FxScope } from "../fx-scope";
+import {FxExpression} from "./fx-expression";
+import {FxScope} from "../fx-scope";
 
 export interface FxPropertyPathItem {
   interrupts: boolean;
@@ -8,7 +8,7 @@ export interface FxPropertyPathItem {
 
 export class FxProperty extends FxExpression {
 
-  private path: FxPropertyPathItem[];
+  private readonly path: FxPropertyPathItem[];
 
   constructor(path: FxPropertyPathItem[]) {
     super();

@@ -122,9 +122,7 @@ export class FxCompiler {
   }
 
   private createProp(root: FxTokenNode) {
-    const r = new FxProperty(this.getPropPath(root));
-    // console.log(r);
-    return r;
+    return new FxProperty(this.getPropPath(root));
   }
 
   private getPropPath(root: FxTokenNode): FxPropertyPathItem[] {

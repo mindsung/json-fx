@@ -1,4 +1,4 @@
-export class FxSyntaxError {
+export class FxSyntaxError extends Error {
 
   private readonly _message: string;
   private readonly _index: number;
@@ -12,6 +12,7 @@ export class FxSyntaxError {
   }
 
   constructor(message: string, index: number) {
+    super();
     this._message = message;
     this._index = index;
   }

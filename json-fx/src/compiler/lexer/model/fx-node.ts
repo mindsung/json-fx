@@ -1,3 +1,4 @@
+// noinspection TypeScriptFieldCanBeMadeReadonly
 export class FxNode {
 
   private _parent: FxNode;
