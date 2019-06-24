@@ -10,7 +10,7 @@ describe("Sandbox", () => {
   it("Executes w/o throwing exceptions", function () {
     const fx = new JsonFx(coreExpressions, mathExpressions);
 
-    const script = fx.compile("{foo: 12, bar: 6}.bar");
+    const script = fx.compile({});
 
     const output1 = script.evaluate({name: "$", value: $CABLE_DATA_1});
     console.log(output1);

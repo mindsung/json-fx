@@ -106,7 +106,7 @@ export class FxCompiler {
   }
 
   private getLambdaVarNames(lambda: FxTokenNode) {
-    if (lambda.first.tag == "param-group") {
+    if (lambda.first.tag == "group") {
       return lambda.first.children.map(child => child.symbol);
     } else {
       return [];
