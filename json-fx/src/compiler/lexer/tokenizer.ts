@@ -1,5 +1,5 @@
 import {FxParser} from "./model/fx-parser";
-import {JsonFx} from "./index";
+import {Lexer} from "./lexer";
 import {isArray} from "../../common";
 import {FxTokenRule} from "./model/fx-token-rule";
 import {FxToken} from "./model/fx-token";
@@ -40,7 +40,7 @@ export class Tokenizer extends FxParser<string, FxToken[]> {
       this.mergeBasedOnRule();
     }
 
-    if (this.nextChar == JsonFx.literalSymbol) {
+    if (this.nextChar == Lexer.literalSymbol) {
       this.toggleAsLiteralSequence();
     }
   }
@@ -64,7 +64,7 @@ export class Tokenizer extends FxParser<string, FxToken[]> {
   }
 
   private getNextRule(): FxTokenRule {
-    for (const rule of JsonFx.tokenRules) {
+    for (const rule of Lexer.tokenRules) {
       if (rule.test && rule.test(this.nextChar)) {
         return Tokenizer.sanitizeRule(rule);
       }
