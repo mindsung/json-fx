@@ -56,17 +56,10 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
-    name: "field",
-    operator: { symbol: "..", precedence: 4 },
-    expression: (arr: any[], field: string) => {
-      return arr.map(item => item[field] || undefined).filter(item => item != undefined);
-    }
-  },
-  {
     name: "min",
     expression: (arr: any[], lambda: FxLambdaFn) => {
       let min: any = null;
-      arr.forEach(item => min = minOf(min, lambda(item)));
+      arr.forEach(item => min = minOf(min, lambda ? lambda(item) : item));
       return min;
     }
   },
@@ -74,29 +67,13 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     name: "max",
     expression: (arr: any[], lambda: FxLambdaFn) => {
       let max: any = null;
-      arr.forEach(item => max = maxOf(max, lambda(item)));
+      arr.forEach(item => max = maxOf(max, lambda ? lambda(item) : item));
       return max;
     }
   },
   {
     name: "length",
     expression: (arr: any[]) => arr.length
-  },
-  {
-    name: "exec",
-    expression: (arr: FxLambdaFn[], ...params: any) => {
-      if (arr.length == 0) {
-        return null;
-      } else {
-        let output = arr[0](...params);
-
-        for (let i = 1; i < arr.length; i++) {
-          output = arr[i](output);
-        }
-
-        return output;
-      }
-    }
   }
 ];
 

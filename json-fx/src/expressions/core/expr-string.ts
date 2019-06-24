@@ -42,7 +42,7 @@ export const exprString: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "titlecase",
     expression: (str: string) => {
-      return str.replace(/\b(.)/g, c => c.toUpperCase());
+      return wordSplit(str).map(word => word[0].toUpperCase() + word.substr(1)).join(" ");
     }
   },
   {

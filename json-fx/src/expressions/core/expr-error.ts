@@ -1,36 +1,15 @@
-import { FxExpressionDefinition, FxLambdaFn } from "../../defs";
+import {FxExpressionDefinition} from "../../defs";
+import {FxCompileError} from "../../compiler/fx-error";
 
 export const exprError: ReadonlyArray<FxExpressionDefinition> = [
-  {
-    name: "try",
-    expression: (lambda: FxLambdaFn) => {
-      try {
-        lambda();
-      } catch (e) {
-      }
-    }
-  },
   {
     name: "notnull",
     expression: (value: any) => {
       if (value == null) {
-        throw new Error("Value cannot be null.");
+        throw new FxCompileError("Value cannot be null.");
+      } else {
+        return value;
       }
-      return value;
     }
-  },
-  /*{
-    name: "assert",
-    params: [
-      { name: "assertTrue" },
-      { name: "valueExpr", deferEvaluation: true },
-      { name: "err" }
-    ],
-    expression: (assertTrue: any, valueExpr: ExpressionScope, err: string) => {
-      if (!assertTrue) {
-        throw new Error(err || "Assertion failed.");
-      }
-      return valueExpr != null ? valueExpr.value : true;
-    }
-  }*/
+  }
 ];
