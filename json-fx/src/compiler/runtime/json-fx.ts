@@ -20,9 +20,6 @@ export class JsonFx {
   }
 
   compile(template: any): FxCompiledTemplate {
-    const tree = this.parser.parse(template);
-    console.log(tree.toString());
-
     const expr = this.compiler.compile(this.parser.parse(template));
     return new FxCompiledTemplateImpl(expr);
   }

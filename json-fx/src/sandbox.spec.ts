@@ -3,6 +3,7 @@ import {$CABLE_DATA_1} from "./sample/sources/cable-data";
 import {JsonFx} from "./compiler/runtime/json-fx";
 import {coreExpressions} from "./expressions/core";
 import {mathExpressions} from "./expressions/math";
+import { cableDataTemplate } from "./sample/cable-data-template";
 
 // const fs = require("fs");
 
@@ -10,7 +11,7 @@ describe("Sandbox", () => {
   it("Executes w/o throwing exceptions", function () {
     const fx = new JsonFx(coreExpressions, mathExpressions);
 
-    const script = fx.compile({});
+    const script = fx.compile(cableDataTemplate);
 
     const output1 = script.evaluate({name: "$", value: $CABLE_DATA_1});
     console.log(output1);

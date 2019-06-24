@@ -21,8 +21,6 @@ export class FxScope {
   }
 
   public setVariable(key: string, value: FxExpression) {
-    console.log("setvar " + key);
-
     if (value != null) {
       value.bindScope(this);
     }
