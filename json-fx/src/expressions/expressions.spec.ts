@@ -125,6 +125,21 @@ describe("Core expressions", function () {
     assert.equal(actual, 4);
   });
 
+  itEvaluates("avg", function () {
+    const actual = compile("avg([1, 2, 3, 4])");
+    assert.equal(actual, 2.5);
+  });
+
+  itEvaluates("withMin", function () {
+    const actual = compile("withMin([1, 2, 3, 4])");
+    assert.equal(actual, 1);
+  });
+
+  itEvaluates("withMax", function () {
+    const actual = compile("withMax([1, 2, 3, 4])");
+    assert.equal(actual, 4);
+  });
+
   itEvaluates("length", function () {
     const actual = compile("length([1, 2, 3, 4])");
     assert.equal(actual, 4);
