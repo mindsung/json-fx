@@ -1,13 +1,17 @@
-**Note:** json-fx is in transition to a new and improved parsing engine. Additional reference documentation will be added prior to the 1.0 release.
-
 # json-fx
-**json-fx** is a JSON template syntax parser, ideal for transforming or querying JavaScript objects or JSON documents. It defines an intuitive syntax for expressing an output object as a function of one or more inputs.
+**json-fx** is a JavaScript template parser and evaluation engine, ideal for querying and transforming JavaScript objects or JSON documents.
+It defines an intuitive syntax for expressing an output value as a function of one or more inputs.
 
-Templates are compiled at run-time into expression trees that are very lightweight wrappers around the JavaScript code they expose. The library includes a large collection of built-in expressions, and it can be easily extended by consumers or by third-party libraries.
+Templates are parsed and compiled at runtime into expression trees, which are very efficient and lightweight wrappers
+around the native JavaScript code they execute. The library includes a large collection of built-in expressions,
+and is easily extensible by consumers and by third-party libraries.
+
+The json-fx core library, which includes the parser/compiler and built-in expression set, has no external
+runtime dependencies, giving it an extremely compact footprint.
 
 ## A very simple example
 
-Given an input object:
+Given an input object $:
 ```json
 { "a": 2, "b": 4 }
 ```
@@ -21,7 +25,7 @@ Yields the output:
 ```
 ## Another simple example
 
-Given an input object:
+Given an input object $:
 ```json
 {
   "organization": { "name": "ACME Coding", "country": "New Zealand" },
@@ -33,34 +37,41 @@ Given an input object:
 ```
 And a template:
 ```json
-{
-  "$org": "$.organization",
-  "$.people:map": {
-    "name": "$.firstName + ' ' + $.lastName",
-    "countryOfEmployment": "$org.country",
-    "canRetire": "$.age >= 65"
-  }
-}
-```
-Yields the output:
-```json
-[
-  { "name": "John Smith", "countryOfEmployment": "New Zealand", "canRetire": true },
-  { "name": "Sue Smith", "countryOfEmployment": "New Zealand", "canRetire": false }
-]
-```
-Or a template:
-```json
-{ "retirementAgeEmployees": "$.people:filter($.age >= 65):length" }
+{ "retirementAgeEmployees": "$.people:filter($p => $p.age >= 65):length()" }
 ```
 Yields the output:
 ```json
 { "retirementAgeEmployees": 1 }
 ```
+Or a template:
+```json
+{
+  "@mappedPerson($p)": {
+    "name": "$p.firstName + ` ` + $p.lastName",
+    "countryOfEmployment": "$.organization.country",
+    "canRetire": "$p.age >= 65"
+  },
+  "peopleAnotherWay": "$.people:map(@mappedPerson)"
+}
+```
+Yields the output:
+```json
+{
+  "peopleAnotherWay":  [
+    { "name": "John Smith", "countryOfEmployment": "New Zealand", "canRetire": true },
+    { "name": "Sue Smith", "countryOfEmployment": "New Zealand", "canRetire": false }
+  ]
+}
+```
 # Use cases
 
-**json-fx** may be helpful any time a readable expression syntax is more desirable or practical than writing code for manipulating or extracting elements from JavaScript objects. But it is especially useful when a dynamic, run-time solution is required for transforming or querying into complex JSON objects, when it’s not possible or practical to hard-code the logic into your application. For example:
+**json-fx** may be useful any time a declarative expression syntax is more desirable or practical than
+writing code for manipulating or extracting elements from JavaScript objects. But it is especially useful
+when a dynamic, run-time solution is required for transforming or querying into complex JSON objects,
+when it’s not possible or practical to hard-code the logic into your application. For example:
 
 
-- Templates could be constructed and maintained by an intuitive user interface that would allow application users to select data elements they want to be included in reports
-- Application developers, or non-programmers who have learned the expression syntax, could create, save, and maintain a set of data extraction or transform templates without requiring code to be changed and re-deployed as the data requirements change
+- Templates could be constructed and maintained by an intuitive user interface that would allow application
+users to select data elements they want to be included in reports
+- Application developers, or non-programmers who have learned the json-fx expression syntax, could create, save,
+and maintain a set of data extraction or transform templates, without requiring code to be changed and deployed
