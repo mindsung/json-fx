@@ -1,7 +1,7 @@
-import {FxNode} from "./fx-node";
-import {FxOperatorDefinition} from "../../../defs";
-import {FxTokenTag} from "./fx-token-tag";
-import {FxToken} from "./fx-token";
+import { FxNode } from "./fx-node";
+import { FxOperatorDefinition } from "../../../defs";
+import { FxTokenTag } from "./fx-token-tag";
+import { FxToken } from "./fx-token";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -32,6 +32,9 @@ export class FxTokenNode extends FxNode implements FxToken {
 
   public set isLvalue(v: boolean) {
     this._isLvalue = v;
+    for (const child of this.children) {
+      child.isLvalue = true;
+    }
   }
 
   public static from(root: FxToken): FxTokenNode {
@@ -46,29 +49,23 @@ export class FxTokenNode extends FxNode implements FxToken {
     return rootNode;
   }
 
-  public toString() {
+  public toString(): string {
     return this.toStringIndent();
   }
 
-  private toStringIndent(indent = 0) {
+  private toStringIndent(indent = 0): string {
     const istr = indent > 0 ? "│ ".repeat(indent - 1) + "├─" : "";
 
-    let result = istr + (`<${this.toStringSelf()}>`);
+    let result = istr + this.toStringSelf();
 
     if (this.count > 0) {
-      result += `\n${this.children.map(v => v.toStringIndent(indent + 1)).join("\n")}`;
+      result += `\n${ this.children.map(v => v.toStringIndent(indent + 1)).join("\n") }`;
     }
 
     return result;
   }
 
-  private toStringSelf() {
-    return `${this.symbol}:${this.tag}`;
-
-    // if (this.tag != "literal" && this.tag != "object" && this.tag != "group" && this.tag != "numeric") {
-    //   return `${this.symbol}:${this.tag}`;
-    // } else {
-    //   return this.symbol;
-    // }
+  private toStringSelf(): string {
+    return (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;
   }
 }

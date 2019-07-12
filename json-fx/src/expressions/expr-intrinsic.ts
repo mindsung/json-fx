@@ -1,18 +1,18 @@
-import {FxExpressionDefinition, FxIntrinsic} from "../defs";
-import {FxFunction} from "../compiler/runtime/model/fx-function";
+import { FxExpressionDefinition, FxIntrinsic } from "../defs";
+import { FxFunction } from "../compiler/runtime/model/fx-function";
 
 export const exprIntrinsic: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: FxIntrinsic.Lambda,
-    operator: {symbol: "=>", precedence: 0}
+    operator: { symbol: "=>", precedence: 0 }
   },
   {
     name: FxIntrinsic.Invoke,
-    operator: {symbol: ":", precedence: 4}
+    operator: { symbol: ":", precedence: 4 }
   },
   {
     name: FxIntrinsic.NullInvoke,
-    operator: {symbol: "?:", precedence: 4},
+    operator: { symbol: "?:", precedence: 4 },
     deferEvaluation: true,
 
     expression: (result: FxFunction) => {
@@ -22,14 +22,18 @@ export const exprIntrinsic: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: FxIntrinsic.Tuple,
-    operator: {symbol: ",", precedence: -1}
+    operator: { symbol: ",", precedence: -2 }
   },
   {
     name: FxIntrinsic.Prop,
-    operator: {symbol: ".", precedence: 4}
+    operator: { symbol: ".", precedence: 4 }
   },
   {
     name: FxIntrinsic.NullProp,
-    operator: {symbol: "?.", precedence: 4}
+    operator: { symbol: "?.", precedence: 4 }
   },
+  {
+    name: "assign",
+    operator: { symbol: ":a", precedence: -1 }
+  }
 ];

@@ -78,6 +78,10 @@
       true,
       "always"
     ],
+    "typedef": [
+      true,
+      "call-signature"
+    ],
     "typedef-whitespace": [
       true,
       {

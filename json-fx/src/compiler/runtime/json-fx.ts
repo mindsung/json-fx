@@ -1,11 +1,11 @@
-import {FxExpressionDefinition} from "../../defs";
-import {FxLoader} from "./fx-loader";
-import {FxContext} from "../lexer/model/fx-context";
-import {TemplateParser} from "../lexer/template-parser";
-import {FxCompiler} from "./fx-compiler";
-import {FxExpression} from "./model/fx-expression";
-import {FxConstant} from "./model/fx-constant";
-import {FxScope} from "./fx-scope";
+import { FxExpressionDefinition } from "../../defs";
+import { FxLoader } from "./fx-loader";
+import { FxContext } from "../lexer/model/fx-context";
+import { TemplateParser } from "../lexer/template-parser";
+import { FxCompiler } from "./fx-compiler";
+import { FxExpression } from "./model/fx-expression";
+import { FxConstant } from "./model/fx-constant";
+import { FxScope } from "./fx-scope";
 
 export class JsonFx {
 
@@ -20,7 +20,10 @@ export class JsonFx {
   }
 
   compile(template: any): FxCompiledTemplate {
-    const expr = this.compiler.compile(this.parser.parse(template));
+    const root = this.parser.parse(template);
+    console.log(root.toString());
+
+    const expr = this.compiler.compile(root);
     return new FxCompiledTemplateImpl(expr);
   }
 }

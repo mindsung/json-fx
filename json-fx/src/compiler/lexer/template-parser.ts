@@ -1,78 +1,33 @@
-import {FxParser} from "./model/fx-parser";
-import {FxTokenNode} from "./model/fx-token-node";
-import {ScriptParser} from "./script-parser";
-import {isArray, isObject, isString} from "../../common";
-import {FxContext} from "./model/fx-context";
+import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./model/fx-token-node";
+import { FxContext } from "./model/fx-context";
+import { TemplateGrouper } from "./template-grouper";
+import { NodeParser } from "./node-parser";
+import { ExpressionParser } from "./expression-parser";
+import { OperatorParser } from "./operator-parser";
+import { Optimizer } from "./optimizer";
+import { ContextParser } from "./context-parser";
+import { OperatorContextParser } from "./operator-context-parser";
 
 export class TemplateParser extends FxParser<any, FxTokenNode> {
-  private scriptParser: ScriptParser;
+  private grouper: TemplateGrouper;
+  private parser: NodeParser;
 
   constructor(context: FxContext) {
     super(context);
-    this.scriptParser = new ScriptParser(context);
+
+    this.grouper = new TemplateGrouper();
+    this.parser = new NodeParser(
+      new ExpressionParser(context),
+      new OperatorContextParser(context),
+      new OperatorParser(context),
+      new Optimizer(context),
+      new ContextParser(context));
   }
 
-  parse(expr: any): FxTokenNode {
-    if (isString(expr)) {
-      return this.parseScript(expr);
-    } else if (isArray(expr)) {
-      return this.parseArray(expr);
-    } else if (isObject(expr)) {
-      return this.parseObject(expr);
-    } else {
-      return null;
-    }
-  }
-
-  private parseScript(expr) {
-    this.scriptParser.lvalue = false;
-    return this.scriptParser.parse(expr);
-  }
-
-  private parseObject(expr) {
-    const root = new FxTokenNode("object", "{}");
-
-    for (const key of Object.keys(expr)) {
-      if (key.startsWith("//")) {
-        continue;
-      }
-
-      const child = this.parseKeyValue(key, expr[key]);
-      if (child) {
-        root.add(child);
-      }
-    }
-
+  parse(template: any): FxTokenNode {
+    const root = this.grouper.parse(template);
+    this.parser.parse(root);
     return root;
-  }
-
-  private parseArray(expr) {
-    const root = new FxTokenNode("array", "[]");
-
-    for (const item of expr) {
-      root.add(this.parse(item));
-    }
-
-    return root;
-  }
-
-  parseKeyValue(key: string, value: any) {
-    this.scriptParser.lvalue = true;
-    const lvalue = this.scriptParser.parse(key);
-
-    if (lvalue.count > 0) {
-      const group = new FxTokenNode("group");
-
-      while (lvalue.count) {
-        group.add(lvalue.last, 0);
-      }
-
-      lvalue.add(group);
-    }
-
-    const rvalue = this.parse(value);
-    lvalue.add(rvalue);
-
-    return lvalue;
   }
 }

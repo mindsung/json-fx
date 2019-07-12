@@ -5,9 +5,13 @@
   "repository": "https://github.com/mindsung/json-fx",
   "main": "index.js",
   "types": "index.d.ts",
-  "author": "Aaron Eads",
+  "author": {
+    "name": "Aaron Eads"
+  },
   "contributors": [
-    "Robb Eads"
+    {
+      "name": "Robb Eads"
+    }
   ],
   "license": "MIT",
   "devDependencies": {

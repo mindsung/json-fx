@@ -1,5 +1,5 @@
-import {FxParser} from "./model/fx-parser";
-import {FxTokenNode} from "./model/fx-token-node";
+import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./model/fx-token-node";
 
 export class ContextParser extends FxParser<FxTokenNode> {
   parse(item: FxTokenNode) {
@@ -14,6 +14,14 @@ export class ContextParser extends FxParser<FxTokenNode> {
         break;
       case "template-call":
         lvalue.tag = "template";
+
+        if (lvalue.first) {
+          if (lvalue.first.tag != "group") {
+            lvalue.first.wrap(new FxTokenNode("signature"));
+          } else {
+            lvalue.first.tag = "signature";
+          }
+        }
         break;
     }
 

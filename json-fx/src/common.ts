@@ -6,6 +6,10 @@ export function isNumber(value: any): value is number {
   return value != null && (typeof value == "number" || toString.call(value) == "[object Number]");
 }
 
+export function isBoolean(value: any): value is boolean {
+  return value != null && (typeof value == "boolean" || toString.call(value) == "[object Boolean]");
+}
+
 export function isArray(value: any): value is Array<any> {
   return value != null && Array.isArray(value);
 }

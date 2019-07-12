@@ -1,23 +1,23 @@
-import {FxParser} from "./model/fx-parser";
-import {FxTokenNode} from "./model/fx-token-node";
-import {FxIntrinsic} from "../../defs";
+import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./model/fx-token-node";
+import { FxIntrinsic } from "../../defs";
 
 export class Optimizer extends FxParser<FxTokenNode, void> {
-  private child: FxTokenNode;
+  private root: FxTokenNode;
 
   parse(root: FxTokenNode): void {
-    for (this.child of root.children) {
-      if (this.child.tag == "group" && this.child.symbol == "()" && this.child.count <= 1) {
-        this.child.unwrap();
+    this.root = root;
 
-      } else if (this.child.operator) {
-        this.optimizeIntrinsics();
-      }
+    if (this.root.tag == "group" && this.root.count <= 1) {
+      this.root.unwrap();
+
+    } else if (this.root.operator) {
+      this.optimizeIntrinsics();
     }
   }
 
   private optimizeIntrinsics() {
-    switch (this.child.operator.symbol) {
+    switch (this.root.operator.symbol) {
       case FxIntrinsic.Tuple:
         this.optimizeTuple();
         break;
@@ -35,63 +35,68 @@ export class Optimizer extends FxParser<FxTokenNode, void> {
         break;
 
       case FxIntrinsic.Prop:
-        this.child.tag = "prop";
+        this.root.tag = "prop";
         break;
 
       case FxIntrinsic.NullProp:
-        this.child.tag = "nullprop";
+        this.root.tag = "nullprop";
+        break;
+
+      case "assign":
+        this.root.first.add(this.root.last);
+        this.root.unwrap();
         break;
     }
   }
 
   private optimizeTuple() {
-    this.child.unwrap();
+    this.root.unwrap();
   }
 
   private optimizeInvoke() {
     // TODO: This is a absolute monstrosity
     // A quick hack allowing invoke to accept list of parameters, e.g. (5, 10):math~randint
 
-    if (this.child.parent && this.child.parent.parent && this.child.parent.parent.tag == "object") {
-      this.child.first.add(this.child.last);
-      this.child.unwrap();
+    if (this.root.parent && this.root.parent.parent && this.root.parent.parent.tag == "object") {
+      this.root.first.add(this.root.last);
+      this.root.unwrap();
 
     } else {
-      if (this.child.first.tag == "group") {
-        while (this.child.first.count) {
-          this.child.last.add(this.child.first.last, 0);
+      if (this.root.first.tag == "group") {
+        while (this.root.first.count) {
+          this.root.last.add(this.root.first.last, 0);
         }
 
-        this.child.first.orphan();
+        this.root.first.orphan();
 
       } else {
-        this.child.last.unshift(this.child.first);
+        this.root.last.unshift(this.root.first);
       }
 
-      if (this.child.last.tag == "identifier") {
-        this.child.last.tag = "expression";
+      if (this.root.last.tag == "identifier") {
+        this.root.last.tag = "expression";
       }
 
-      this.child.unwrap();
+      this.root.unwrap();
     }
   }
 
   private optimizeNullInvoke() {
-    this.child.last.unshift(this.child.first);
+    this.root.last.unshift(this.root.first);
 
-    if (this.child.last.tag == "identifier") {
-      this.child.last.tag = "expression";
+    if (this.root.last.tag == "identifier") {
+      this.root.last.tag = "expression";
     }
   }
 
   private optimizeLambda() {
-    this.child.tag = "lambda";
-    if (this.child.first.tag != "group") {
-      const wrapper = new FxTokenNode("group");
+    this.root.tag = "lambda";
+    if (this.root.first.tag != "group") {
+      const wrapper = new FxTokenNode("signature");
       wrapper.isLvalue = true;
-      this.child.first.wrap(wrapper);
+      this.root.first.wrap(wrapper);
     } else {
-      this.child.first.symbol = "vars";
+      this.root.first.tag = "signature";
     }
   }
 }

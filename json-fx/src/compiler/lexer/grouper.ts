@@ -1,14 +1,14 @@
-import {FxParser} from "./model/fx-parser";
-import {FxTokenNode} from "./model/fx-token-node";
-import {FxToken} from "./model/fx-token";
-import {FxSyntaxError} from "../fx-error";
+import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./model/fx-token-node";
+import { FxToken } from "./model/fx-token";
+import { FxSyntaxError } from "../fx-error";
 
 export class Grouper extends FxParser<FxToken[], FxTokenNode> {
   private root: FxTokenNode;
   private nextToken: FxTokenNode;
 
   parse(tokens: FxToken[]): FxTokenNode {
-    this.root = new FxTokenNode("global");
+    this.root = new FxTokenNode("group");
 
     for (const t of tokens) {
       this.nextToken = new FxTokenNode(t.tag, t.symbol, t.index);
@@ -27,7 +27,7 @@ export class Grouper extends FxParser<FxToken[], FxTokenNode> {
     }
 
     if (!this.rootIsClosed()) {
-      throw new FxSyntaxError(`Unclosed "${this.root.symbol}"`, this.root.index);
+      throw new FxSyntaxError(`Unclosed "${ this.root.symbol }"`, this.root.index);
     }
 
     return this.root;
@@ -40,7 +40,7 @@ export class Grouper extends FxParser<FxToken[], FxTokenNode> {
 
   private ascendRoot() {
     if (!this.closeBracketMatchesRoot()) {
-      throw new FxSyntaxError(`Unexpected token "${this.nextToken.symbol}"`, this.nextToken.index);
+      throw new FxSyntaxError(`Unexpected token "${ this.nextToken.symbol }"`, this.nextToken.index);
     }
 
     this.root.symbol += this.nextToken.symbol;

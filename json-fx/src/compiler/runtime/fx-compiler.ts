@@ -23,7 +23,7 @@ export class FxCompiler {
     let result: FxExpression;
 
     switch (root.tag) {
-      case "global":
+      case "group":
         return this.compile(root.first);
       case "operator":
       case "expression":
@@ -106,7 +106,7 @@ export class FxCompiler {
   }
 
   private getLambdaVarNames(lambda: FxTokenNode) {
-    if (lambda.first.tag == "group") {
+    if (lambda.first.tag == "signature") {
       return lambda.first.children.map(child => child.symbol);
     } else {
       return [];
