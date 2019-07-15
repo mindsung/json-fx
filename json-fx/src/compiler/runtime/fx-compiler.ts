@@ -22,12 +22,12 @@ export class FxCompiler {
     let result: FxExpression;
 
     switch (root.tag) {
-      case "group":
-        return this.compile(root.first);
-      case "operator":
-      case "expression":
-        result = this.createExpression(root);
-        break;
+      // case "group":
+      //   return this.compile(root.first);
+      // case "operator":
+      // case "expression":
+      //   result = this.createExpression(root);
+      //   break;
       case "lambda":
         result = this.createLambda(root);
         break;

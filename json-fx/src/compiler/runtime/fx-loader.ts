@@ -33,6 +33,7 @@ export class FxLoader {
 
     const fxdef: FxDefinition = {
       operator: def.operator,
+      evaluator: def.evaluator,
       compiler: def.compiler,
       optimizer: def.optimizer
     };
@@ -66,24 +67,16 @@ export class FxLoader {
   }
 
   public load(node: FxTokenNode): void {
-    let def = this.operators[node.symbol];
+    const def = this.getDefinition(node);
 
-    if (def) {
+    if (this.operators[node.symbol]) {
       node.tag = "operator";
-    } else {
-      def = this.getDefinition(node);
     }
 
-    if (def) {
-      node.operator = def.operator;
-      node.evaluator = def.evaluator;
-      node.optimizer = def.optimizer;
-      node.compiler = def.compiler;
-    }
-
-    if (!node.optimizer) {
-      node.optimizer = this.optimizer.backupParse.bind(this.optimizer);
-    }
+    node.operator = def.operator;
+    node.evaluator = def.evaluator;
+    node.optimizer = def.optimizer;
+    node.compiler = def.compiler;
 
     if (!node.compiler) {
       node.compiler = this.compiler.backupCompile.bind(this.compiler);
@@ -91,19 +84,24 @@ export class FxLoader {
   }
 
   private getDefinition(node: FxTokenNode): FxDefinition {
-    const strictHash = FxLoader.hash(node.tag, node.symbol);
-    const tagHash = FxLoader.hash(node.tag, null);
-    const symbolHash = FxLoader.hash(null, node.symbol);
+    const oprDef = FxLoader.sanitizeObject(this.operators[node.symbol]);
+    const strDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
+    const tagDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(node.tag, null)]);
+    const symDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(null, node.symbol)]);
 
-    if (this.definitions[strictHash]) {
-      return this.definitions[strictHash];
-    } else if (this.definitions[tagHash]) {
-      return this.definitions[tagHash];
-    } else if (this.definitions[symbolHash]) {
-      return this.definitions[symbolHash];
-    } else {
-      return null;
+    return Object.assign({}, symDef, tagDef, strDef, oprDef);
+  }
+
+  private static sanitizeObject(obj: any): any {
+    const clone = Object.assign({}, obj);
+
+    for (const key of Object.keys(clone)) {
+      if (clone[key] == null) {
+        delete clone[key];
+      }
     }
+
+    return clone;
   }
 
   private static hash(tag?: string, symbol?: string): string {

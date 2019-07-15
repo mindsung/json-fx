@@ -1,24 +1,19 @@
-import { FxArray } from "../../runtime/model/fx-array";
 import { FxIntrinsicDefinition } from "./fx-definition";
-import { FxTokenNode } from "./fx-token-node";
-import { FxLambda } from "../../runtime/model/fx-lambda";
+import { OperatorDef } from "../../../definitions/operator-def";
+import { ExpressionDef, IdentifierDef } from "../../../definitions/expression-def";
+import { GroupDef } from "../../../definitions/group-def";
+import { LambdaDef } from "../../../definitions/lambda-def";
+import { PropertyDef } from "../../../definitions/property-def";
+import { NullPropertyDef } from "../../../definitions/null-property-def";
 
 export const intrinsics: FxIntrinsicDefinition[] = [
-  {
-    tag: "group",
-    optimizer: token => {
-      if (token.parent && token.count <= 1) {
-        token.unwrap();
-      }
-    },
-    compiler: token => {
-      if (token.parent) {
-        return new FxArray(token.children.map(c => c.compile()));
-      } else {
-        return token.first.compile();
-      }
-    }
-  },
+  new GroupDef(),
+  new IdentifierDef(),
+  new OperatorDef(),
+  new ExpressionDef(),
+  new LambdaDef(),
+  new PropertyDef(),
+  new NullPropertyDef(),
   {
     operator: {symbol: ",", precedence: -2},
     optimizer: token => {
@@ -33,21 +28,33 @@ export const intrinsics: FxIntrinsicDefinition[] = [
     }
   },
   {
-    operator: {symbol: "=>", precedence: 0},
+    operator: {symbol: ":", precedence: 4},
     optimizer: token => {
-      token.tag = "lambda";
+      token.last.unshift(token.first);
 
-      if (token.first.tag != "group") {
-        const wrapper = new FxTokenNode("signature");
-        wrapper.isLvalue = true;
-        token.first.wrap(wrapper);
-      } else {
-        token.first.tag = "signature";
+      if (token.last.tag == "identifier") {
+        token.last.tag = "expression";
+      }
+
+      token.unwrap();
+    }
+  },
+  {
+    operator: {symbol: "?:", precedence: 4},
+    optimizer: token => {
+      token.last.unshift(token.first);
+
+      if (token.last.tag == "identifier") {
+        token.last.tag = "expression";
       }
     },
-    compiler: token => {
-      const paramNames = token.first.children.map(c => c.symbol);
-      return new FxLambda(paramNames, token.last.compile());
+    evaluator: {
+      name: "nullinvoke",
+      deferEvaluation: true,
+      evaluate: result => {
+        const evalFirstArg = result.args[0].evaluate();
+        return evalFirstArg != null ? result.evaluate() : null;
+      }
     }
   }
 ];

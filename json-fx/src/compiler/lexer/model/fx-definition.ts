@@ -17,7 +17,7 @@ export interface FxOperatorDefinition {
 }
 
 export interface FxEvaluatorDefinition {
-  name: string;
+  readonly name: string;
   evaluate?: (...args: any[]) => any;
   params?: FxParamDefinition[];
   deferEvaluation?: boolean;
@@ -33,10 +33,6 @@ export interface FxExpressionDefinition extends FxEvaluatorDefinition {
   operator?: FxOperatorDefinition;
 }
 
-export interface FxIntrinsicDefinition {
-  tag?: FxTokenTag;
-  operator?: FxOperatorDefinition;
-
-  optimizer?: (token: FxTokenNode) => void;
-  compiler?: (token: FxTokenNode) => FxExpression;
+export interface FxIntrinsicDefinition extends FxDefinition {
+  readonly tag?: FxTokenTag;
 }
