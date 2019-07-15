@@ -2,7 +2,7 @@ import { FxTokenNode } from "../lexer/model/fx-token-node";
 import { FxExpression } from "./model/fx-expression";
 import { FxObject } from "./model/fx-object";
 import { FxLambda } from "./model/fx-lambda";
-import { FxVariable } from "./model/fx-variable";
+import { FxVariableReference } from "./model/fx-variable-reference";
 import { FxFunction } from "./model/fx-function";
 import { FxConstant } from "./model/fx-constant";
 import { FxArray } from "./model/fx-array";
@@ -46,7 +46,7 @@ export class FxCompiler {
         break;
       case "variable":
       case "template":
-        result = new FxVariable(root.symbol);
+        result = new FxVariableReference(root.symbol);
         break;
       case "template-call":
         result = this.createFunction(root);
@@ -85,7 +85,7 @@ export class FxCompiler {
   }
 
   private createFunction(root: FxTokenNode) {
-    const result: FxExpression = new FxVariable(root.symbol);
+    const result: FxExpression = new FxVariableReference(root.symbol);
     let params: FxExpression[];
 
     if (root.first && root.first.tag == "group") {

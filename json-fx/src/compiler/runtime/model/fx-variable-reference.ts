@@ -1,6 +1,6 @@
 import { FxExpression } from "./fx-expression";
 
-export class FxVariable extends FxExpression {
+export class FxVariableReference extends FxExpression {
   public varName: string;
 
   constructor(varName: string) {

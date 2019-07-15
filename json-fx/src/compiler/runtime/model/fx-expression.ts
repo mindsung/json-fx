@@ -7,7 +7,7 @@ export abstract class FxExpression {
   public sourceRef: SourceRef;
 
   protected constructor() {
-    this._scope = new FxScope();
+    this._scope = new FxScope(this);
   }
 
   public get scope() {
@@ -15,6 +15,14 @@ export abstract class FxExpression {
   }
 
   evaluate(): any {
+  }
+
+  resolveDependencies(): any {
+    for (const x of this._scope.childScopes.map(s => s.owner)) {
+      if (x != null) {
+        x.resolveDependencies();
+      }
+    }
   }
 
   public bindScope(parent: FxScope = null) {

@@ -24,6 +24,7 @@ export class JsonFx {
     console.log(root.toString());
 
     const expr = this.compiler.compile(root);
+    expr.resolveDependencies();
     return new FxCompiledTemplateImpl(expr);
   }
 }

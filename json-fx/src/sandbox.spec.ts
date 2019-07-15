@@ -17,14 +17,16 @@ describe("Sandbox", () => {
       "@doSomething($a, $b)": {
         "a": "`var $a = ` + $a",
         "b": "`var $b = ` + $b",
-        "a_and_b": "`var $a = ` + $a + ` and var $b = ` + $b"
+        "a_and_b": "`var $a = ` + $a + ` and var $b = ` + $b + ` and var $c = ` + $c"
       },
       "$c": "$.a + $.b",
       "$d": "@doSomething($.a, $.b)",
       "result": {
         "c": "$c",
         "d": "$d",
-        "abc": "$.a + $.b + $c"
+        "$abc": "$.a + $.b + $c",
+        "abc1": "$abc",
+        "abc2": "$abc + ` #2`"
       }
     });
 
