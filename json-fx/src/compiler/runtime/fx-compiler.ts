@@ -21,7 +21,7 @@ export class FxCompiler {
 
   public compile(root: FxTokenNode): FxExpression {
     const result = root.compile();
-    result.sourceRef = { symbol: root.symbol, index: root.index };
+    result.sourceRef = {symbol: root.symbol, index: root.index};
     return result;
   }
 
@@ -70,7 +70,7 @@ export class FxCompiler {
     const exprDef = this.context.loader.getExpression(root.symbol);
 
     if (!exprDef) {
-      throw new FxCompileError(`Expression "${ root.symbol }" is undefined`, root.index);
+      throw new FxCompileError(`Expression "${root.symbol}" is undefined`, root.index);
     }
 
     const result = new FxFunction(exprDef.expression);
@@ -86,10 +86,17 @@ export class FxCompiler {
 
   private createFunction(root: FxTokenNode) {
     const result: FxExpression = new FxVariable(root.symbol);
+    let params: FxExpression[];
+
+    if (root.first && root.first.tag == "group") {
+      params = root.first.children.map(child => this.compile(child));
+    } else {
+      params = root.children.map(child => this.compile(child));
+    }
 
     return new FxFunction((lambda: FxLambdaFn, ...args: any[]) => {
       return lambda(...args);
-    }, [result].concat(root.children.map(child => this.compile(child))));
+    }, [result].concat(params));
   }
 
   private createObject(root: FxTokenNode) {

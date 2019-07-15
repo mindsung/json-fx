@@ -1,5 +1,5 @@
-import {FxParser} from "./model/fx-parser";
-import {FxTokenNode} from "./model/fx-token-node";
+import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./model/fx-token-node";
 
 export class ExpressionParser implements FxParser<FxTokenNode, void> {
   private last: FxTokenNode;
@@ -31,8 +31,12 @@ export class ExpressionParser implements FxParser<FxTokenNode, void> {
       this.last.tag = "template-call";
     }
 
+    const group = new FxTokenNode("group");
+
     while (this.next.count) {
-      this.last.add(this.next.first);
+      group.add(this.next.first);
     }
+
+    this.last.add(group, 0);
   }
 }

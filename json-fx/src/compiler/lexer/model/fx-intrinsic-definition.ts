@@ -3,7 +3,6 @@ import { FxTokenNode } from "./fx-token-node";
 import { FxTokenTag } from "./fx-token-tag";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxArray } from "../../runtime/model/fx-array";
-import { FxLambda } from "../../runtime/model/fx-lambda";
 
 export interface FxIntrinsicDefinition {
   tag: FxTokenTag;
@@ -17,7 +16,7 @@ export const intrinsics: FxIntrinsicDefinition[] = [
   {
     tag: "group",
     optimize: token => {
-      if (token.count <= 1 && token.parent) {
+      if (token.parent && token.count <= 1) {
         token.unwrap();
       }
     },
@@ -31,7 +30,7 @@ export const intrinsics: FxIntrinsicDefinition[] = [
   },
   {
     tag: "delimiter",
-    operator: { symbol: ",", precedence: -2 },
+    operator: {symbol: ",", precedence: -2},
     optimize: token => {
       token.unwrap();
     }
