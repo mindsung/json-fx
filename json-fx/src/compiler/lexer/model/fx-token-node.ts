@@ -2,6 +2,8 @@ import { FxNode } from "./fx-node";
 import { FxOperatorDefinition } from "../../../defs";
 import { FxTokenTag } from "./fx-token-tag";
 import { FxToken } from "./fx-token";
+import { FxExpression } from "../../runtime/model/fx-expression";
+import { FxCompiler } from "../../runtime/fx-compiler";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -9,7 +11,9 @@ export class FxTokenNode extends FxNode implements FxToken {
   public symbol: string;
   public index: number;
 
-  operator: FxOperatorDefinition = null;
+  public operator: FxOperatorDefinition = null;
+  public optimizer: (token?: FxTokenNode) => void;
+  public compiler: (token: FxTokenNode) => FxExpression;
 
   constructor(tag?: FxTokenTag, symbol?: string, index?: number) {
     super();
@@ -20,14 +24,15 @@ export class FxTokenNode extends FxNode implements FxToken {
 
   private _isLvalue = false;
 
-  public get isLvalue() {
-    if (this._isLvalue) {
-      return true;
-    } else if (this.parent) {
-      return this.parent.isLvalue;
-    } else {
-      return false;
-    }
+  public get isLvalue(): boolean {
+    return this._isLvalue;
+    // if (this._isLvalue) {
+    //   return true;
+    // } else if (this.parent) {
+    //   return this.parent.isLvalue;
+    // } else {
+    //   return false;
+    // }
   }
 
   public set isLvalue(v: boolean) {
@@ -35,6 +40,16 @@ export class FxTokenNode extends FxNode implements FxToken {
     for (const child of this.children) {
       child.isLvalue = true;
     }
+  }
+
+  public optimize(): void {
+    if (this.optimizer) {
+      this.optimizer(this);
+    }
+  }
+
+  public compile(): FxExpression {
+    return this.compiler ? this.compiler(this) : null;
   }
 
   public static from(root: FxToken): FxTokenNode {

@@ -1,15 +1,15 @@
-import {FxTokenNode} from "../lexer/model/fx-token-node";
-import {FxExpression} from "./model/fx-expression";
-import {FxObject} from "./model/fx-object";
-import {FxLambda} from "./model/fx-lambda";
-import {FxVariable} from "./model/fx-variable";
-import {FxFunction} from "./model/fx-function";
-import {FxConstant} from "./model/fx-constant";
-import {FxArray} from "./model/fx-array";
-import {FxLambdaFn} from "../../defs";
-import {FxProperty, FxPropertyPathItem} from "./model/fx-property";
-import {FxContext} from "../lexer/model/fx-context";
-import {FxCompileError} from "../fx-error";
+import { FxTokenNode } from "../lexer/model/fx-token-node";
+import { FxExpression } from "./model/fx-expression";
+import { FxObject } from "./model/fx-object";
+import { FxLambda } from "./model/fx-lambda";
+import { FxVariable } from "./model/fx-variable";
+import { FxFunction } from "./model/fx-function";
+import { FxConstant } from "./model/fx-constant";
+import { FxArray } from "./model/fx-array";
+import { FxLambdaFn } from "../../defs";
+import { FxProperty, FxPropertyPathItem } from "./model/fx-property";
+import { FxContext } from "../lexer/model/fx-context";
+import { FxCompileError } from "../fx-error";
 
 export class FxCompiler {
 
@@ -20,6 +20,12 @@ export class FxCompiler {
   }
 
   public compile(root: FxTokenNode): FxExpression {
+    const result = root.compile();
+    result.sourceRef = { symbol: root.symbol, index: root.index };
+    return result;
+  }
+
+  public backupCompile(root: FxTokenNode): FxExpression {
     let result: FxExpression;
 
     switch (root.tag) {
@@ -57,7 +63,6 @@ export class FxCompiler {
         break;
     }
 
-    result.sourceRef = {symbol: root.symbol, index: root.index};
     return result;
   }
 
@@ -65,7 +70,7 @@ export class FxCompiler {
     const exprDef = this.context.loader.getExpression(root.symbol);
 
     if (!exprDef) {
-      throw new FxCompileError(`Expression "${root.symbol}" is undefined`, root.index);
+      throw new FxCompileError(`Expression "${ root.symbol }" is undefined`, root.index);
     }
 
     const result = new FxFunction(exprDef.expression);

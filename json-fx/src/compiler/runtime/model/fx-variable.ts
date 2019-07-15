@@ -8,8 +8,9 @@ export class FxVariable extends FxExpression {
     this.varName = varName;
   }
 
-  public evaluate() {
-    return this.scope.getVariable(this.varName).evaluate();
+  public evaluate(): any {
+    return this.scope.getVariable(this.varName)
+      .evaluate();
   }
 
   public toString(): string {

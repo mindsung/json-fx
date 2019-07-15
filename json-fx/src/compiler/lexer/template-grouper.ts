@@ -1,17 +1,15 @@
 import { FxParser } from "./model/fx-parser";
-import { FxToken } from "./model/fx-token";
 import { Tokenizer } from "./tokenizer";
 import { isArray, isBoolean, isNumber, isObject, isString } from "../../common";
 import { Grouper } from "./grouper";
 import { FxTokenNode } from "./model/fx-token-node";
 
-export class TemplateGrouper extends FxParser<any, FxTokenNode> {
+export class TemplateGrouper implements FxParser<any, FxTokenNode> {
 
   private tokenizer: Tokenizer;
   private grouper: Grouper;
 
   constructor() {
-    super();
     this.tokenizer = new Tokenizer();
     this.grouper = new Grouper();
   }
@@ -78,7 +76,7 @@ export class TemplateGrouper extends FxParser<any, FxTokenNode> {
       root.add(keyToken);
       root.add(new FxTokenNode("operator", ":"));
       root.add(this.parse(obj[key]));
-      root.add(new FxTokenNode("operator", ","));
+      root.add(new FxTokenNode("delimiter", ","));
     }
 
     if (root.count > 0) {

@@ -4,7 +4,7 @@ import {isArray} from "../../common";
 import {FxTokenRule} from "./model/fx-token-rule";
 import {FxToken} from "./model/fx-token";
 
-export class Tokenizer extends FxParser<string, FxToken[]> {
+export class Tokenizer implements FxParser<string, FxToken[]> {
   private tokens: FxToken[];
   private nextChar: string;
   private isLiteralSequence: boolean;

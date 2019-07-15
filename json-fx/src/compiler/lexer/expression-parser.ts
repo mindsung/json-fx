@@ -1,7 +1,7 @@
 import {FxParser} from "./model/fx-parser";
 import {FxTokenNode} from "./model/fx-token-node";
 
-export class ExpressionParser extends FxParser<FxTokenNode, void> {
+export class ExpressionParser implements FxParser<FxTokenNode, void> {
   private last: FxTokenNode;
   private next: FxTokenNode;
 

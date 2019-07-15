@@ -1,7 +1,7 @@
 import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
 
-export class ContextParser extends FxParser<FxTokenNode> {
+export class ContextParser implements FxParser<FxTokenNode> {
   parse(item: FxTokenNode) {
     if (item.isLvalue) {
       this.makeLValue(item);
@@ -25,6 +25,6 @@ export class ContextParser extends FxParser<FxTokenNode> {
         break;
     }
 
-    lvalue.children.forEach(child => this.makeLValue(child));
+    // lvalue.children.forEach(child => this.makeLValue(child));
   }
 }

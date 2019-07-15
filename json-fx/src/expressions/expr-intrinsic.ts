@@ -21,10 +21,6 @@ export const exprIntrinsic: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
-    name: FxIntrinsic.Tuple,
-    operator: { symbol: ",", precedence: -2 }
-  },
-  {
     name: FxIntrinsic.Prop,
     operator: { symbol: ".", precedence: 4 }
   },

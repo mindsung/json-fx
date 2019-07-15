@@ -3,7 +3,7 @@ import { FxTokenNode } from "./model/fx-token-node";
 import { FxToken } from "./model/fx-token";
 import { FxSyntaxError } from "../fx-error";
 
-export class Grouper extends FxParser<FxToken[], FxTokenNode> {
+export class Grouper implements FxParser<FxToken[], FxTokenNode> {
   private root: FxTokenNode;
   private nextToken: FxTokenNode;
 

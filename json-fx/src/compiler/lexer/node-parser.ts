@@ -1,11 +1,10 @@
-import {FxParser} from "./model/fx-parser";
-import {FxNode} from "./model/fx-node";
+import { FxParser } from "./model/fx-parser";
+import { FxNode } from "./model/fx-node";
 
-export class NodeParser extends FxParser<FxNode, void> {
+export class NodeParser implements FxParser<FxNode, void> {
   public parsers: FxParser<FxNode, void>[];
 
   constructor(...parsers: FxParser<FxNode, void>[]) {
-    super();
     this.parsers = parsers;
   }
 
@@ -15,7 +14,9 @@ export class NodeParser extends FxParser<FxNode, void> {
     }
   }
 
-  private parseTree(root: FxNode, parser: FxParser<FxNode, void>) {
+  private parseTree(root: FxNode, parser: FxParser<FxNode, void>): void {
+    const p = root.parent;
+
     for (const node of root.children) {
       this.parseTree(node, parser);
     }

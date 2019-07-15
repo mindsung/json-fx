@@ -2,10 +2,14 @@ import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
 import { FxIntrinsic } from "../../defs";
 
-export class Optimizer extends FxParser<FxTokenNode, void> {
+export class Optimizer implements FxParser<FxTokenNode, void> {
   private root: FxTokenNode;
 
   parse(root: FxTokenNode): void {
+    root.optimize();
+  }
+
+  public backupParse(root: FxTokenNode): void {
     this.root = root;
 
     if (this.root.tag == "group" && this.root.count <= 1) {

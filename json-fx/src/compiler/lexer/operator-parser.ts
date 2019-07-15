@@ -1,19 +1,25 @@
-import {FxParser} from "./model/fx-parser";
-import {FxTokenNode} from "./model/fx-token-node";
+import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./model/fx-token-node";
+import { FxContext } from "./model/fx-context";
 
 
-export class OperatorParser extends FxParser<FxTokenNode, void> {
+export class OperatorParser implements FxParser<FxTokenNode, void> {
+  private context: FxContext;
   private nextNode: FxTokenNode;
 
   private operatorStack: FxTokenNode[];
   private outputQueue: FxTokenNode[];
 
-  parse(root: FxTokenNode) {
+  constructor(context: FxContext) {
+    this.context = context;
+  }
+
+  public parse(root: FxTokenNode): void {
     this.operatorStack = [];
     this.outputQueue = [];
 
     for (this.nextNode of root.children) {
-      this.loadOperator();
+      // this.loadOperator();
 
       if (this.nextNode.tag == "operator") {
         while (this.operatorStack.length > 0 && (this.operatorStack[0].operator.precedence >= this.nextNode.operator.precedence || this.operatorStack[0].operator.isUnary)) {
@@ -47,7 +53,7 @@ export class OperatorParser extends FxParser<FxTokenNode, void> {
       }
       this.outputQueue.push(stackTop);
     } else {
-      throw new Error(`Operator "${stackTop.operator.symbol}" expects ${numOperands} operands, ${this.outputQueue.length} given`);
+      throw new Error(`Operator "${ stackTop.operator.symbol }" expects ${ numOperands } operands, ${ this.outputQueue.length } given`);
     }
   }
 }
