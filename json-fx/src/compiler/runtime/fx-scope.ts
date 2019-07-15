@@ -2,19 +2,19 @@ import {FxExpression} from "./model/fx-expression";
 
 
 export class FxScope {
-  public owner: FxScope;
+  public parentScope: FxScope;
+  public childScopes: FxScope[] = [];
   public variables: { [index: string]: FxExpression };
 
-  constructor(owner: FxScope = null) {
-    this.owner = owner;
+  constructor() {
     this.variables = {};
   }
 
   public getVariable(key: string) {
     if (this.variables[key]) {
       return this.variables[key];
-    } else if (this.owner) {
-      return this.owner.getVariable(key);
+    } else if (this.parentScope) {
+      return this.parentScope.getVariable(key);
     } else {
       throw new Error(`Undefined variable "${key}"`);
     }
@@ -25,10 +25,6 @@ export class FxScope {
       value.bindScope(this);
     }
     this.variables[key] = value;
-  }
-
-  public deleteVariable(key: string) {
-    delete this.variables[key];
   }
 
   public deleteAll() {
