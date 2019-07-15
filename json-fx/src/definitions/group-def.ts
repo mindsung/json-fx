@@ -1,20 +1,20 @@
-import { FxIntrinsicDefinition } from "../compiler/lexer/model/fx-definition";
 import { FxTokenNode } from "../compiler/lexer/model/fx-token-node";
 import { FxExpression } from "../compiler/runtime/model/fx-expression";
 import { FxTokenTag } from "../compiler/lexer/model/fx-token-tag";
 import { FxArray } from "../compiler/runtime/model/fx-array";
+import { FxDef } from "./model/fx-def";
 
-export class GroupDef implements FxIntrinsicDefinition {
+export class GroupDef extends FxDef {
 
   public get tag(): FxTokenTag { return "group"; }
 
-  public optimizer(token: FxTokenNode): void {
+  protected optimize(token: FxTokenNode): void {
     if (token.parent && token.count <= 1) {
       token.unwrap();
     }
   }
 
-  public compiler(token: FxTokenNode): FxExpression {
+  protected compile(token: FxTokenNode): FxExpression {
     if (token.parent) {
       return new FxArray(token.children.map(c => c.compile()));
     } else {

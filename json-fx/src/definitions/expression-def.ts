@@ -1,24 +1,20 @@
-import { FxIntrinsicDefinition } from "../compiler/lexer/model/fx-definition";
 import { FxTokenNode } from "../compiler/lexer/model/fx-token-node";
 import { FxExpression } from "../compiler/runtime/model/fx-expression";
 import { FxCompileError } from "../compiler/fx-error";
 import { FxFunction } from "../compiler/runtime/model/fx-function";
 import { FxTokenTag } from "../compiler/lexer/model/fx-token-tag";
 import { FxConstant } from "../compiler/runtime/model/fx-constant";
+import { FxDef } from "./model/fx-def";
 
-export class ExpressionDef implements FxIntrinsicDefinition {
+export class ExpressionDef extends FxDef {
 
   public get tag(): FxTokenTag { return "expression"; }
 
-  public compiler(token: FxTokenNode): FxExpression {
-    return ExpressionDef.compiler(token);
-  }
-
-  public static compiler(token: FxTokenNode): FxExpression {
+  protected compile(token: FxTokenNode): FxExpression {
     const evaluator = token.evaluator;
 
     if (!evaluator) {
-      throw new FxCompileError(`Expression "${token.symbol}" is undefined`, token.index);
+      throw new FxCompileError(`Expression "${ token.symbol }" is undefined`, token.index);
     }
 
     const result = new FxFunction(evaluator.evaluate);
@@ -33,11 +29,15 @@ export class IdentifierDef extends ExpressionDef {
 
   public get tag(): FxTokenTag { return "identifier"; }
 
-  public compiler(token: FxTokenNode): FxExpression {
+  protected compile(token: FxTokenNode): FxExpression {
     if (token.evaluator) {
-      return super.compiler(token);
+      return super.compile(token);
     } else {
       return new FxConstant(token.symbol);
     }
   }
+}
+
+export class OperatorDef extends ExpressionDef {
+  public get tag(): FxTokenTag { return "operator"; }
 }

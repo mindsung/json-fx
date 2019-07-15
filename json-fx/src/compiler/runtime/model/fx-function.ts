@@ -14,24 +14,26 @@ export class FxFunction extends FxExpression {
     this.deferEvaluation = false;
   }
 
-  public evaluate() {
+  public evaluate(): any {
     const args = this.evaluateArgs();
     return this.evaluator(...args);
   }
 
-  protected evaluateArgs() {
+  protected evaluateArgs(): any[] {
     return this.deferEvaluation ? this.args : this.args.map(p => p.evaluate());
   }
 
-  public bindScope(root: FxScope = null) {
+  public bindScope(root: FxScope = null): void {
     super.bindScope(root);
-    this.args.forEach(arg => arg.bindScope(this.scope));
+    for (const arg of this.args) {
+      arg.bindScope(this.scope);
+    }
   }
 
   public toString(): string {
     let result = this.sourceRef.symbol;
     if (this.args.length > 0) {
-      result += `(${this.args.map(arg => arg.toString()).join(", ")})`;
+      result += `(${ this.args.map(arg => arg.toString()).join(", ") })`;
     }
 
     return result;

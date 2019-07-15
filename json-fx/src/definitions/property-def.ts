@@ -1,16 +1,17 @@
-import { FxIntrinsicDefinition, FxOperatorDefinition } from "../compiler/lexer/model/fx-definition";
+import { FxOperatorDefinition } from "../compiler/lexer/model/fx-definition";
 import { FxTokenNode } from "../compiler/lexer/model/fx-token-node";
 import { FxExpression } from "../compiler/runtime/model/fx-expression";
 import { FxProperty, FxPropertyPathItem } from "../compiler/runtime/model/fx-property";
 import { FxConstant } from "../compiler/runtime/model/fx-constant";
+import { FxDef } from "./model/fx-def";
 
-export class PropertyDef implements FxIntrinsicDefinition {
+export class PropertyDef extends FxDef {
 
   public get operator(): FxOperatorDefinition {
     return {symbol: ".", precedence: 4};
   }
 
-  public compiler(token: FxTokenNode): FxExpression {
+  protected compile(token: FxTokenNode): FxExpression {
     return new FxProperty(PropertyDef.getPropertyPath(token));
   }
 
@@ -43,5 +44,12 @@ export class PropertyDef implements FxIntrinsicDefinition {
 
   private static isNullProp(node: FxTokenNode): boolean {
     return node.tag == "operator" && node.symbol == "?.";
+  }
+}
+
+export class NullPropertyDef extends PropertyDef {
+
+  public get operator(): FxOperatorDefinition {
+    return {symbol: "?.", precedence: 4};
   }
 }

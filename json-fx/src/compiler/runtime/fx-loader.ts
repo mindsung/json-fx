@@ -77,10 +77,6 @@ export class FxLoader {
     node.evaluator = def.evaluator;
     node.optimizer = def.optimizer;
     node.compiler = def.compiler;
-
-    if (!node.compiler) {
-      node.compiler = this.compiler.backupCompile.bind(this.compiler);
-    }
   }
 
   private getDefinition(node: FxTokenNode): FxDefinition {

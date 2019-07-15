@@ -1,8 +1,8 @@
-import {after, describe, Func, it} from "mocha";
-import {assert} from "chai";
+import { after, describe, Func, it } from "mocha";
+import { assert } from "chai";
 
-import {coreExpressions} from "./core";
-import {JsonFx} from "..";
+import { coreExpressions } from "./core";
+import { JsonFx } from "..";
 
 const expressions = coreExpressions.map(expr => expr.name);
 

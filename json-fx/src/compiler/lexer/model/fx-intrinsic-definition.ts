@@ -1,34 +1,44 @@
 import { FxIntrinsicDefinition } from "./fx-definition";
-import { OperatorDef } from "../../../definitions/operator-def";
-import { ExpressionDef, IdentifierDef } from "../../../definitions/expression-def";
+import { ExpressionDef, IdentifierDef, OperatorDef } from "../../../definitions/expression-def";
 import { GroupDef } from "../../../definitions/group-def";
 import { LambdaDef } from "../../../definitions/lambda-def";
-import { PropertyDef } from "../../../definitions/property-def";
-import { NullPropertyDef } from "../../../definitions/null-property-def";
+import { NullPropertyDef, PropertyDef } from "../../../definitions/property-def";
+import { ObjectDef } from "../../../definitions/object-def";
+import { ArrayDef } from "../../../definitions/array-def";
+import { TemplateDef, VariableDef } from "../../../definitions/variable-def";
+import { CallDef } from "../../../definitions/call-def";
+import { NumberLiteralDef, StringLiteralDef } from "../../../definitions/literal-def";
 
 export const intrinsics: FxIntrinsicDefinition[] = [
   new GroupDef(),
   new IdentifierDef(),
+  new ObjectDef(),
+  new ArrayDef(),
+  new VariableDef(),
+  new TemplateDef(),
   new OperatorDef(),
   new ExpressionDef(),
+  new StringLiteralDef(),
+  new NumberLiteralDef(),
   new LambdaDef(),
   new PropertyDef(),
+  new CallDef(),
   new NullPropertyDef(),
   {
-    operator: {symbol: ",", precedence: -2},
+    operator: { symbol: ",", precedence: -2 },
     optimizer: token => {
       token.unwrap();
     }
   },
   {
-    operator: {symbol: ":a", precedence: -1},
+    operator: { symbol: ":a", precedence: -1 },
     optimizer: token => {
       token.first.add(token.last);
       token.unwrap();
     }
   },
   {
-    operator: {symbol: ":", precedence: 4},
+    operator: { symbol: ":", precedence: 4 },
     optimizer: token => {
       token.last.unshift(token.first);
 
@@ -40,7 +50,7 @@ export const intrinsics: FxIntrinsicDefinition[] = [
     }
   },
   {
-    operator: {symbol: "?:", precedence: 4},
+    operator: { symbol: "?:", precedence: 4 },
     optimizer: token => {
       token.last.unshift(token.first);
 

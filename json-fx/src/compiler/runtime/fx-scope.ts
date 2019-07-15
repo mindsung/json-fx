@@ -1,4 +1,4 @@
-import {FxExpression} from "./model/fx-expression";
+import { FxExpression } from "./model/fx-expression";
 
 
 export class FxScope {

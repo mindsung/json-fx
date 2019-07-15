@@ -30,11 +30,11 @@ export class FxObject extends FxExpression {
   }
 
   public toString(): string {
-    const vars = Object.keys(this.scope.variables).map(key => `${key}: ${this.scope.variables[key].toString()}`);
-    let items = Object.keys(this.items).map(key => `${key}: ${this.items[key].toString()}`);
+    const vars = Object.keys(this.scope.variables).map(key => `${ key }: ${ this.scope.variables[key].toString() }`);
+    let items = Object.keys(this.items).map(key => `${ key }: ${ this.items[key].toString() }`);
 
     items = vars.concat(items);
 
-    return `{${items.join(", ")}}`;
+    return `{${ items.join(", ") }}`;
   }
 }

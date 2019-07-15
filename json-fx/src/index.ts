@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 import { polyfills } from "./polyfills";
+
 polyfills();
 
 export * from "./expressions/core";

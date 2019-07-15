@@ -27,13 +27,6 @@ export class FxTokenNode extends FxNode implements FxToken {
 
   public get isLvalue(): boolean {
     return this._isLvalue;
-    // if (this._isLvalue) {
-    //   return true;
-    // } else if (this.parent) {
-    //   return this.parent.isLvalue;
-    // } else {
-    //   return false;
-    // }
   }
 
   public set isLvalue(v: boolean) {
@@ -45,12 +38,14 @@ export class FxTokenNode extends FxNode implements FxToken {
 
   public optimize(): void {
     if (this.optimizer) {
-      this.optimizer(this);
+      this.optimizer.call(this.optimizer, this);
     }
   }
 
   public compile(): FxExpression {
-    return this.compiler ? this.compiler(this) : null;
+    return this.compiler
+      ? this.compiler(this)
+      : null;
   }
 
   public static from(root: FxToken): FxTokenNode {
@@ -75,13 +70,13 @@ export class FxTokenNode extends FxNode implements FxToken {
     let result = istr + this.toStringSelf();
 
     if (this.count > 0) {
-      result += `\n${this.children.map(v => v.toStringIndent(indent + 1)).join("\n")}`;
+      result += `\n${ this.children.map(v => v.toStringIndent(indent + 1)).join("\n") }`;
     }
 
     return result;
   }
 
   private toStringSelf(): string {
-    return (this.symbol != "" ? this.symbol : "<>") + ` [${this.tag}]`;
+    return (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;
   }
 }

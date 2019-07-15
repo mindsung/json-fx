@@ -15,8 +15,6 @@ export class NodeParser implements FxParser<FxNode, void> {
   }
 
   private parseTree(root: FxNode, parser: FxParser<FxNode, void>): void {
-    const p = root.parent;
-
     for (const node of root.children) {
       this.parseTree(node, parser);
     }
