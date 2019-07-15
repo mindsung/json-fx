@@ -25,18 +25,19 @@ export class ExpressionParser implements FxParser<FxTokenNode, void> {
   }
 
   private makeLastAnExpression() {
+    let group: FxTokenNode;
+
     if (this.last.tag == "identifier") {
       this.last.tag = "expression";
+      group = this.last;
     } else if (this.last.tag == "template") {
       this.last.tag = "template-call";
+      group = new FxTokenNode("signature");
+      this.last.add(group);
     }
-
-    const group = new FxTokenNode("group");
 
     while (this.next.count) {
       group.add(this.next.first);
     }
-
-    this.last.add(group, 0);
   }
 }

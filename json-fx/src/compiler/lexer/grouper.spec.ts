@@ -1,9 +1,9 @@
-import {describe, it} from "mocha";
-import {assert} from "chai";
+import { describe, it } from "mocha";
+import { assert } from "chai";
 
-import {Tokenizer} from "./tokenizer";
-import {Grouper} from "./grouper";
-import {FxTokenNode} from "./model/fx-token-node";
+import { Tokenizer } from "./tokenizer";
+import { Grouper } from "./grouper";
+import { FxTokenNode } from "./model/fx-token-node";
 
 describe("lexer/Grouper", function () {
 
@@ -122,7 +122,7 @@ describe("lexer/Grouper", function () {
     }));
   });
 
-  it("Parses a complex expression", function () {
+  it("Parses a complex evaluator", function () {
     const grouper = new Grouper();
     const result = parse("($var1.bar2 * 2.5 + `baz boz`):map(@template)");
 

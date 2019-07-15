@@ -1,7 +1,7 @@
-import {describe, it} from "mocha";
-import {assert} from "chai";
+import { describe, it } from "mocha";
+import { assert } from "chai";
 
-import {Tokenizer} from "./tokenizer";
+import { Tokenizer } from "./tokenizer";
 
 describe("lexer/Tokenizer", function () {
 
@@ -106,7 +106,7 @@ describe("lexer/Tokenizer", function () {
     assert.deepEqual(result, [{tag: "operator", symbol: "**", index: 0}]);
   });
 
-  it("Parses a complex expression", function () {
+  it("Parses a complex evaluator", function () {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("($var1.bar2 * 2.5 + `baz boz`):map(@template)");
 

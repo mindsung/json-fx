@@ -8,7 +8,6 @@ import { OperatorParser } from "./operator-parser";
 import { Optimizer } from "./optimizer";
 import { ContextParser } from "./context-parser";
 import { OperatorContextParser } from "./operator-context-parser";
-import { FxNode } from "./model/fx-node";
 import { FxCompiler } from "../runtime/fx-compiler";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
@@ -22,10 +21,10 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
       new ExpressionParser(),
       new OperatorContextParser(context),
       new OperatorParser(context),
-      new OptimizerImplGlue(),
+      // new OptimizerImplGlue(),
       new Optimizer(),
-      new ContextParser(),
-      new CompilerImplGlue(context));
+      new ContextParser());
+    //new CompilerImplGlue(context));
   }
 
   parse(template: any): FxTokenNode {
@@ -55,7 +54,7 @@ class CompilerImplGlue implements FxParser<FxTokenNode> {
   readonly compiler: FxCompiler;
 
   constructor(context: FxContext) {
-    this.compiler = new FxCompiler(context);
+    this.compiler = new FxCompiler();
   }
 
   parse(item: FxTokenNode): void {

@@ -26,29 +26,24 @@ export class Optimizer implements FxParser<FxTokenNode, void> {
         this.optimizeTuple();
         break;
 
-      case FxIntrinsic.Invoke:
+      case ":":
         this.optimizeInvoke();
         break;
 
-      case FxIntrinsic.NullInvoke:
+      case "?:":
         this.optimizeNullInvoke();
         break;
 
-      case FxIntrinsic.Lambda:
+      case "=>":
         this.optimizeLambda();
         break;
 
-      case FxIntrinsic.Prop:
+      case ".":
         this.root.tag = "prop";
         break;
 
-      case FxIntrinsic.NullProp:
+      case "?.":
         this.root.tag = "nullprop";
-        break;
-
-      case "assign":
-        this.root.first.add(this.root.last);
-        this.root.unwrap();
         break;
     }
   }
@@ -95,7 +90,7 @@ export class Optimizer implements FxParser<FxTokenNode, void> {
 
   private optimizeLambda() {
     this.root.tag = "lambda";
-    if (this.root.first.tag != "group") {
+    if (this.root.first.tag != "signature") {
       const wrapper = new FxTokenNode("signature");
       wrapper.isLvalue = true;
       this.root.first.wrap(wrapper);

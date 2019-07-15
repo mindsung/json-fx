@@ -1,35 +1,25 @@
-import { intrinsics } from "../lexer/model/fx-intrinsic-definition";
 import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
 import { FxTokenNode } from "../lexer/model/fx-token-node";
-import { exprIntrinsic } from "../../expressions/expr-intrinsic";
-import { Optimizer } from "../lexer/optimizer";
-import { FxCompiler } from "./fx-compiler";
+import { intrinsics } from "../lexer/model/fx-intrinsic-definition";
 
-export class FxLoader {
-  private readonly operators: { [index: string]: FxDefinition };
-  private readonly definitions: { [index: string]: FxDefinition };
+export class NewFxLoader {
 
-  private optimizer: Optimizer;
-  private compiler: FxCompiler;
+  private operators: { [index: string]: FxDefinition };
+  private definitions: { [index: string]: FxDefinition };
 
-  constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
+  constructor(...expressions: FxExpressionDefinition[][]) {
     this.operators = {};
     this.definitions = {};
-
-    this.optimizer = new Optimizer();
-    this.compiler = new FxCompiler();
 
     expressions.forEach(
       set => set.forEach(
         def => this.defineExpression(def)));
 
-    exprIntrinsic.forEach(def => this.defineExpression(def));
-
     intrinsics.forEach(intr => this.defineIntrinsic(intr));
   }
 
   public defineIntrinsic(def: FxIntrinsicDefinition): void {
-    const hash = FxLoader.hash(def.tag);
+    const hash = NewFxLoader.hashDefinition(def.tag);
 
     const fxdef: FxDefinition = {
       operator: def.operator,
@@ -37,9 +27,7 @@ export class FxLoader {
       optimizer: def.optimizer
     };
 
-    if (def.tag) {
-      this.definitions[hash] = fxdef;
-    }
+    this.definitions[hash] = fxdef;
 
     if (def.operator) {
       this.defineOperator(def.operator.symbol, fxdef);
@@ -47,7 +35,7 @@ export class FxLoader {
   }
 
   public defineExpression(def: FxExpressionDefinition): void {
-    const hash = FxLoader.hash(null, def.name);
+    const hash = NewFxLoader.hashDefinition("identifier", def.name);
 
     const fxdef: FxDefinition = {
       operator: def.operator,
@@ -68,45 +56,31 @@ export class FxLoader {
   public load(node: FxTokenNode): void {
     let def = this.operators[node.symbol];
 
-    if (def) {
-      node.tag = "operator";
-    } else {
+    if (!def) {
       def = this.getDefinition(node);
     }
 
     if (def) {
       node.operator = def.operator;
-      node.evaluator = def.evaluator;
       node.optimizer = def.optimizer;
       node.compiler = def.compiler;
-    }
-
-    if (!node.optimizer) {
-      node.optimizer = this.optimizer.backupParse.bind(this.optimizer);
-    }
-
-    if (!node.compiler) {
-      node.compiler = this.compiler.backupCompile.bind(this.compiler);
     }
   }
 
   private getDefinition(node: FxTokenNode): FxDefinition {
-    const strictHash = FxLoader.hash(node.tag, node.symbol);
-    const tagHash = FxLoader.hash(node.tag, null);
-    const symbolHash = FxLoader.hash(null, node.symbol);
+    const strictHash = NewFxLoader.hashDefinition(node.tag, node.symbol);
+    const tagHash = NewFxLoader.hashDefinition(node.tag);
 
     if (this.definitions[strictHash]) {
       return this.definitions[strictHash];
     } else if (this.definitions[tagHash]) {
       return this.definitions[tagHash];
-    } else if (this.definitions[symbolHash]) {
-      return this.definitions[symbolHash];
     } else {
       return null;
     }
   }
 
-  private static hash(tag?: string, symbol?: string): string {
+  private static hashDefinition(tag?: string, symbol?: string): string {
     tag = tag || "*";
     symbol = symbol || "*";
 

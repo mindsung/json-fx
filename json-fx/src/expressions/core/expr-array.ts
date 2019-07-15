@@ -1,23 +1,24 @@
-import {FxExpressionDefinition, FxLambdaFn} from "../../defs";
 import { isArray, isNumber } from "../../common";
+import { FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
+import { FxLambdaFn } from "../../defs";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "item",
-    expression: (arr: any[], index: number) => {
+    evaluate: (arr: any[], index: number) => {
       return arr[index];
     }
   },
   {
     name: "map",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       return arr.map(lambda);
     },
     operator: {symbol: "::", precedence: 4}
   },
   {
     name: "sort",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       if (lambda) {
         return arr.sort((a, b) => {
           const evalA = lambda(a);
@@ -32,19 +33,19 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "filter",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       return arr.filter(lambda);
     }
   },
   {
     name: "find",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       return arr.find(lambda);
     }
   },
   {
     name: "concat",
-    expression: (a: any, b: any) => {
+    evaluate: (a: any, b: any) => {
       if (!isArray(a)) {
         a = [a];
       }
@@ -57,7 +58,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "min",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       let min: any = null;
       arr.forEach(item => min = minOf(min, lambda ? lambda(item) : item));
       return min;
@@ -65,7 +66,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "max",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       let max: any = null;
       arr.forEach(item => max = maxOf(max, lambda ? lambda(item) : item));
       return max;
@@ -73,14 +74,14 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "avg",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       let total = 0;
       let count = 0;
       arr.forEach(item => {
         const itemVal = lambda ? lambda(item) : item;
         if (itemVal == null) { return; }
         if (!isNumber(itemVal)) {
-          throw new Error("Values for expression 'avg' must be numeric or null.");
+          throw new Error("Values for evaluator 'avg' must be numeric or null.");
         }
         total += itemVal;
         count++;
@@ -90,7 +91,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "withMin",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       let min: any = null;
       let minItem: any = null;
       arr.forEach(item => {
@@ -105,7 +106,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "withMax",
-    expression: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: FxLambdaFn) => {
       let max: any = null;
       let maxItem: any = null;
       arr.forEach(item => {
@@ -120,11 +121,11 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "length",
-    expression: (arr: any[]) => arr.length
+    evaluate: (arr: any[]) => arr.length
   }
 ];
 
-function minOf(val1: any, val2: any) {
+function minOf(val1: any, val2: any): any {
   return val1 == null && val2 == null ? null
     : val1 == null ? val2
       : val2 == null ? val1
@@ -132,7 +133,7 @@ function minOf(val1: any, val2: any) {
           : val1;
 }
 
-function maxOf(val1: any, val2: any) {
+function maxOf(val1: any, val2: any): any {
   return val1 == null && val2 == null ? null
     : val1 == null ? val2
       : val2 == null ? val1

@@ -1,11 +1,11 @@
-import {describe, it} from "mocha";
-import {assert} from "chai";
+import { describe, it } from "mocha";
+import { assert } from "chai";
 
-import {Tokenizer} from "./tokenizer";
-import {Grouper} from "./grouper";
-import {FxTokenNode} from "./model/fx-token-node";
-import {ExpressionParser} from "./expression-parser";
-import {NodeParser} from "./node-parser";
+import { Tokenizer } from "./tokenizer";
+import { Grouper } from "./grouper";
+import { FxTokenNode } from "./model/fx-token-node";
+import { ExpressionParser } from "./expression-parser";
+import { NodeParser } from "./node-parser";
 
 describe("lexer/ExpressionParser", function () {
 
@@ -20,7 +20,7 @@ describe("lexer/ExpressionParser", function () {
     return result;
   }
 
-  it("Creates expression from [identifier], [group]", function () {
+  it("Creates evaluator from [identifier], [group]", function () {
     const result = parse("foo(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
@@ -36,7 +36,7 @@ describe("lexer/ExpressionParser", function () {
     }));
   });
 
-  it("Creates expression from [template], [group]", function () {
+  it("Creates evaluator from [template], [group]", function () {
     const result = parse("@foo(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
@@ -52,7 +52,7 @@ describe("lexer/ExpressionParser", function () {
     }));
   });
 
-  it("Won't create expression from [operator], [group]", function () {
+  it("Won't create evaluator from [operator], [group]", function () {
     const result = parse("*(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({

@@ -1,10 +1,10 @@
-import {FxExpressionDefinition} from "../../defs";
-import {FxCompileError} from "../../compiler/fx-error";
+import { FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
+import { FxCompileError } from "../../compiler/fx-error";
 
 export const exprError: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "notnull",
-    expression: (value: any) => {
+    evaluate: (value: any) => {
       if (value == null) {
         throw new FxCompileError("Value cannot be null.");
       } else {

@@ -44,11 +44,6 @@ export namespace Lexer {
       test: c => /\s/.test(c)
     },
     {
-      tag: "delimiter",
-      test: c => c == ",",
-      preventMerge: true
-    },
-    {
       tag: "operator",
       test: c => c == ".",
       mergeWith: "numeric"

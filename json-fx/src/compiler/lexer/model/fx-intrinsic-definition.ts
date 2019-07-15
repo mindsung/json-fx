@@ -1,26 +1,17 @@
-import { FxOperatorDefinition } from "../../../defs";
-import { FxTokenNode } from "./fx-token-node";
-import { FxTokenTag } from "./fx-token-tag";
-import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxArray } from "../../runtime/model/fx-array";
-
-export interface FxIntrinsicDefinition {
-  tag: FxTokenTag;
-  operator?: FxOperatorDefinition;
-
-  optimize?: (token: FxTokenNode) => void;
-  compile?: (token: FxTokenNode) => FxExpression;
-}
+import { FxIntrinsicDefinition } from "./fx-definition";
+import { FxTokenNode } from "./fx-token-node";
+import { FxLambda } from "../../runtime/model/fx-lambda";
 
 export const intrinsics: FxIntrinsicDefinition[] = [
   {
     tag: "group",
-    optimize: token => {
+    optimizer: token => {
       if (token.parent && token.count <= 1) {
         token.unwrap();
       }
     },
-    compile: token => {
+    compiler: token => {
       if (token.parent) {
         return new FxArray(token.children.map(c => c.compile()));
       } else {
@@ -29,29 +20,34 @@ export const intrinsics: FxIntrinsicDefinition[] = [
     }
   },
   {
-    tag: "delimiter",
     operator: {symbol: ",", precedence: -2},
-    optimize: token => {
+    optimizer: token => {
       token.unwrap();
     }
   },
-  // {
-  //   tag: "lambda",
-  //   operator: { symbol: "=>", precedence: 0 },
-  //   optimize: token => {
-  //     token.tag = "lambda";
-  //
-  //     if (token.first.tag != "group") {
-  //       const wrapper = new FxTokenNode("signature");
-  //       wrapper.isLvalue = true;
-  //       token.first.wrap(wrapper);
-  //     } else {
-  //       token.first.tag = "signature";
-  //     }
-  //   },
-  //   compile: token => {
-  //     const paramNames = token.first.children.map(c => c.symbol);
-  //     return new FxLambda(paramNames, token.last.compile());
-  //   }
-  // }
+  {
+    operator: {symbol: ":a", precedence: -1},
+    optimizer: token => {
+      token.first.add(token.last);
+      token.unwrap();
+    }
+  },
+  {
+    operator: {symbol: "=>", precedence: 0},
+    optimizer: token => {
+      token.tag = "lambda";
+
+      if (token.first.tag != "group") {
+        const wrapper = new FxTokenNode("signature");
+        wrapper.isLvalue = true;
+        token.first.wrap(wrapper);
+      } else {
+        token.first.tag = "signature";
+      }
+    },
+    compiler: token => {
+      const paramNames = token.first.children.map(c => c.symbol);
+      return new FxLambda(paramNames, token.last.compile());
+    }
+  }
 ];

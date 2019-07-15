@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../defs";
+import { FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
 import { exprMath } from "./expr-math";
 import { exprRandom } from "./expr-random";
 

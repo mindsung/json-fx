@@ -1,4 +1,4 @@
-import {FxExpressionDefinition} from "../../defs";
+import { FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
 
 function wordSplit(str: string): string[] {
   const words = [""];
@@ -25,33 +25,33 @@ function wordSplit(str: string): string[] {
 export const exprString: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "substr",
-    expression: (str: string, from: number, length: number) => str.substr(from, length)
+    evaluate: (str: string, from: number, length: number) => str.substr(from, length)
   },
   {
     name: "split",
-    expression: (str: string, separator: string) => str.split(separator)
+    evaluate: (str: string, separator: string) => str.split(separator)
   },
   {
     name: "uppercase",
-    expression: (str: string) => str.toUpperCase()
+    evaluate: (str: string) => str.toUpperCase()
   },
   {
     name: "lowercase",
-    expression: (str: string) => str.toLowerCase()
+    evaluate: (str: string) => str.toLowerCase()
   },
   {
     name: "titlecase",
-    expression: (str: string) => {
+    evaluate: (str: string) => {
       return wordSplit(str).map(word => word[0].toUpperCase() + word.substr(1)).join(" ");
     }
   },
   {
     name: "snakecase",
-    expression: (str: string) => wordSplit(str).join("_")
+    evaluate: (str: string) => wordSplit(str).join("_")
   },
   {
     name: "camelcase",
-    expression: (str: string) => {
+    evaluate: (str: string) => {
       const words = wordSplit(str);
       let result = "";
 
@@ -71,7 +71,7 @@ export const exprString: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "reverse",
-    expression: (str: string) => {
+    evaluate: (str: string) => {
       let result = "";
 
       for (let i = str.length - 1; i >= 0; i--) {

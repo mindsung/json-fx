@@ -3,7 +3,7 @@ import { FxOperatorDefinition } from "../../../defs";
 import { FxTokenTag } from "./fx-token-tag";
 import { FxToken } from "./fx-token";
 import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxCompiler } from "../../runtime/fx-compiler";
+import { FxEvaluatorDefinition } from "./fx-definition";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -11,7 +11,8 @@ export class FxTokenNode extends FxNode implements FxToken {
   public symbol: string;
   public index: number;
 
-  public operator: FxOperatorDefinition = null;
+  public operator: FxOperatorDefinition;
+  public evaluator: FxEvaluatorDefinition;
   public optimizer: (token?: FxTokenNode) => void;
   public compiler: (token: FxTokenNode) => FxExpression;
 
@@ -74,13 +75,13 @@ export class FxTokenNode extends FxNode implements FxToken {
     let result = istr + this.toStringSelf();
 
     if (this.count > 0) {
-      result += `\n${ this.children.map(v => v.toStringIndent(indent + 1)).join("\n") }`;
+      result += `\n${this.children.map(v => v.toStringIndent(indent + 1)).join("\n")}`;
     }
 
     return result;
   }
 
   private toStringSelf(): string {
-    return (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;
+    return (this.symbol != "" ? this.symbol : "<>") + ` [${this.tag}]`;
   }
 }

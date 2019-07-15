@@ -8,16 +8,9 @@ import { FxConstant } from "./model/fx-constant";
 import { FxArray } from "./model/fx-array";
 import { FxLambdaFn } from "../../defs";
 import { FxProperty, FxPropertyPathItem } from "./model/fx-property";
-import { FxContext } from "../lexer/model/fx-context";
 import { FxCompileError } from "../fx-error";
 
 export class FxCompiler {
-
-  private readonly context: FxContext;
-
-  constructor(context: FxContext) {
-    this.context = context;
-  }
 
   public compile(root: FxTokenNode): FxExpression {
     const result = root.compile();
@@ -67,13 +60,13 @@ export class FxCompiler {
   }
 
   private createExpression(root: FxTokenNode) {
-    const exprDef = this.context.loader.getExpression(root.symbol);
+    const exprDef = root.evaluator;
 
     if (!exprDef) {
       throw new FxCompileError(`Expression "${root.symbol}" is undefined`, root.index);
     }
 
-    const result = new FxFunction(exprDef.expression);
+    const result = new FxFunction(exprDef.evaluate);
     result.args = root.children.map(child => this.compile(child));
     result.deferEvaluation = exprDef.deferEvaluation;
 
@@ -88,7 +81,7 @@ export class FxCompiler {
     const result: FxExpression = new FxVariable(root.symbol);
     let params: FxExpression[];
 
-    if (root.first && root.first.tag == "group") {
+    if (root.first && root.first.tag == "signature") {
       params = root.first.children.map(child => this.compile(child));
     } else {
       params = root.children.map(child => this.compile(child));

@@ -13,7 +13,7 @@ export class OperatorContextParser implements FxParser<FxTokenNode, void> {
 
   constructor(context: FxContext) {
     this.context = context;
-    this.compilerBackup = new FxCompiler(context);
+    this.compilerBackup = new FxCompiler();
   }
 
   public parse(item: FxTokenNode): void {
@@ -23,31 +23,6 @@ export class OperatorContextParser implements FxParser<FxTokenNode, void> {
       item.symbol = ":a";
     }
 
-    this.loadDefinitions();
-  }
-
-  private loadDefinitions(): void {
-    const intrinsic = this.context.loader.getIntrinsic(this.token.tag);
-
-    if (intrinsic) {
-      if (intrinsic.optimize) {
-        this.token.optimizer = intrinsic.optimize;
-      }
-      if (intrinsic.compile) {
-        this.token.compiler = intrinsic.compile;
-      }
-    }
-
-    const operator = this.context.loader.getOperator(this.token.symbol);
-
-    if (operator) {
-      this.token.operator = operator;
-      this.token.tag = "operator";
-      const expression = this.context.loader.getExpression(operator.symbol);
-
-      if (expression) {
-        this.token.symbol = expression.name;
-      }
-    }
+    this.context.loader.load(this.token);
   }
 }
