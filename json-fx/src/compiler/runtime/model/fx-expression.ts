@@ -32,13 +32,6 @@ export abstract class FxExpression {
 
   public bindScope(parent: FxScope = null): void {
     if (this.scope.parentScope !== parent) {
-      if (this.scope.parentScope != null) {
-        const i = this.scope.parentScope.childScopes.indexOf(this.scope);
-        if (i >= 0) {
-          this.scope.parentScope.childScopes.splice(i, 1);
-        }
-      }
-      parent.childScopes.push(this.scope);
       this.scope.parentScope = parent;
       this.scope.bind();
     }

@@ -6,7 +6,6 @@ import { FxCompileError } from "../fx-error";
 export class FxScope {
   public readonly owner: FxExpression;
   public parentScope: FxScope;
-  public childScopes: FxScope[] = [];
   public variables: { [index: string]: FxScopeVariable };
 
   constructor(owner: FxExpression = null) {
