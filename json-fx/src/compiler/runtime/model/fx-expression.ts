@@ -30,14 +30,6 @@ export abstract class FxExpression {
     }
   }
 
-  resolveDependencies(): any {
-    for (const x of this._scope.childScopes.map(s => s.owner)) {
-      if (x != null) {
-        x.resolveDependencies();
-      }
-    }
-  }
-
   public bindScope(parent: FxScope = null): void {
     if (this.scope.parentScope !== parent) {
       if (this.scope.parentScope != null) {

@@ -22,10 +22,7 @@ export class JsonFx {
   public compile(template: any): FxCompiledTemplate {
     const root = this.parser.parse(template);
     console.log(root.toString());
-
-    const expr = root.compile();
-    expr.resolveDependencies();
-    return new FxCompiledTemplateImpl(expr);
+    return new FxCompiledTemplateImpl(root.compile());
   }
 
   public define(def: FxExpressionDefinition): void {
@@ -55,7 +52,7 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
   }
 
   evaluate(...inputs: FxInput[]): any {
-    this.global.deleteAll();
+    this.global.clearVariables();
 
     inputs.forEach(input => {
       if (input.name == null || !input.name.startsWith("$")) {

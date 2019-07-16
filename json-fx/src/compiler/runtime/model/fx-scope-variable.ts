@@ -1,10 +1,8 @@
 import { FxExpression } from "./fx-expression";
 import { FxScope } from "../fx-scope";
 
-const _FxScopeVariableExpressionType = "__FxScopeVariableExpression";
-
 export class FxScopeVariable extends FxExpression {
-  private readonly _fxScopeVariableExpressionType = _FxScopeVariableExpressionType;
+  private readonly _fxScopeVariableExpressionType = "__FxScopeVariableExpression";
   public readonly varName: string;
   private readonly inner: FxExpression;
   private readonly canCache: boolean;
@@ -25,15 +23,21 @@ export class FxScopeVariable extends FxExpression {
     }
     else if (this.canCache) {
       if (!this.isCached) {
-        // console.log("eval and cache", this.varName);
         this.cachedValue = this.inner.evaluate();
         this.isCached = true;
       }
       return this.cachedValue;
     }
     else {
-      // console.log("eval", this.varName);
       return this.inner.evaluate();
+    }
+  }
+
+  clearCache(): void {
+    this.isCached = false;
+    this.cachedValue = undefined;
+    for (const d of this.dependents) {
+      d.clearCache();
     }
   }
 
@@ -48,12 +52,7 @@ export class FxScopeVariable extends FxExpression {
     for (const dep of dependents) {
       if (this.dependents.indexOf(dep) < 0) {
         this.dependents.push(dep);
-        // console.log(`${dep.varName} has dependency ${this.varName}`);
       }
     }
   }
-}
-
-export function isScopeVariable(expr: FxExpression): expr is FxScopeVariable {
-  return expr["_fxScopeVariableExpressionType"] === _FxScopeVariableExpressionType;
 }

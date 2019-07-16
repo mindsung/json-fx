@@ -1,5 +1,6 @@
 import { FxScopeVariable } from "./model/fx-scope-variable";
 import { FxExpression } from "./model/fx-expression";
+import { FxCompileError } from "../fx-error";
 
 
 export class FxScope {
@@ -14,23 +15,38 @@ export class FxScope {
   }
 
   public getVariable(key: string): FxScopeVariable {
-    if (this.variables[key]) {
-      return this.variables[key];
-    } else if (this.parentScope) {
-      return this.parentScope.getVariable(key);
-    } else {
-      return undefined;
+    const dependents: FxScopeVariable[] = [];
+    let scope: FxScope = this;
+    while (scope != null) {
+      if (isScopeVariable(scope.owner)) {
+        dependents.push(scope.owner);
+      }
+      const v = scope.variables[key];
+      if (v != null) {
+        v.addDependents(dependents);
+        return v;
+      }
+      scope = scope.parentScope;
     }
+    return undefined;
   }
 
   public setVariable(value: FxScopeVariable) {
-    if (value != null) {
-      value.bindScope(this);
+    if (value == null) {
+      throw new Error("Cannot set null variable.");
     }
+    const currentVar = this.variables[value.varName];
+    if (currentVar != null) {
+      currentVar.clearCache();
+    }
+    value.bindScope(this);
     this.variables[value.varName] = value;
   }
 
-  public deleteAll() {
+  public clearVariables() {
+    for (const k of Object.keys(this.variables)) {
+      this.variables[k].clearCache();
+    }
     this.variables = {};
   }
 
@@ -39,4 +55,8 @@ export class FxScope {
       this.variables[key].bindScope(this);
     }
   }
+}
+
+export function isScopeVariable(expr: FxExpression): expr is FxScopeVariable {
+  return expr == null ? false : expr["_fxScopeVariableExpressionType"] === "__FxScopeVariableExpression";
 }

@@ -1,5 +1,4 @@
 import { FxExpression } from "./fx-expression";
-import { isScopeVariable } from "./fx-scope-variable";
 import { FxCompileError } from "../../fx-error";
 
 export class FxVariableReference extends FxExpression {
@@ -15,24 +14,12 @@ export class FxVariableReference extends FxExpression {
   }
 
   public evaluate(): any {
-    const variable = this.scope.getVariable(this.varName);
+    const v = this.scope.getVariable(this.varName);
 
-    if (variable == undefined) {
+    if (v == undefined) {
       throw new FxCompileError(`Undefined variable "${ this.varName }"`, this.sourceRef);
     }
-    return this.scope.getVariable(this.varName)
-    .evaluate();
-  }
-
-  resolveDependencies(): any {
-    super.resolveDependencies();
-    let parentScope = this.scope.parentScope;
-    while (parentScope != null) {
-      if (isScopeVariable(parentScope.owner)) {
-        // console.log(`defer ${parentScope.owner.varName} depends on ${this.varName}`);
-      }
-      parentScope = parentScope.parentScope;
-    }
+    return v.evaluate();
   }
 
   public toString(): string {
