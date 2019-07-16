@@ -72,11 +72,41 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
+    name: "findMin",
+    evaluate: (arr: any[], lambda: AnyFn) => {
+      let min: any = null;
+      let minItem: any = null;
+      arr.forEach(item => {
+        const itemVal = lambda ? lambda(item) : item;
+        min = minOf(min, itemVal);
+        if (itemVal === min) {
+          minItem = item;
+        }
+      });
+      return minItem;
+    }
+  },
+  {
     name: "max",
     evaluate: (arr: any[], lambda: AnyFn) => {
       let max: any = null;
       arr.forEach(item => max = maxOf(max, lambda ? lambda(item) : item));
       return max;
+    }
+  },
+  {
+    name: "findMax",
+    evaluate: (arr: any[], lambda: AnyFn) => {
+      let max: any = null;
+      let maxItem: any = null;
+      arr.forEach(item => {
+        const itemVal = lambda ? lambda(item) : item;
+        max = maxOf(max, itemVal);
+        if (itemVal === max) {
+          maxItem = item;
+        }
+      });
+      return maxItem;
     }
   },
   {

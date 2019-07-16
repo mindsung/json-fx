@@ -17,13 +17,6 @@ export abstract class FxExpression {
 
   public evaluate(): any {}
 
-  public getDependencies(): string[] {
-    return this.children.reduce((arr, child) => {
-      arr.push(...child.getDependencies());
-      return arr;
-    }, []);
-  }
-
   public bindSourceRefPath(): void {
     for (const child of this.children) {
       child.sourceRef.path = this.sourceRef.path;

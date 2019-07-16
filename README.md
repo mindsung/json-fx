@@ -62,7 +62,7 @@ Or a template:
 ```json
 {
   "@mappedPerson($p)": {
-    "name": "$p.firstName + ` ` + $p.lastName",
+    "name": "$p.firstName + ' ' + $p.lastName",
     "countryOfEmployment": "$.organization.country",
     "canRetire": "$p.age >= 65"
   },
