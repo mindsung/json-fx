@@ -2,6 +2,8 @@ import { FxTokenNode } from "./fx-token-node";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxTokenTag } from "./fx-token-tag";
 
+export type AnyFn = (...args: any[]) => any;
+
 export interface FxDefinition {
   operator?: FxOperatorDefinition;
   evaluator?: FxEvaluatorDefinition;
@@ -18,7 +20,7 @@ export interface FxOperatorDefinition {
 
 export interface FxEvaluatorDefinition {
   readonly name: string;
-  evaluate?: (...args: any[]) => any;
+  evaluate?: AnyFn;
   params?: FxParamDefinition[];
   deferEvaluation?: boolean;
 }

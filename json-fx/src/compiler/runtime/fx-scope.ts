@@ -1,6 +1,5 @@
 import { FxScopeVariable } from "./model/fx-scope-variable";
 import { FxExpression } from "./model/fx-expression";
-import { FxCompileError } from "../fx-error";
 
 
 export class FxScope {

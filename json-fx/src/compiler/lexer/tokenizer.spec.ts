@@ -3,57 +3,57 @@ import { assert } from "chai";
 
 import { Tokenizer } from "./tokenizer";
 
-describe("lexer/Tokenizer", function () {
+describe("lexer/Tokenizer", function (): void {
 
-  it("Parses an empty string", function () {
+  it("Parses an empty string", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("");
     assert.deepEqual(result, []);
   });
 
-  it("Parses a single identifier", function () {
+  it("Parses a single identifier", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("foo_123");
     assert.deepEqual(result, [{tag: "identifier", symbol: "foo_123", index: 0}]);
   });
 
-  it("Parses a single variable", function () {
+  it("Parses a single variable", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("$foo_123");
     assert.deepEqual(result, [{tag: "variable", symbol: "$foo_123", index: 0}]);
   });
 
-  it("Parses a single template", function () {
+  it("Parses a single template", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("@foo_123");
     assert.deepEqual(result, [{tag: "template", symbol: "@foo_123", index: 0}]);
   });
 
-  it("Parses a single literal", function () {
+  it("Parses a single literal", function (): void {
     const tokenizer = new Tokenizer();
-    const result = tokenizer.parse("`foo 123`");
+    const result = tokenizer.parse("'foo 123'");
     assert.deepEqual(result, [{tag: "literal", symbol: "foo 123", index: 0}]);
   });
 
-  it("Parses a single number (integer)", function () {
+  it("Parses a single number (integer)", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("123");
     assert.deepEqual(result, [{tag: "numeric", symbol: "123", index: 0}]);
   });
 
-  it("Parses a single number (decimal)", function () {
+  it("Parses a single number (decimal)", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("123.45");
     assert.deepEqual(result, [{tag: "numeric", symbol: "123.45", index: 0}]);
   });
 
-  it("Parses a single operator", function () {
+  it("Parses a single operator", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("*");
     assert.deepEqual(result, [{tag: "operator", symbol: "*", index: 0}]);
   });
 
-  it("Delimits between whitespace", function () {
+  it("Delimits between whitespace", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("$foo_123 bar");
 
@@ -63,7 +63,7 @@ describe("lexer/Tokenizer", function () {
     ]);
   });
 
-  it("Filters out whitespace", function () {
+  it("Filters out whitespace", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse(" a b c ");
 
@@ -74,7 +74,7 @@ describe("lexer/Tokenizer", function () {
     ]);
   });
 
-  it("Prevents merging of adjacent bracket/literal symbols", function () {
+  it("Prevents merging of adjacent bracket/literal symbols", function (): void {
     const tokenizer = new Tokenizer();
     const result1 = tokenizer.parse("(())");
 
@@ -93,22 +93,22 @@ describe("lexer/Tokenizer", function () {
       {tag: "group-close", symbol: "]", index: 4}
     ]);
 
-    const result3 = tokenizer.parse("`A``B`");
+    const result3 = tokenizer.parse("'A''B'");
     assert.deepEqual(result3, [
       {tag: "literal", symbol: "A", index: 0},
       {tag: "literal", symbol: "B", index: 3}
     ]);
   });
 
-  it("Merges adjacent operator symbols", function () {
+  it("Merges adjacent operator symbols", function (): void {
     const tokenizer = new Tokenizer();
     const result = tokenizer.parse("**");
     assert.deepEqual(result, [{tag: "operator", symbol: "**", index: 0}]);
   });
 
-  it("Parses a complex evaluator", function () {
+  it("Parses a complex evaluator", function (): void {
     const tokenizer = new Tokenizer();
-    const result = tokenizer.parse("($var1.bar2 * 2.5 + `baz boz`):map(@template)");
+    const result = tokenizer.parse("($var1.bar2 * 2.5 + 'baz boz'):map(@template)");
 
     assert.deepEqual(result, [
       {tag: "group", symbol: "(", index: 0},

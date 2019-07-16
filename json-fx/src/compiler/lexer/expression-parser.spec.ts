@@ -20,11 +20,11 @@ describe("lexer/ExpressionParser", function () {
     return result;
   }
 
-  it("Creates evaluator from [identifier], [group]", function () {
+  it("Creates expression from [identifier], [group]", function () {
     const result = parse("foo(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [{
         tag: "expression",
@@ -36,27 +36,30 @@ describe("lexer/ExpressionParser", function () {
     }));
   });
 
-  it("Creates evaluator from [template], [group]", function () {
+  it("Creates expression from [template], [group]", function () {
     const result = parse("@foo(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [{
         tag: "template-call",
         symbol: "@foo",
         index: 0,
 
-        children: [{tag: "identifier", symbol: "bar", index: 5}]
+        children: [{
+          tag: "signature",
+          children: [{tag: "identifier", symbol: "bar", index: 5}]
+        }]
       }]
     }));
   });
 
-  it("Won't create evaluator from [operator], [group]", function () {
+  it("Won't create expression from [operator], [group]", function () {
     const result = parse("*(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [
         {tag: "operator", symbol: "*", index: 0},
@@ -74,7 +77,7 @@ describe("lexer/ExpressionParser", function () {
     const result = parse("foo(bar(baz))");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [{
         tag: "expression",

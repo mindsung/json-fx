@@ -1,17 +1,62 @@
+import { describe, it } from "mocha";
+import { assert } from "chai";
+import { AnyFn, FxExpressionDefinition } from "../compiler/lexer/model/fx-definition";
+
+export class ExpressionTester {
+
+  private readonly expressions: { [index: string]: FxExpressionDefinition };
+  private readonly set: string;
+
+  constructor(set: string, expressions: ReadonlyArray<FxExpressionDefinition>) {
+    this.set = set;
+    this.expressions = expressions.reduce((obj, item) => {
+      obj[item.name] = item;
+      return obj;
+    }, {});
+  }
+
+  public run(fn: AnyFn): void {
+    describe(`Expressions <${this.set}>`, () => {
+      fn();
+
+      it("[Tests all expressions in set]", () => {
+        this.assertAllTested();
+      });
+    });
+  }
+
+  public test(name: string, tester: (fn: AnyFn) => void): void {
+    const definition = this.expressions[name];
+
+    if (definition) {
+      delete this.expressions[name];
+
+      it(`Evaluates <${name}>`, () => {
+        tester(definition.evaluate);
+      });
+    }
+  }
+
+  private assertAllTested(): void {
+    const keysRemaining = Object.keys(this.expressions);
+    assert(keysRemaining.length == 0, "These expressions are not being tested: " + keysRemaining.join(", "));
+  }
+}
+
+/*
 import { after, describe, Func, it } from "mocha";
 import { assert } from "chai";
 
 import { coreExpressions } from "./core";
-import { JsonFx } from "..";
 
 const expressions = coreExpressions.map(expr => expr.name);
 
-function compile(expr: string) {
+function compile(expr: string): any {
   const fx = new JsonFx(coreExpressions);
   return fx.compile(expr).evaluate();
 }
 
-function itEvaluates(name: string, fn: Func) {
+function itEvaluates(name: string, fn: Func): void {
   // Remove tested expressions from master list,
   // so after completion we know which expressions did not get tested
 
@@ -335,3 +380,4 @@ describe("Core expressions", function () {
     assert.doesNotThrow(compile.bind(null, "notnull(1)"));
   });
 });
+*/

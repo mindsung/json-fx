@@ -1,5 +1,4 @@
 import { FxExpression } from "./fx-expression";
-import { FxScope } from "../fx-scope";
 
 export interface FxPropertyPathItem {
   interrupts: boolean;

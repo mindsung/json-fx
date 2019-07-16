@@ -1,5 +1,4 @@
 import { FxExpression } from "./fx-expression";
-import { FxScope } from "../fx-scope";
 
 export class FxArray extends FxExpression {
   public items: FxExpression[];

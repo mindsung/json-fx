@@ -4,7 +4,7 @@ import { FxTokenNode } from "../compiler/lexer/model/fx-token-node";
 import { FxExpression } from "../compiler/runtime/model/fx-expression";
 import { FxVariableReference } from "../compiler/runtime/model/fx-variable-reference";
 import { FxFunction } from "../compiler/runtime/model/fx-function";
-import { FxLambdaFn } from "../defs";
+import { AnyFn } from "../compiler/lexer/model/fx-definition";
 
 export class CallDef extends FxDef {
 
@@ -20,7 +20,7 @@ export class CallDef extends FxDef {
       params = token.children.map(child => child.compile());
     }
 
-    return new FxFunction((lambda: FxLambdaFn, ...args: any[]) => {
+    return new FxFunction((lambda: AnyFn, ...args: any[]) => {
       return lambda(...args);
     }, [result].concat(params));
   }
