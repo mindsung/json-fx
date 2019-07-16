@@ -11,6 +11,7 @@ const fs = require("fs");
 
 const fx = new JsonFx(coreExpressions, mathExpressions);
 const script = fx.compile(cableDataTemplate);
+console.log(script.toString());
 
 const output = script.evaluate({name: "$", value: $CABLE_DATA_1});
 console.log(output);

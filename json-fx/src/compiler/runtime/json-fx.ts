@@ -8,6 +8,7 @@ import { FxScopeVariable } from "./model/fx-scope-variable";
 import { FxExpressionDefinition } from "../lexer/model/fx-definition";
 import { coreExpressions } from "../../expressions/core";
 import { mathExpressions } from "../../expressions/math";
+import { FxTokenNode } from "../lexer/model/fx-token-node";
 
 export class JsonFx {
 
@@ -20,9 +21,7 @@ export class JsonFx {
   }
 
   public compile(template: any): FxCompiledTemplate {
-    const root = this.parser.parse(template);
-    console.log(root.toString());
-    return new FxCompiledTemplateImpl(root.compile());
+    return new FxCompiledTemplateImpl(this.parser.parse(template));
   }
 
   public define(def: FxExpressionDefinition): void {
@@ -36,15 +35,18 @@ export class JsonFx {
 
 export interface FxCompiledTemplate {
   evaluate(...inputs: FxInput[]): any;
+  toString(): string;
 }
 
 class FxCompiledTemplateImpl implements FxCompiledTemplate {
 
   private readonly global: FxScope;
+  private readonly parsed: FxTokenNode;
   private readonly expr: FxExpression;
 
-  constructor(expr: FxExpression) {
-    this.expr = expr;
+  constructor(parsed: FxTokenNode) {
+    this.parsed = parsed;
+    this.expr = parsed.compile();
     this.global = new FxScope();
 
     this.expr.bindScope(this.global);
@@ -61,6 +63,10 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
       this.global.setVariable(new FxScopeVariable(input.name, new FxConstant(input.value)));
     });
     return this.expr.evaluate();
+  }
+
+  toString() {
+    return this.parsed.toString();
   }
 }
 
