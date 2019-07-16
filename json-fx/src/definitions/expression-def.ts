@@ -14,7 +14,7 @@ export class ExpressionDef extends FxDef {
     const evaluator = token.evaluator;
 
     if (!evaluator) {
-      throw new FxCompileError(`Expression "${ token.symbol }" is undefined`, token.index);
+      throw new FxCompileError(`Expression "${ token.symbol }" is undefined`, token.sourceRef);
     }
 
     const result = new FxFunction(evaluator.evaluate);

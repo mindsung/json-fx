@@ -12,24 +12,24 @@ describe("Sandbox", () => {
   it("Executes w/o throwing exceptions", function () {
     const fx = new JsonFx(coreExpressions, mathExpressions);
 
-    const script = fx.compile(cableDataTemplate);
-    // const script = fx.compile({
-    //   "@doSomething($a, $b)": {
-    //     "a": "`var $a = ` + $a",
-    //     "b": "`var $b = ` + $b",
-    //     "a_and_b": "`var $a = ` + $a + ` and var $b = ` + $b"
-    //   },
-    //   "$c": "$.a + $.b",
-    //   "$d": "@doSomething($.a, $.b)",
-    //   "result": {
-    //     "c": "$c",
-    //     "d": "$d",
-    //     "abc": "$.a + $.b + $c"
-    //   }
-    // });
+    // const script = fx.compile(cableDataTemplate);
+    const script = fx.compile({
+      "@doSomething($a, $b)": {
+        "a": "`var $a = ` + $a",
+        "b": "`var $b = ` + $b",
+        "a_and_b": "`var $a = ` + $a + ` and var $b = ` + $b"
+      },
+      "$c": "$.a + $.b",
+      "$d": "@doSomething($.a, $.b)",
+      "result": {
+        "c": "$c",
+        "d": "$ddd",
+        "abc": "$.a + $.b + $c"
+      }
+    });
 
-    const output1 = script.evaluate({name: "$", value: $CABLE_DATA_1});
-    // const output1 = script.evaluate({name: "$", value: {a: 3, b: 5}});
+    // const output1 = script.evaluate({name: "$", value: $CABLE_DATA_1});
+    const output1 = script.evaluate({name: "$", value: {a: 3, b: 5}});
     console.log(output1);
 
     // const output2 = script.evaluate({name: "$", value: $CABLE_DATA_2});

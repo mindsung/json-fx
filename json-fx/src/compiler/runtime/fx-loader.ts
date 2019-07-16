@@ -2,22 +2,14 @@ import { intrinsics } from "../lexer/model/fx-intrinsic-definition";
 import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
 import { FxTokenNode } from "../lexer/model/fx-token-node";
 import { exprIntrinsic } from "../../expressions/expr-intrinsic";
-import { Optimizer } from "../lexer/optimizer";
-import { FxCompiler } from "./fx-compiler";
 
 export class FxLoader {
   private readonly operators: { [index: string]: FxDefinition };
   private readonly definitions: { [index: string]: FxDefinition };
 
-  private optimizer: Optimizer;
-  private compiler: FxCompiler;
-
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
     this.operators = {};
     this.definitions = {};
-
-    this.optimizer = new Optimizer();
-    this.compiler = new FxCompiler();
 
     expressions.forEach(
       set => set.forEach(

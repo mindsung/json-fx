@@ -14,6 +14,8 @@ export class FxFunction extends FxExpression {
     this.deferEvaluation = false;
   }
 
+  protected get children(): FxExpression[] { return this.args; }
+
   public evaluate(): any {
     const args = this.evaluateArgs();
     return this.evaluator(...args);
@@ -21,13 +23,6 @@ export class FxFunction extends FxExpression {
 
   protected evaluateArgs(): any[] {
     return this.deferEvaluation ? this.args : this.args.map(p => p.evaluate());
-  }
-
-  public bindScope(root: FxScope = null): void {
-    super.bindScope(root);
-    for (const arg of this.args) {
-      arg.bindScope(this.scope);
-    }
   }
 
   public toString(): string {

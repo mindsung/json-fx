@@ -20,7 +20,12 @@ export class FxDef implements FxIntrinsicDefinition {
   }
 
   public get compiler(): IFxCompiler {
-    return this.compile.bind(this);
+    return (token) => {
+      const expression = this.compile(token);
+      expression.sourceRef = { symbol: token.symbol, index: token.index, path: "" };
+
+      return expression;
+    };
   }
 
   protected optimize(token: FxTokenNode): void { return; }

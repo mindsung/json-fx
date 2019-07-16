@@ -1,4 +1,5 @@
 import { FxExpression } from "./model/fx-expression";
+import { FxCompileError } from "../fx-error";
 
 
 export class FxScope {
@@ -10,13 +11,13 @@ export class FxScope {
     this.variables = {};
   }
 
-  public getVariable(key: string) {
+  public getVariable(key: string): any {
     if (this.variables[key]) {
       return this.variables[key];
     } else if (this.parentScope) {
       return this.parentScope.getVariable(key);
     } else {
-      throw new Error(`Undefined variable "${key}"`);
+      return undefined;
     }
   }
 
