@@ -10,6 +10,7 @@ import { FxLambdaFn } from "../../defs";
 import { FxProperty, FxPropertyPathItem } from "./model/fx-property";
 import { FxContext } from "../lexer/model/fx-context";
 import { FxCompileError } from "../fx-error";
+import { FxScopeVariable } from "./model/fx-scope-variable";
 
 export class FxCompiler {
 
@@ -107,10 +108,10 @@ export class FxCompiler {
         result.items[child.symbol] = this.compile(child.first);
 
       } else if (child.tag == "variable") {
-        result.scope.setVariable(child.symbol, this.compile(child.first));
+        result.scope.setVariable(new FxScopeVariable(child.symbol, this.compile(child.first)));
 
       } else if (child.tag == "template") {
-        result.scope.setVariable(child.symbol, this.createLambda(child));
+        result.scope.setVariable(new FxScopeVariable(child.symbol, this.createLambda(child), false));
       }
     });
 

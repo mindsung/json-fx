@@ -1,37 +1,18 @@
 import {FxExpression} from "./model/fx-expression";
-
-// const _FxScopeVariableExpressionType = "__FxScopeVariableExpression";
-
-export class FxScopeVariableExpression {
-  private readonly _inner: FxExpression;
-  // private readonly _type = "a"; // _FxScopeVariableExpressionType;
-
-  constructor(inner: FxExpression) {
-    // super();
-    this._inner = inner;
-  }
-
-  public evaluate(): any {
-    return this._inner.evaluate();
-  }
-}
-//
-// export function isScopeVariable(expr: FxExpression): expr is FxScopeVariableExpression {
-//   return expr["_type"] === "a"; // _FxScopeVariableExpressionType;
-// }
+import { FxScopeVariable } from "./model/fx-scope-variable";
 
 export class FxScope {
   public readonly owner: FxExpression;
   public parentScope: FxScope;
   public childScopes: FxScope[] = [];
-  public variables: { [index: string]: FxExpression };
+  public variables: { [index: string]: FxScopeVariable };
 
   constructor(owner: FxExpression = null) {
     this.owner = owner;
     this.variables = {};
   }
 
-  public getVariable(key: string) {
+  public getVariable(key: string): FxScopeVariable {
     if (this.variables[key]) {
       return this.variables[key];
     } else if (this.parentScope) {
@@ -41,11 +22,11 @@ export class FxScope {
     }
   }
 
-  public setVariable(key: string, value: FxExpression) {
+  public setVariable(value: FxScopeVariable) {
     if (value != null) {
       value.bindScope(this);
     }
-    this.variables[key] = value; // new FxScopeVariableExpression(value);
+    this.variables[value.varName] = value;
   }
 
   public deleteAll() {

@@ -6,6 +6,7 @@ import { FxCompiler } from "./fx-compiler";
 import { FxExpression } from "./model/fx-expression";
 import { FxConstant } from "./model/fx-constant";
 import { FxScope } from "./fx-scope";
+import { FxScopeVariable } from "./model/fx-scope-variable";
 
 export class JsonFx {
 
@@ -52,7 +53,7 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
       if (input.name == null || !input.name.startsWith("$")) {
         throw new Error("Input variable names must begin with '$'.");
       }
-      this.global.setVariable(input.name, new FxConstant(input.value));
+      this.global.setVariable(new FxScopeVariable(input.name, new FxConstant(input.value)));
     });
     return this.expr.evaluate();
   }

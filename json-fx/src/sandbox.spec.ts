@@ -14,6 +14,7 @@ describe("Sandbox", () => {
 
     // const script = fx.compile(cableDataTemplate);
     const script = fx.compile({
+      "@doEveryTime()": { "hello": 5 },
       "@doSomething($a, $b)": {
         "a": "`var $a = ` + $a",
         "b": "`var $b = ` + $b",
@@ -24,9 +25,11 @@ describe("Sandbox", () => {
       "result": {
         "c": "$c",
         "d": "$d",
+        "e": "@doSomething($.a, $c)",
         "$abc": "$.a + $.b + $c",
         "abc1": "$abc",
-        "abc2": "$abc + ` #2`"
+        "abc2": "$abc + ` #2`",
+        "hello": "@doEveryTime()"
       }
     });
 
