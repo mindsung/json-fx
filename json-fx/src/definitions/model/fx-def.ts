@@ -1,8 +1,7 @@
-import { FxIntrinsicDefinition } from "../../compiler/lexer/model/fx-definition";
+import { FxEvaluatorDefinition, FxIntrinsicDefinition, FxOperatorDefinition } from "../../compiler/lexer/model/fx-definition";
 import { FxTokenNode } from "../../compiler/lexer/model/fx-token-node";
 import { FxExpression } from "../../compiler/runtime/model/fx-expression";
 import { FxTokenTag } from "../../compiler/lexer/model/fx-token-tag";
-import { FxEvaluatorDefinition, FxOperatorDefinition } from "../../compiler/lexer/model/fx-definition";
 
 export type FxOptimizer = (token: FxTokenNode) => void;
 export type IFxCompiler = (token: FxTokenNode) => FxExpression;

@@ -1,6 +1,5 @@
 import { isArray, isNumber } from "../../common";
-import { FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
-import { FxLambdaFn } from "../../defs";
+import { AnyFn, FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
@@ -11,14 +10,14 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "map",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       return arr.map(lambda);
     },
-    operator: { symbol: "::", precedence: 4 }
+    operator: {symbol: "::", precedence: 4}
   },
   {
     name: "sort",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       if (lambda) {
         return arr.sort((a, b) => {
           const evalA = lambda(a);
@@ -33,38 +32,40 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "filter",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       return arr.filter(lambda);
     }
   },
   {
     name: "reduce",
-    evaluate: (arr: any[], lambda: FxLambdaFn, identity: any) => {
+    evaluate: (arr: any[], lambda: AnyFn, identity: any) => {
       return arr.reduce(lambda, identity);
     }
   },
   {
     name: "find",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       return arr.find(lambda);
     }
   },
   {
     name: "concat",
-    evaluate: (a: any, b: any) => {
+    evaluate: (a: any, ...other: any[]) => {
       if (!isArray(a)) {
         a = [a];
       }
-      if (!isArray(b)) {
-        b = [b];
+      for (let i = 0; i < other.length; i++) {
+        if (!isArray(other[i])) {
+          other[i] = [other[i]];
+        }
       }
 
-      return a.concat(b);
+      return a.concat(...other);
     }
   },
   {
     name: "min",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       let min: any = null;
       arr.forEach(item => min = minOf(min, lambda ? lambda(item) : item));
       return min;
@@ -72,7 +73,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "max",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       let max: any = null;
       arr.forEach(item => max = maxOf(max, lambda ? lambda(item) : item));
       return max;
@@ -80,7 +81,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "avg",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
+    evaluate: (arr: any[], lambda: AnyFn) => {
       let total = 0;
       let count = 0;
       arr.forEach(item => {
@@ -93,36 +94,6 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
         count++;
       });
       return count ? (total / count) : null;
-    }
-  },
-  {
-    name: "withMin",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
-      let min: any = null;
-      let minItem: any = null;
-      arr.forEach(item => {
-        const itemVal = lambda ? lambda(item) : item;
-        min = minOf(min, itemVal);
-        if (itemVal === min) {
-          minItem = item;
-        }
-      });
-      return minItem;
-    }
-  },
-  {
-    name: "withMax",
-    evaluate: (arr: any[], lambda: FxLambdaFn) => {
-      let max: any = null;
-      let maxItem: any = null;
-      arr.forEach(item => {
-        const itemVal = lambda ? lambda(item) : item;
-        max = maxOf(max, itemVal);
-        if (itemVal === max) {
-          maxItem = item;
-        }
-      });
-      return maxItem;
     }
   },
   {

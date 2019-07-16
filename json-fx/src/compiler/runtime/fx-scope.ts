@@ -1,5 +1,4 @@
 import { FxExpression } from "./model/fx-expression";
-import { FxCompileError } from "../fx-error";
 
 
 export class FxScope {

@@ -18,7 +18,7 @@ describe("lexer/Grouper", function () {
     const result = parse("foo");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
       children: [{tag: "identifier", symbol: "foo", index: 0}]
     }));
   });
@@ -28,7 +28,7 @@ describe("lexer/Grouper", function () {
     const result = parse("()");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
       children: [{tag: "group", symbol: "()", index: 0}]
     }));
   });
@@ -38,8 +38,8 @@ describe("lexer/Grouper", function () {
     const result = parse("[]");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
-      children: [{tag: "group", symbol: "[]", index: 0}]
+      tag: "group",
+      children: [{tag: "array", symbol: "[]", index: 0}]
     }));
   });
 
@@ -48,8 +48,8 @@ describe("lexer/Grouper", function () {
     const result = parse("{}");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
-      children: [{tag: "group", symbol: "{}", index: 0}]
+      tag: "group",
+      children: [{tag: "object", symbol: "{}", index: 0}]
     }));
   });
 
@@ -58,7 +58,7 @@ describe("lexer/Grouper", function () {
     const result = parse("(foo)");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [{
         tag: "group",
@@ -75,7 +75,7 @@ describe("lexer/Grouper", function () {
     const result = parse("(foo)(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [
         {
@@ -101,7 +101,7 @@ describe("lexer/Grouper", function () {
     const result = parse("(foo(bar))");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [{
         tag: "group",
@@ -124,10 +124,10 @@ describe("lexer/Grouper", function () {
 
   it("Parses a complex evaluator", function () {
     const grouper = new Grouper();
-    const result = parse("($var1.bar2 * 2.5 + `baz boz`):map(@template)");
+    const result = parse("($var1.bar2 * 2.5 + 'baz boz'):map(@template)");
 
     assert.deepEqual(result, FxTokenNode.from({
-      tag: "global",
+      tag: "group",
 
       children: [
         {

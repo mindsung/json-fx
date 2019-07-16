@@ -1,7 +1,6 @@
 import { intrinsics } from "../lexer/model/fx-intrinsic-definition";
 import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
 import { FxTokenNode } from "../lexer/model/fx-token-node";
-import { exprIntrinsic } from "../../expressions/expr-intrinsic";
 
 export class FxLoader {
   private readonly operators: { [index: string]: FxDefinition };
@@ -14,8 +13,6 @@ export class FxLoader {
     expressions.forEach(
       set => set.forEach(
         def => this.defineExpression(def)));
-
-    exprIntrinsic.forEach(def => this.defineExpression(def));
 
     intrinsics.forEach(intr => this.defineIntrinsic(intr));
   }
@@ -96,6 +93,6 @@ export class FxLoader {
     tag = tag || "*";
     symbol = symbol || "*";
 
-    return `<${ tag }>${ symbol }`;
+    return `<${tag}>${symbol}`;
   }
 }

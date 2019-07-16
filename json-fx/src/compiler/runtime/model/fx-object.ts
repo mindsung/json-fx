@@ -1,4 +1,3 @@
-import { FxScope } from "../fx-scope";
 import { FxExpression } from "./fx-expression";
 import { isEmpty, isObject } from "../../../common";
 

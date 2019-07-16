@@ -1,13 +1,12 @@
-import { FxScope } from "../fx-scope";
 import { FxExpression } from "./fx-expression";
-import { FxLambdaFn } from "../../../defs";
+import { AnyFn } from "../../lexer/model/fx-definition";
 
 export class FxFunction extends FxExpression {
-  public evaluator: (...args: any[]) => any;
+  public evaluator: AnyFn;
   public args: FxExpression[];
   public deferEvaluation: boolean;
 
-  constructor(evaluator?: FxLambdaFn, args?: FxExpression[]) {
+  constructor(evaluator?: AnyFn, args?: FxExpression[]) {
     super();
     this.evaluator = evaluator || null;
     this.args = args || [];
