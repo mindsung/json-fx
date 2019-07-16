@@ -96,6 +96,6 @@ export class FxLoader {
     tag = tag || "*";
     symbol = symbol || "*";
 
-    return `<${tag}>${symbol}`;
+    return `<${ tag }>${ symbol }`;
   }
 }

@@ -4,10 +4,10 @@ export type FxTokenTag =
   | "identifier"
   | "variable"
   | "numeric"
+  | "indexer"
   | "group"
   | "group-close"
   | "literal"
-  | "delimiter"
   | "space"
   | "template"
   | "template-call"
@@ -15,10 +15,7 @@ export type FxTokenTag =
   | "array"
   | "operator"
   | "expression"
-  | "object"
-  | "lambda"
-  | "prop"
-  | "nullprop";
+  | "object";
 
 /*
 

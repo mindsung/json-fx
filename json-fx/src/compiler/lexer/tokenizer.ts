@@ -88,7 +88,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
   private toggleAsLiteralSequence() {
     this.isLiteralSequence = !this.isLiteralSequence;
     this.lastToken.tag = "literal";
-    this.lastToken.symbol = this.lastToken.symbol.replace("`", "");
+    this.lastToken.symbol = this.lastToken.symbol.replace(Lexer.literalSymbol, "");
   }
 
   private static sanitizeRule(rule: FxTokenRule): FxTokenRule {

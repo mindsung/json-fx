@@ -5,7 +5,7 @@ import { FxLambdaFn } from "../../defs";
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "item",
-    evaluate: (arr: any[], index: number) => {
+    evaluate: (arr: any[] | any, index: number | string) => {
       return arr[index];
     }
   },
@@ -14,7 +14,7 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (arr: any[], lambda: FxLambdaFn) => {
       return arr.map(lambda);
     },
-    operator: {symbol: "::", precedence: 4}
+    operator: { symbol: "::", precedence: 4 }
   },
   {
     name: "sort",
@@ -35,6 +35,12 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     name: "filter",
     evaluate: (arr: any[], lambda: FxLambdaFn) => {
       return arr.filter(lambda);
+    }
+  },
+  {
+    name: "reduce",
+    evaluate: (arr: any[], lambda: FxLambdaFn, identity: any) => {
+      return arr.reduce(lambda, identity);
     }
   },
   {
@@ -122,6 +128,16 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "length",
     evaluate: (arr: any[]) => arr.length
+  },
+  {
+    name: "range",
+    evaluate: (min: number, max: number) => {
+      const result = [];
+      for (let i = min; i < max; i++) {
+        result.push(i);
+      }
+      return result;
+    }
   }
 ];
 

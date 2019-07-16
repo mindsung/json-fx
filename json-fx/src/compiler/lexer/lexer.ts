@@ -1,7 +1,7 @@
 import { FxTokenRule } from "./model/fx-token-rule";
 
 export namespace Lexer {
-  export const literalSymbol = "`";
+  export const literalSymbol = "'";
 
   export const tokenRules: ReadonlyArray<FxTokenRule> = [
     {

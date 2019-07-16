@@ -7,8 +7,12 @@ export abstract class FxError {
   private readonly _sourceRef: SourceRef;
 
   public get message(): string {
-    const column = this._sourceRef.index >= 0 ? "@ col. " + this._sourceRef.index : "";
-    const ref = (this._sourceRef.path + " " + column).trim();
+    let ref = "";
+
+    if (this._sourceRef) {
+      const column = this._sourceRef.index >= 0 ? "@ col. " + this._sourceRef.index : "";
+      ref = (this._sourceRef.path + " " + column).trim();
+    }
 
     return `${ this._prefix }: ${ this._message } (${ ref })`;
   }

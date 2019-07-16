@@ -5,6 +5,8 @@ import { FxExpression } from "./model/fx-expression";
 import { FxConstant } from "./model/fx-constant";
 import { FxScope } from "./fx-scope";
 import { FxExpressionDefinition } from "../lexer/model/fx-definition";
+import { coreExpressions } from "../../expressions/core";
+import { mathExpressions } from "../../expressions/math";
 
 export class JsonFx {
 
@@ -16,12 +18,20 @@ export class JsonFx {
     this.parser = new TemplateParser(this.context);
   }
 
-  compile(template: any): FxCompiledTemplate {
+  public compile(template: any): FxCompiledTemplate {
     const root = this.parser.parse(template);
-    // console.log(root.toString());
+    console.log(root.toString());
 
     const expr = root.compile();
     return new FxCompiledTemplateImpl(expr);
+  }
+
+  public define(def: FxExpressionDefinition): void {
+    this.context.loader.defineExpression(def);
+  }
+
+  public static std(): JsonFx {
+    return new JsonFx(coreExpressions, mathExpressions);
   }
 }
 

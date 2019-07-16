@@ -11,8 +11,6 @@ export class LambdaDef extends FxDef {
   }
 
   protected optimize(token: FxTokenNode): void {
-    token.tag = "lambda";
-
     if (token.first.tag != "group") {
       const wrapper = new FxTokenNode("signature");
       wrapper.isLvalue = true;

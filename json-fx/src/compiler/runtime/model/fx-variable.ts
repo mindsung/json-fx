@@ -9,6 +9,10 @@ export class FxVariable extends FxExpression {
     this.varName = varName;
   }
 
+  public getDependencies(): string[] {
+    return super.getDependencies().concat([this.varName]);
+  }
+
   public evaluate(): any {
     const variable = this.scope.getVariable(this.varName);
 
