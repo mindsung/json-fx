@@ -36,11 +36,47 @@ tester.run(() => {
   });
 
   tester.test("min", fn => {
+    const data = [
+      {id: 0, name: "AAA"},
+      {id: 1, name: "BBB"},
+      {id: 2, name: "CCC"},
+    ];
+
     assert.equal(fn([0, 1, 2, 3]), 0);
+    assert.equal(fn(data, i => i.id), 0);
+  });
+
+  tester.test("findMin", fn => {
+    const data = [
+      {id: 0, name: "AAA"},
+      {id: 1, name: "BBB"},
+      {id: 2, name: "CCC"},
+    ];
+
+    assert.equal(fn([0, 1, 2, 3]), 0);
+    assert.deepEqual(fn(data, i => i.id), {id: 0, name: "AAA"});
   });
 
   tester.test("max", fn => {
+    const data = [
+      {id: 0, name: "AAA"},
+      {id: 1, name: "BBB"},
+      {id: 2, name: "CCC"},
+    ];
+
     assert.equal(fn([0, 1, 2, 3]), 3);
+    assert.equal(fn(data, i => i.id), 2);
+  });
+
+  tester.test("findMax", fn => {
+    const data = [
+      {id: 0, name: "AAA"},
+      {id: 1, name: "BBB"},
+      {id: 2, name: "CCC"},
+    ];
+
+    assert.equal(fn([0, 1, 2, 3]), 3);
+    assert.deepEqual(fn(data, i => i.id), {id: 2, name: "CCC"});
   });
 
   tester.test("avg", fn => {
