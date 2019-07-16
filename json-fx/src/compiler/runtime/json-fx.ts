@@ -41,8 +41,8 @@ export interface FxCompiledTemplate {
 class FxCompiledTemplateImpl implements FxCompiledTemplate {
 
   private readonly global: FxScope;
-  private readonly parsed: FxTokenNode;
-  private readonly expr: FxExpression;
+  public readonly parsed: FxTokenNode;
+  public readonly expr: FxExpression;
 
   constructor(parsed: FxTokenNode) {
     this.parsed = parsed;
@@ -63,10 +63,6 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
       this.global.setVariable(new FxScopeVariable(input.name, new FxConstant(input.value)));
     });
     return this.expr.evaluate();
-  }
-
-  toString() {
-    return this.parsed.toString();
   }
 }
 
