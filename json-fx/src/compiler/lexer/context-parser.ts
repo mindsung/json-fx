@@ -14,14 +14,6 @@ export class ContextParser implements FxParser<FxTokenNode> {
         break;
       case "template-call":
         lvalue.tag = "template";
-
-        if (lvalue.first) {
-          if (lvalue.first.tag != "group") {
-            lvalue.first.wrap(new FxTokenNode("signature"));
-          } else {
-            lvalue.first.tag = "signature";
-          }
-        }
         break;
     }
 

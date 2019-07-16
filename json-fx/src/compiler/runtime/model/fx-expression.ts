@@ -8,13 +8,26 @@ export abstract class FxExpression {
 
   protected constructor() {
     this._scope = new FxScope(this);
+    this.sourceRef = { symbol: "", index: -1, path: "" };
   }
 
-  public get scope() {
-    return this._scope;
+  protected get children(): FxExpression[] { return []; }
+
+  public get scope(): FxScope { return this._scope; }
+
+  public evaluate(): any {}
+
+  public getDependencies(): string[] {
+    return this.children.reduce((arr, child) => {
+      arr.push(...child.getDependencies());
+      return arr;
+    }, []);
   }
 
-  evaluate(): any {
+  public bindSourceRefPath(): void {
+    for (const child of this.children) {
+      child.sourceRef.path = this.sourceRef.path;
+    }
   }
 
   resolveDependencies(): any {
@@ -25,7 +38,7 @@ export abstract class FxExpression {
     }
   }
 
-  public bindScope(parent: FxScope = null) {
+  public bindScope(parent: FxScope = null): void {
     if (this.scope.parentScope !== parent) {
       if (this.scope.parentScope != null) {
         const i = this.scope.parentScope.childScopes.indexOf(this.scope);
@@ -37,10 +50,14 @@ export abstract class FxExpression {
       this.scope.parentScope = parent;
       this.scope.bind();
     }
+
+    for (const child of this.children) {
+      child.bindScope(this.scope);
+    }
   }
 
   public toString(): string {
-    return "<unknown>";
+    return this.constructor.name;
   }
 }
 

@@ -1,32 +1,39 @@
-import { FxExpressionDefinition } from "../../defs";
 import { FxLoader } from "./fx-loader";
 import { FxContext } from "../lexer/model/fx-context";
 import { TemplateParser } from "../lexer/template-parser";
-import { FxCompiler } from "./fx-compiler";
 import { FxExpression } from "./model/fx-expression";
 import { FxConstant } from "./model/fx-constant";
 import { FxScope } from "./fx-scope";
 import { FxScopeVariable } from "./model/fx-scope-variable";
+import { FxExpressionDefinition } from "../lexer/model/fx-definition";
+import { coreExpressions } from "../../expressions/core";
+import { mathExpressions } from "../../expressions/math";
 
 export class JsonFx {
 
   private readonly context: FxContext;
   private readonly parser: TemplateParser;
-  private readonly compiler: FxCompiler;
 
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
     this.context = new FxContext(new FxLoader(...expressions));
     this.parser = new TemplateParser(this.context);
-    this.compiler = new FxCompiler(this.context);
   }
 
-  compile(template: any): FxCompiledTemplate {
+  public compile(template: any): FxCompiledTemplate {
     const root = this.parser.parse(template);
     console.log(root.toString());
 
-    const expr = this.compiler.compile(root);
+    const expr = root.compile();
     expr.resolveDependencies();
     return new FxCompiledTemplateImpl(expr);
+  }
+
+  public define(def: FxExpressionDefinition): void {
+    this.context.loader.defineExpression(def);
+  }
+
+  public static std(): JsonFx {
+    return new JsonFx(coreExpressions, mathExpressions);
   }
 }
 
@@ -44,6 +51,7 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
     this.global = new FxScope();
 
     this.expr.bindScope(this.global);
+    this.expr.bindSourceRefPath();
   }
 
   evaluate(...inputs: FxInput[]): any {

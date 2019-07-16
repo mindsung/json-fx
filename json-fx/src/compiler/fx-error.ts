@@ -1,29 +1,37 @@
+import { SourceRef } from "./runtime/source-ref";
+
 export abstract class FxError {
 
   private readonly _prefix: string;
   private readonly _message: string;
-  private readonly _index: number;
+  private readonly _sourceRef: SourceRef;
 
   public get message(): string {
-    const index = this._index != undefined || this._index < 0 ? " @ col. " + this._index : "";
-    return this._prefix + ": " + this._message + index;
+    let ref = "";
+
+    if (this._sourceRef) {
+      const column = this._sourceRef.index >= 0 ? "@ col. " + this._sourceRef.index : "";
+      ref = (this._sourceRef.path + " " + column).trim();
+    }
+
+    return `${ this._prefix }: ${ this._message } (${ ref })`;
   }
 
   public get index(): number {
-    return this._index;
+    return this._sourceRef.index;
   }
 
-  protected constructor(prefix: string, message: string, index?: number) {
+  protected constructor(prefix: string, message: string, sourceRef?: SourceRef) {
     this._prefix = prefix;
     this._message = message;
-    this._index = index;
+    this._sourceRef = sourceRef;
   }
 }
 
 export class FxSyntaxError extends FxError {
-  constructor(message: string, index?: number) { super("Syntax error", message, index); }
+  constructor(message: string, index?: number) { super("Syntax error", message, { index: index, symbol: "" }); }
 }
 
 export class FxCompileError extends FxError {
-  constructor(message: string, index?: number) { super("Compilation error", message, index); }
+  constructor(message: string, sourceRef?: SourceRef) { super("Compilation error", message, sourceRef); }
 }

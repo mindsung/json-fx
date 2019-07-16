@@ -10,6 +10,8 @@ export class FxObject extends FxExpression {
     this.items = items || {};
   }
 
+  protected get children(): FxExpression[] { return Object.keys(this.items).map(key => this.items[key]); }
+
   evaluate(): any {
     const result = {};
     for (const key of Object.keys(this.items)) {
@@ -22,19 +24,22 @@ export class FxObject extends FxExpression {
     return result;
   }
 
-  bindScope(root: FxScope = null) {
-    super.bindScope(root);
+  bindSourceRefPath(): void {
+    super.bindSourceRefPath();
+    const useDot = !!this.sourceRef.path;
+
     for (const key of Object.keys(this.items)) {
-      this.items[key].bindScope(this.scope);
+      this.items[key].sourceRef.path += useDot ? "." + key : key;
+      this.items[key].bindSourceRefPath();
     }
   }
 
   public toString(): string {
-    const vars = Object.keys(this.scope.variables).map(key => `${key}: ${this.scope.variables[key].toString()}`);
-    let items = Object.keys(this.items).map(key => `${key}: ${this.items[key].toString()}`);
+    const vars = Object.keys(this.scope.variables).map(key => `${ key }: ${ this.scope.variables[key].toString() }`);
+    let items = Object.keys(this.items).map(key => `${ key }: ${ this.items[key].toString() }`);
 
     items = vars.concat(items);
 
-    return `{${items.join(", ")}}`;
+    return `{${ items.join(", ") }}`;
   }
 }

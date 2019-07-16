@@ -1,8 +1,8 @@
-import {FxParser} from "./model/fx-parser";
-import {Lexer} from "./lexer";
-import {isArray} from "../../common";
-import {FxTokenRule} from "./model/fx-token-rule";
-import {FxToken} from "./model/fx-token";
+import { FxParser } from "./model/fx-parser";
+import { Lexer } from "./lexer";
+import { isArray } from "../../common";
+import { FxTokenRule } from "./model/fx-token-rule";
+import { FxToken } from "./model/fx-token";
 
 export class Tokenizer implements FxParser<string, FxToken[]> {
   private tokens: FxToken[];
@@ -88,7 +88,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
   private toggleAsLiteralSequence() {
     this.isLiteralSequence = !this.isLiteralSequence;
     this.lastToken.tag = "literal";
-    this.lastToken.symbol = this.lastToken.symbol.replace("`", "");
+    this.lastToken.symbol = this.lastToken.symbol.replace(Lexer.literalSymbol, "");
   }
 
   private static sanitizeRule(rule: FxTokenRule): FxTokenRule {

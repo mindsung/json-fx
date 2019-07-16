@@ -1,7 +1,7 @@
 import { FxTokenRule } from "./model/fx-token-rule";
 
 export namespace Lexer {
-  export const literalSymbol = "`";
+  export const literalSymbol = "'";
 
   export const tokenRules: ReadonlyArray<FxTokenRule> = [
     {
@@ -42,11 +42,6 @@ export namespace Lexer {
     {
       tag: "space",
       test: c => /\s/.test(c)
-    },
-    {
-      tag: "delimiter",
-      test: c => c == ",",
-      preventMerge: true
     },
     {
       tag: "operator",

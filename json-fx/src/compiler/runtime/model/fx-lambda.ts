@@ -1,6 +1,5 @@
-import {FxScope} from "../fx-scope";
-import {FxExpression} from "./fx-expression";
-import {FxConstant} from "./fx-constant";
+import { FxExpression } from "./fx-expression";
+import { FxConstant } from "./fx-constant";
 import { FxScopeVariable } from "./fx-scope-variable";
 
 export class FxLambda extends FxExpression {
@@ -13,7 +12,9 @@ export class FxLambda extends FxExpression {
     this.expression = expression;
   }
 
-  public evaluate() {
+  protected get children(): FxExpression[] { return [this.expression]; }
+
+  public evaluate(): (...vars: any[]) => any {
     return (...vars: any[]) => {
       for (let i = 0; i < this.varNames.length; i++) {
         if (vars[i] != undefined) {
@@ -27,12 +28,7 @@ export class FxLambda extends FxExpression {
     };
   }
 
-  public bindScope(root: FxScope = null) {
-    super.bindScope(root);
-    this.expression.bindScope(this.scope);
-  }
-
   public toString(): string {
-    return `(${this.varNames.join(", ")}) => ${this.expression.toString()}`;
+    return `(${ this.varNames.join(", ") }) => ${ this.expression.toString() }`;
   }
 }

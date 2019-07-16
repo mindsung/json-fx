@@ -1,33 +1,34 @@
 import * as CryptoJS from "crypto-js";
+import { FxExpressionDefinition } from "../../../json-fx/src/compiler/lexer/model/fx-definition";
 
-export const cryptoExpressions = [
+export const cryptoExpressions: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "crypto~md5",
-    expression: (token: string) => CryptoJS.MD5(token).toString()
+    evaluate: (token: string) => CryptoJS.MD5(token).toString()
   },
   {
     name: "crypto~sha1",
-    expression: (token: string) => CryptoJS.SHA1(token).toString()
+    evaluate: (token: string) => CryptoJS.SHA1(token).toString()
   },
   {
     name: "crypto~sha256",
-    expression: (token: string) => CryptoJS.SHA256(token).toString()
+    evaluate: (token: string) => CryptoJS.SHA256(token).toString()
   },
   {
     name: "crypto~sha512",
-    expression: (token: string) => CryptoJS.SHA512(token).toString()
+    evaluate: (token: string) => CryptoJS.SHA512(token).toString()
   },
   {
     name: "crypto~sha3",
-    expression: (token: string) => CryptoJS.SHA3(token).toString()
+    evaluate: (token: string) => CryptoJS.SHA3(token).toString()
   },
   {
     name: "crypto~encrypt",
-    expression: (token: string, key: string) => CryptoJS.AES.encrypt(token, key).toString()
+    evaluate: (token: string, key: string) => CryptoJS.AES.encrypt(token, key).toString()
   },
   {
     name: "crypto~decrypt",
-    expression: (token: string, key: string) => {
+    evaluate: (token: string, key: string) => {
       const hex = CryptoJS.AES.decrypt(token, key).toString();
       let message = "";
 

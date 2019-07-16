@@ -1,5 +1,7 @@
-import {FxExpression} from "./model/fx-expression";
 import { FxScopeVariable } from "./model/fx-scope-variable";
+import { FxExpression } from "./model/fx-expression";
+import { FxCompileError } from "../fx-error";
+
 
 export class FxScope {
   public readonly owner: FxExpression;
@@ -18,7 +20,7 @@ export class FxScope {
     } else if (this.parentScope) {
       return this.parentScope.getVariable(key);
     } else {
-      throw new Error(`Undefined variable "${key}"`);
+      return undefined;
     }
   }
 

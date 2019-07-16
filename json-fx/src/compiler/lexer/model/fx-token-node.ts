@@ -3,7 +3,8 @@ import { FxOperatorDefinition } from "../../../defs";
 import { FxTokenTag } from "./fx-token-tag";
 import { FxToken } from "./fx-token";
 import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxCompiler } from "../../runtime/fx-compiler";
+import { FxEvaluatorDefinition } from "./fx-definition";
+import { SourceRef } from "../../runtime/source-ref";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -11,7 +12,10 @@ export class FxTokenNode extends FxNode implements FxToken {
   public symbol: string;
   public index: number;
 
-  public operator: FxOperatorDefinition = null;
+  public sourceRef: SourceRef;
+
+  public operator: FxOperatorDefinition;
+  public evaluator: FxEvaluatorDefinition;
   public optimizer: (token?: FxTokenNode) => void;
   public compiler: (token: FxTokenNode) => FxExpression;
 
@@ -26,13 +30,6 @@ export class FxTokenNode extends FxNode implements FxToken {
 
   public get isLvalue(): boolean {
     return this._isLvalue;
-    // if (this._isLvalue) {
-    //   return true;
-    // } else if (this.parent) {
-    //   return this.parent.isLvalue;
-    // } else {
-    //   return false;
-    // }
   }
 
   public set isLvalue(v: boolean) {
@@ -44,12 +41,14 @@ export class FxTokenNode extends FxNode implements FxToken {
 
   public optimize(): void {
     if (this.optimizer) {
-      this.optimizer(this);
+      this.optimizer.call(this.optimizer, this);
     }
   }
 
   public compile(): FxExpression {
-    return this.compiler ? this.compiler(this) : null;
+    return this.compiler
+      ? this.compiler(this)
+      : null;
   }
 
   public static from(root: FxToken): FxTokenNode {

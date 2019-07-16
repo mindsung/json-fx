@@ -9,16 +9,22 @@ export class FxArray extends FxExpression {
     this.items = items || [];
   }
 
-  evaluate() {
+  protected get children(): FxExpression[] { return this.items; }
+
+  evaluate(): any[] {
     return this.items.map(item => item.evaluate());
   }
 
-  public bindScope(root: FxScope = null) {
-    super.bindScope(root);
-    this.items.forEach(item => item.bindScope(this.scope));
+  bindSourceRefPath(): void {
+    this.bindSourceRefPath();
+
+    for (let i = 0; i < this.items.length; i++) {
+      this.items[i].sourceRef.path += `[${ i }]`;
+      this.items[i].bindSourceRefPath();
+    }
   }
 
   public toString(): string {
-    return `[${this.items.map(item => item.toString())}]`;
+    return `[${ this.items.map(item => item.toString()) }]`;
   }
 }

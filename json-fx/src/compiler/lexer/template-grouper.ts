@@ -76,7 +76,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
       root.add(keyToken);
       root.add(new FxTokenNode("operator", ":"));
       root.add(this.parse(obj[key]));
-      root.add(new FxTokenNode("delimiter", ","));
+      root.add(new FxTokenNode("operator", ","));
     }
 
     if (root.count > 0) {

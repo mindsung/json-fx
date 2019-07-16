@@ -1,7 +1,7 @@
-import {describe, it} from "mocha";
-import {assert} from "chai";
+import { describe, it } from "mocha";
+import { assert } from "chai";
 
-import {FxNode} from "./fx-node";
+import { FxNode } from "./fx-node";
 
 describe("lexer/FxNode", function () {
 

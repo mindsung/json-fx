@@ -1,56 +1,101 @@
-import { FxExpressionDefinition, FxOperatorDefinition } from "../../defs";
+import { intrinsics } from "../lexer/model/fx-intrinsic-definition";
+import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
+import { FxTokenNode } from "../lexer/model/fx-token-node";
 import { exprIntrinsic } from "../../expressions/expr-intrinsic";
-import { FxIntrinsicDefinition, intrinsics } from "../lexer/model/fx-intrinsic-definition";
 
 export class FxLoader {
-  readonly expressions: Map<string, FxExpressionDefinition>;
-  readonly operators: Map<string, FxOperatorDefinition>;
-
-  readonly intrinsics: { [index: string]: FxIntrinsicDefinition };
+  private readonly operators: { [index: string]: FxDefinition };
+  private readonly definitions: { [index: string]: FxDefinition };
 
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
-    this.expressions = new Map<string, FxExpressionDefinition>();
-    this.operators = new Map<string, FxOperatorDefinition>();
+    this.operators = {};
+    this.definitions = {};
 
-    this.define(...exprIntrinsic);
-    expressions.forEach(exp => this.define(...exp));
+    expressions.forEach(
+      set => set.forEach(
+        def => this.defineExpression(def)));
 
-    // TODO: Code cleanup
-    this.intrinsics = intrinsics.reduce((obj, item) => {
-      obj[item.tag] = item;
-      return obj;
-    }, {});
-    intrinsics.forEach(intrinsic => {
-      if (intrinsic.operator) {
-        this.operators.set(intrinsic.operator.symbol, intrinsic.operator);
-      }
-    });
+    exprIntrinsic.forEach(def => this.defineExpression(def));
+
+    intrinsics.forEach(intr => this.defineIntrinsic(intr));
   }
 
-  define(...expressions: FxExpressionDefinition[]): void {
-    for (const expr of expressions) {
-      this.expressions.set(expr.name, expr);
+  public defineIntrinsic(def: FxIntrinsicDefinition): void {
+    const hash = FxLoader.hash(def.tag);
 
-      if (expr.operator) {
-        this.operators.set(expr.operator.symbol, {
-          symbol: expr.name,
-          precedence: expr.operator.precedence,
-          assoc: expr.operator.assoc || "left",
-          isUnary: !!expr.operator.isUnary
-        });
-      }
+    const fxdef: FxDefinition = {
+      operator: def.operator,
+      evaluator: def.evaluator,
+      compiler: def.compiler,
+      optimizer: def.optimizer
+    };
+
+    if (def.tag) {
+      this.definitions[hash] = fxdef;
+    }
+
+    if (def.operator) {
+      this.defineOperator(def.operator.symbol, fxdef);
     }
   }
 
-  public getIntrinsic(tag: string): FxIntrinsicDefinition {
-    return this.intrinsics[tag];
+  public defineExpression(def: FxExpressionDefinition): void {
+    const hash = FxLoader.hash(null, def.name);
+
+    const fxdef: FxDefinition = {
+      operator: def.operator,
+      evaluator: def
+    };
+
+    this.definitions[hash] = fxdef;
+
+    if (def.operator) {
+      this.defineOperator(def.operator.symbol, fxdef);
+    }
   }
 
-  public getExpression(name: string): FxExpressionDefinition {
-    return this.expressions.has(name) ? this.expressions.get(name) : null;
+  private defineOperator(symbol: string, def: FxDefinition): void {
+    this.operators[symbol] = def;
   }
 
-  public getOperator(name: string): FxOperatorDefinition {
-    return this.operators.has(name) ? this.operators.get(name) : null;
+  public load(node: FxTokenNode): void {
+    const def = this.getDefinition(node);
+
+    if (this.operators[node.symbol]) {
+      node.tag = "operator";
+    }
+
+    node.operator = def.operator;
+    node.evaluator = def.evaluator;
+    node.optimizer = def.optimizer;
+    node.compiler = def.compiler;
+  }
+
+  private getDefinition(node: FxTokenNode): FxDefinition {
+    const oprDef = FxLoader.sanitizeObject(this.operators[node.symbol]);
+    const strDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
+    const tagDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(node.tag, null)]);
+    const symDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(null, node.symbol)]);
+
+    return Object.assign({}, symDef, tagDef, strDef, oprDef);
+  }
+
+  private static sanitizeObject(obj: any): any {
+    const clone = Object.assign({}, obj);
+
+    for (const key of Object.keys(clone)) {
+      if (clone[key] == null) {
+        delete clone[key];
+      }
+    }
+
+    return clone;
+  }
+
+  private static hash(tag?: string, symbol?: string): string {
+    tag = tag || "*";
+    symbol = symbol || "*";
+
+    return `<${ tag }>${ symbol }`;
   }
 }

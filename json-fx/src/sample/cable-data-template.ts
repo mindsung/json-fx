@@ -1,5 +1,5 @@
 export const cableDataTemplate = {
-  "TemplateVersion": "`1.0`",
+  "TemplateVersion": "'1.0'",
 
   "Meter": "$.Meter",
   "Jobs": "$.Jobs",
@@ -17,7 +17,7 @@ export const cableDataTemplate = {
     "manufacturer": "VIAVI",
     "model": "$meter.MeterType:notnull",
     "swVersion": "$meter.SoftwareVersions.AppVersion:notnull",
-    "hwVersion": "`rf:` + $hw.RfVersion + `; modem:` + $hw.ModemType + $hw.ModemVersion + `; optical:` + $hw.OpticalVersion",
+    "hwVersion": "'rf:' + $hw.RfVersion + '; modem:' + $hw.ModemType + $hw.ModemVersion + '; optical:' + $hw.OpticalVersion",
     "calibrationDate": "$hw.CalDate"
   },
 
@@ -28,8 +28,8 @@ export const cableDataTemplate = {
 
     "@workflow": {
       "workOrderId": "$job.Name",
-      "date?": "$job.Attributes?.OpenTime?:substr(0, 10)?:add(`T00:00Z`)",
-      "state?": "ifelse($job.Attributes?.MeterStatus == `Closed`, `COMPLETED`, `IN PROGRESS`)",
+      "date?": "$job.Attributes?.OpenTime?:substr(0, 10)?:add('T00:00Z')",
+      "state?": "ifelse($job.Attributes?.MeterStatus == 'Closed', 'COMPLETED', 'IN PROGRESS')",
       "techInfo": {
         "techId?": "$ts.TechID || $ts.Attributes?.TechId"
       }
@@ -37,15 +37,15 @@ export const cableDataTemplate = {
 
     "$workflow": "$job?.Workflow || @workflow()",
 
-    "cdmVersion": "`2.0`",
+    "cdmVersion": "'2.0'",
     "workflow?": "$workflow",
     "assetInfo": "$asset",
     "tests": [{
       "$tval": "$ts.TestValues",
-      "type": "ifelse($tval:length() > 0, ifelse($tval:length() == 1, $tval:min($t => $t.Name), `multi`)):lowercase",
+      "type": "ifelse($tval:length() > 0, ifelse($tval:length() == 1, $tval:min($t => $t.Name), 'multi')):lowercase",
       "workflowId?": "$workflow?.workflowId",
       "configuration?": {
-        "eType?": "ifelse($ts.ChannelPlanId || $ts.LimitSetId || $ts.AutoTestId, `dsp-native`)",
+        "eType?": "ifelse($ts.ChannelPlanId || $ts.LimitSetId || $ts.AutoTestId, 'dsp-native')",
         "channelPlan?": "$ts.ChannelPlanId:ifelse($.ChannelPlans?:find($cp => $cp.Id == $ts.ChannelPlanId))",
         "limitSet?": "$ts.LimitSetId:ifelse($.LimitSets?:find($ls => $ls.Id == $ts.LimitSetId))",
         "autoTest?": "$ts.AutoTestId:ifelse($.AutoTests?:find($at => $at.Id == $ts.AutoTestId))",
@@ -53,10 +53,10 @@ export const cableDataTemplate = {
         "//": "TODO: Ethernet test config assets"
       },
       "results": {
-        "status": "$ts.Results:ifelse($ts.Results.Failed:ifelse(`fail`, `pass`), `none`)",
+        "status": "$ts.Results:ifelse($ts.Results.Failed:ifelse('fail', 'pass'), 'none')",
         "testTime": "$ts.TestTime:notnull",
         "data": {
-          "eType": "`dsp-native`",
+          "eType": "'dsp-native'",
           "testSet": "$ts",
           "job?": "$job"
         }

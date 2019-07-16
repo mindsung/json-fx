@@ -1,5 +1,5 @@
-import {FxExpression} from "./fx-expression";
-import {FxScope} from "../fx-scope";
+import { FxExpression } from "./fx-expression";
+import { FxScope } from "../fx-scope";
 
 export interface FxPropertyPathItem {
   interrupts: boolean;
@@ -15,13 +15,7 @@ export class FxProperty extends FxExpression {
     this.path = path;
   }
 
-  bindScope(root: FxScope = null) {
-    super.bindScope(root);
-
-    for (const p of this.path) {
-      p.value.bindScope(this.scope);
-    }
-  }
+  protected get children(): FxExpression[] { return this.path.map(item => item.value); }
 
   evaluate(): any {
     let result = this.path[0].value.evaluate();

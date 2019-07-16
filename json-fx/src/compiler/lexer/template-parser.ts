@@ -8,11 +8,9 @@ import { OperatorParser } from "./operator-parser";
 import { Optimizer } from "./optimizer";
 import { ContextParser } from "./context-parser";
 import { OperatorContextParser } from "./operator-context-parser";
-import { FxNode } from "./model/fx-node";
-import { FxCompiler } from "../runtime/fx-compiler";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
-  private context: FxContext;
+
   private grouper: TemplateGrouper;
   private parser: NodeParser;
 
@@ -22,45 +20,13 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
       new ExpressionParser(),
       new OperatorContextParser(context),
       new OperatorParser(context),
-      new OptimizerImplGlue(),
       new Optimizer(),
-      new ContextParser(),
-      new CompilerImplGlue(context));
+      new ContextParser());
   }
 
   parse(template: any): FxTokenNode {
     const root = this.grouper.parse(template);
     this.parser.parse(root);
     return root;
-  }
-}
-
-class OptimizerImplGlue implements FxParser<FxTokenNode> {
-
-  readonly optimizer: Optimizer;
-
-  constructor() {
-    this.optimizer = new Optimizer();
-  }
-
-  parse(item: FxTokenNode): void {
-    if (!item.optimizer) {
-      item.optimizer = this.optimizer.backupParse.bind(this.optimizer);
-    }
-  }
-}
-
-class CompilerImplGlue implements FxParser<FxTokenNode> {
-
-  readonly compiler: FxCompiler;
-
-  constructor(context: FxContext) {
-    this.compiler = new FxCompiler(context);
-  }
-
-  parse(item: FxTokenNode): void {
-    if (!item.compiler) {
-      item.compiler = this.compiler.backupCompile.bind(this.compiler);
-    }
   }
 }

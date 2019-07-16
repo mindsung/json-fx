@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../defs";
+import { FxExpressionDefinition } from "../../compiler/lexer/model/fx-definition";
 import { isFunction, isNumber } from "../../common";
 
 export const exprMath: ReadonlyArray<FxExpressionDefinition> = Object.getOwnPropertyNames(Math).map(key => {
@@ -6,6 +6,6 @@ export const exprMath: ReadonlyArray<FxExpressionDefinition> = Object.getOwnProp
   const x = isFunction(prop) ? (...params: any[]): any => prop(...params) : isNumber(prop) ? () => prop : null;
   return {
     name: "math~" + key,
-    expression: x
+    evaluate: x
   };
-}).filter(expr => expr.expression != null);
+}).filter(expr => expr.evaluate != null);
