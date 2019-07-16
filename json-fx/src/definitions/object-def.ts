@@ -4,6 +4,7 @@ import { FxExpression } from "../compiler/runtime/model/fx-expression";
 import { FxObject } from "../compiler/runtime/model/fx-object";
 import { LambdaDef } from "./lambda-def";
 import { FxDef } from "./model/fx-def";
+import { FxScopeVariable } from "../compiler/runtime/model/fx-scope-variable";
 
 export class ObjectDef extends FxDef {
 
@@ -25,10 +26,10 @@ export class ObjectDef extends FxDef {
           result.items[child.symbol] = child.first.compile();
           break;
         case "variable":
-          result.scope.setVariable(child.symbol, child.first.compile());
+          result.scope.setVariable(new FxScopeVariable(child.symbol, child.first.compile()));
           break;
         case "template":
-          result.scope.setVariable(child.symbol, this.lambda.compiler(child));
+          result.scope.setVariable(new FxScopeVariable(child.symbol, this.lambda.compiler(child)));
           break;
       }
     }

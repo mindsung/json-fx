@@ -2,7 +2,7 @@ import { FxDef } from "./model/fx-def";
 import { FxTokenTag } from "../compiler/lexer/model/fx-token-tag";
 import { FxTokenNode } from "../compiler/lexer/model/fx-token-node";
 import { FxExpression } from "../compiler/runtime/model/fx-expression";
-import { FxVariable } from "../compiler/runtime/model/fx-variable";
+import { FxVariableReference } from "../compiler/runtime/model/fx-variable-reference";
 import { FxFunction } from "../compiler/runtime/model/fx-function";
 import { FxLambdaFn } from "../defs";
 
@@ -11,7 +11,7 @@ export class CallDef extends FxDef {
   public get tag(): FxTokenTag { return "template-call"; }
 
   protected compile(token: FxTokenNode): FxExpression {
-    const result: FxExpression = new FxVariable(token.symbol);
+    const result: FxExpression = new FxVariableReference(token.symbol);
     let params: FxExpression[];
 
     if (token.first && token.first.tag == "signature") {

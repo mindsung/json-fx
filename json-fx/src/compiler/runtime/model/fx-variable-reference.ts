@@ -1,26 +1,27 @@
 import { FxExpression } from "./fx-expression";
-import { FxScopeVariable, isScopeVariable } from "./fx-scope-variable";
+import { isScopeVariable } from "./fx-scope-variable";
+import { FxCompileError } from "../../fx-error";
 
 export class FxVariableReference extends FxExpression {
   public varName: string;
-  private resolved: FxScopeVariable;
-  private dependencies: FxScopeVariable[] = [];
 
   constructor(varName: string) {
     super();
     this.varName = varName;
   }
 
-  private getResolved(): FxScopeVariable {
-    if (this.resolved == null) {
-      this.resolved = this.scope.getVariable(this.varName);
-      this.resolved.addDependents(this.dependencies);
-    }
-    return this.resolved;
+  public getDependencies(): string[] {
+    return super.getDependencies().concat([this.varName]);
   }
 
   public evaluate(): any {
-    return this.getResolved().evaluate();
+    const variable = this.scope.getVariable(this.varName);
+
+    if (variable == undefined) {
+      throw new FxCompileError(`Undefined variable "${ this.varName }"`, this.sourceRef);
+    }
+    return this.scope.getVariable(this.varName)
+    .evaluate();
   }
 
   resolveDependencies(): any {
@@ -29,7 +30,6 @@ export class FxVariableReference extends FxExpression {
     while (parentScope != null) {
       if (isScopeVariable(parentScope.owner)) {
         // console.log(`defer ${parentScope.owner.varName} depends on ${this.varName}`);
-        this.dependencies.push(parentScope.owner);
       }
       parentScope = parentScope.parentScope;
     }
