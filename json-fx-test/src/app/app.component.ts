@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
 import {BehaviorSubject} from "rxjs";
 import {JsonFx} from "@mindsung/json-fx";
+import { cryptoExpressions } from "@mindsung/json-fx-crypto";
 import {$POKEMON} from "../sample-data/pokemon";
 
 @Component({
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit {
 
   constructor() {
     this.fx = new JsonFx();
+    cryptoExpressions.forEach(x => this.fx.define(x));
     this.fxScript = "$";
 
     window["fx"] = (template: any) => {
