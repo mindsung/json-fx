@@ -13,10 +13,10 @@
     ],
     "paths": {
       "@mindsung/json-fx": [
-        "lib/json-fx/index"
+        "../json-fx/src/index"
       ],
       "@mindsung/json-fx-crypto": [
-        "lib/json-fx-crypto/index"
+        "../json-fx-crypto/src/index"
       ]
     }
   }
