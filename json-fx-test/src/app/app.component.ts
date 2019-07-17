@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
 import {BehaviorSubject} from "rxjs";
-import {Fx, JsonFx} from "@mindsung/json-fx";
+import {JsonFx} from "@mindsung/json-fx";
 import {$POKEMON} from "../sample-data/pokemon";
 
 @Component({
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
   public fxResult = new BehaviorSubject("");
 
   constructor() {
-    this.fx = new JsonFx(Fx.expressions);
+    this.fx = new JsonFx();
     this.fxScript = "$";
 
     window["fx"] = (template: any) => {

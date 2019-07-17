@@ -32,6 +32,10 @@ export const exprString: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (str: string, separator: string) => str.split(separator)
   },
   {
+    name: "join",
+    evaluate: (items: any[], separator: string) => items.join(separator)
+  },
+  {
     name: "uppercase",
     evaluate: (str: string) => str.toUpperCase()
   },
