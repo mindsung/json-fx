@@ -1,6 +1,10 @@
 {
   "name": "json-fx-sandbox",
   "version": "1.0.0",
+  "scripts": {
+    "linux-link-json-fx": "mkdir -p lib && cd lib && ln -nsf ../../json-fx/src ./json-fx",
+    "linux-link-json-fx-crypto": "mkdir -p lib && cd lib && ln -nsf ../../json-fx-crypto/src ./json-fx-crypto"
+  },
   "devDependencies": {
     "@types/node": "^12.6.6",
     "ts-node": "^8.3.0",

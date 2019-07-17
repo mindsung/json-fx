@@ -1,9 +1,0 @@
-You need to create a ./lib folder with a symbol link, exactly like json-fx-test.
-
-Example run configuration:
-
-Node parameters:   -r ts-node/register -r tsconfig-paths/register
-Working directory: ~/json-fx/json-fx-sandbox/src
-Javascript file:   cable-data/index.ts
-
-"tsconfig-paths/register" includes paths defined in tsconfig.json, i.e. @mindsung/json-fx
