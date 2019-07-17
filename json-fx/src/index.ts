@@ -25,8 +25,5 @@ SOFTWARE.
 */
 import { polyfills } from "./polyfills";
 
+export * from "./runtime/json-fx";
 polyfills();
-
-export * from "./expressions/core";
-export * from "./expressions/math";
-export * from "./compiler/runtime/json-fx";

@@ -1,4 +1,4 @@
-import { FxLoader } from "./fx-loader";
+import { FxLoader } from "../lexer/fx-loader";
 import { FxContext } from "../lexer/model/fx-context";
 import { TemplateParser } from "../lexer/template-parser";
 import { FxExpression } from "./model/fx-expression";
@@ -6,8 +6,6 @@ import { FxConstant } from "./model/fx-constant";
 import { FxScope } from "./fx-scope";
 import { FxScopeVariable } from "./model/fx-scope-variable";
 import { FxExpressionDefinition } from "../lexer/model/fx-definition";
-import { coreExpressions } from "../../expressions/core";
-import { mathExpressions } from "../../expressions/math";
 import { FxTokenNode } from "../lexer/model/fx-token-node";
 
 export class JsonFx {
@@ -26,10 +24,6 @@ export class JsonFx {
 
   public define(def: FxExpressionDefinition): void {
     this.context.loader.defineExpression(def);
-  }
-
-  public static std(): JsonFx {
-    return new JsonFx(coreExpressions, mathExpressions);
   }
 }
 

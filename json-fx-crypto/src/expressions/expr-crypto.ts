@@ -1,5 +1,5 @@
 import * as CryptoJS from "crypto-js";
-import { FxExpressionDefinition } from "../../../json-fx/src/compiler/lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../../json-fx/src/lexer/model/fx-definition";
 
 export const cryptoExpressions: ReadonlyArray<FxExpressionDefinition> = [
   {

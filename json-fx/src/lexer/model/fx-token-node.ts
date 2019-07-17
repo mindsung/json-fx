@@ -3,15 +3,12 @@ import { FxTokenTag } from "./fx-token-tag";
 import { FxToken } from "./fx-token";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxEvaluatorDefinition, FxOperatorDefinition } from "./fx-definition";
-import { SourceRef } from "../../runtime/source-ref";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
   public tag: FxTokenTag;
   public symbol: string;
   public index: number;
-
-  public sourceRef: SourceRef;
 
   public operator: FxOperatorDefinition;
   public evaluator: FxEvaluatorDefinition;

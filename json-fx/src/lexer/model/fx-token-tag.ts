@@ -16,24 +16,3 @@ export type FxTokenTag =
   | "operator"
   | "expression"
   | "object";
-
-/*
-
-identifier
-variable
-template
-string
-number
-array
-object
-keyword
-group
-group-close
-delimiter
-space
-call
-signature
-operator
-lambda
-
-*/

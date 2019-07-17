@@ -1,6 +1,6 @@
 import { FxParser } from "./model/fx-parser";
 import { Tokenizer } from "./tokenizer";
-import { isArray, isBoolean, isNumber, isObject, isString } from "../../common";
+import { isArray, isBoolean, isNumber, isObject, isString } from "../common";
 import { Grouper } from "./grouper";
 import { FxTokenNode } from "./model/fx-token-node";
 

@@ -1,6 +1,6 @@
 import { FxParser } from "./model/fx-parser";
 import { Lexer } from "./lexer";
-import { isArray } from "../../common";
+import { isArray } from "../common";
 import { FxTokenRule } from "./model/fx-token-rule";
 import { FxToken } from "./model/fx-token";
 

@@ -1,5 +1,5 @@
 import { FxExpression } from "./fx-expression";
-import { isEmpty, isObject } from "../../../common";
+import { isEmpty, isObject } from "../../common";
 
 export class FxObject extends FxExpression {
   public items: { [index: string]: FxExpression };

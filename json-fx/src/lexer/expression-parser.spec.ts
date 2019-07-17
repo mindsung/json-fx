@@ -73,7 +73,7 @@ describe("lexer/ExpressionParser", function () {
     }));
   });
 
-  it("Creates expressions from nested calls", function () {
+  it("Creates Fx from nested calls", function () {
     const result = parse("foo(bar(baz))");
 
     assert.deepEqual(result, FxTokenNode.from({

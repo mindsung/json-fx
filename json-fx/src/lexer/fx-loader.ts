@@ -1,8 +1,9 @@
-import { intrinsics } from "../lexer/model/fx-intrinsic-definition";
-import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
-import { FxTokenNode } from "../lexer/model/fx-token-node";
+import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "./model/fx-definition";
+import { FxTokenNode } from "./model/fx-token-node";
+import { Fx } from "../fx";
 
 export class FxLoader {
+
   private readonly operators: { [index: string]: FxDefinition };
   private readonly definitions: { [index: string]: FxDefinition };
 
@@ -10,11 +11,12 @@ export class FxLoader {
     this.operators = {};
     this.definitions = {};
 
-    expressions.forEach(
-      set => set.forEach(
-        def => this.defineExpression(def)));
+    Fx.Expressions.forEach(expr => this.defineExpression(expr));
+    Fx.Intrinsics.forEach(intr => this.defineIntrinsic(intr));
 
-    intrinsics.forEach(intr => this.defineIntrinsic(intr));
+    for (const set of expressions) {
+      set.forEach(expr => this.defineExpression(expr));
+    }
   }
 
   public defineIntrinsic(def: FxIntrinsicDefinition): void {
@@ -69,15 +71,15 @@ export class FxLoader {
   }
 
   private getDefinition(node: FxTokenNode): FxDefinition {
-    const oprDef = FxLoader.sanitizeObject(this.operators[node.symbol]);
-    const strDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
-    const tagDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(node.tag, null)]);
-    const symDef = FxLoader.sanitizeObject(this.definitions[FxLoader.hash(null, node.symbol)]);
+    const oprDef = FxLoader.sanitize(this.operators[node.symbol]);
+    const strDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
+    const tagDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, null)]);
+    const symDef = FxLoader.sanitize(this.definitions[FxLoader.hash(null, node.symbol)]);
 
     return Object.assign({}, symDef, tagDef, strDef, oprDef);
   }
 
-  private static sanitizeObject(obj: any): any {
+  private static sanitize(obj: any): any {
     const clone = Object.assign({}, obj);
 
     for (const key of Object.keys(clone)) {
