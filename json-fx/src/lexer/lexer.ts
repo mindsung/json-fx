@@ -50,6 +50,11 @@ export namespace Lexer {
     },
     {
       tag: "operator",
+      test: c => c == "-",
+      preventMerge: true
+    },
+    {
+      tag: "operator",
       test: () => true,
     }
   ];

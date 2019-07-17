@@ -1,11 +1,10 @@
-import { CableDataTemplate } from "./cable-data-template";
 import { CableData } from "./cable-data";
 import { JsonFx } from "@mindsung/json-fx";
-import { exportJSON } from "../utils";
+import { exportJSON } from "../common";
 import * as path from "path";
 
 const fx = new JsonFx();
-const script = fx.compile(CableDataTemplate);
+const script = fx.compile("3+-2");
 
 const output = script.evaluate({ name: "$", value: CableData });
 

@@ -5,19 +5,32 @@ import { FxContext } from "./model/fx-context";
 export class OperatorContextParser implements FxParser<FxTokenNode, void> {
 
   private context: FxContext;
-  private token: FxTokenNode;
 
   constructor(context: FxContext) {
     this.context = context;
   }
 
-  public parse(item: FxTokenNode): void {
-    this.token = item;
+  public parse(token: FxTokenNode): void {
+    // TODO: Code cleanup, edge case considerations
 
-    if (this.token.parent && this.token.parent.tag == "object" && this.token.tag == "operator" && this.token.symbol == ":") {
-      item.symbol = ":a";
+    let lastChild: FxTokenNode = null;
+
+    for (const child of token.children) {
+      if (child.tag == "operator" && child.symbol == "-" && (!lastChild || lastChild.tag == "operator")) {
+        child.symbol = "-u";
+      }
+
+      // This only works in few cases (where the object literal contains no instances of a legitimate invoke ":" operator
+      else if (child.parent && child.parent.tag == "object" && child.tag == "operator" && child.symbol == ":") {
+        child.symbol = ":a";
+      }
+
+      this.context.loader.load(child);
+      lastChild = child;
     }
 
-    this.context.loader.load(this.token);
+    if (!token.parent) {
+      this.context.loader.load(token);
+    }
   }
 }

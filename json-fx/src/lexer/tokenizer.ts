@@ -10,7 +10,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
   private isLiteralSequence: boolean;
   private sourceIndex: number;
 
-  private get lastToken() {
+  private get lastToken(): FxToken {
     return this.tokens[this.tokens.length - 1] || null;
   }
 

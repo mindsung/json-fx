@@ -10,6 +10,8 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
   private operatorStack: FxTokenNode[];
   private outputQueue: FxTokenNode[];
 
+  private lastUnary: FxTokenNode;
+
   constructor(context: FxContext) {
     this.context = context;
   }
@@ -20,12 +22,22 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
 
     for (this.nextNode of root.children) {
       if (this.nextNode.tag == "operator") {
-        while (this.operatorStack.length > 0 && (this.operatorStack[0].operator.precedence >= this.nextNode.operator.precedence || this.operatorStack[0].operator.isUnary)) {
-          this.shunt();
+        if (this.nextNode.operator.isUnary) {
+          this.lastUnary = this.nextNode;
+        } else {
+          while (this.operatorStack.length > 0 && this.operatorStack[0].operator.precedence >= this.nextNode.operator.precedence) {
+            this.shunt();
+          }
+          this.operatorStack.unshift(this.nextNode);
         }
-        this.operatorStack.unshift(this.nextNode);
       } else {
-        this.outputQueue.push(this.nextNode);
+        if (this.lastUnary) {
+          this.lastUnary.add(this.nextNode);
+          this.outputQueue.push(this.lastUnary);
+          this.lastUnary = null;
+        } else {
+          this.outputQueue.push(this.nextNode);
+        }
       }
     }
 
@@ -44,7 +56,7 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
       }
       this.outputQueue.push(stackTop);
     } else {
-      throw new Error(`Operator "${stackTop.operator.symbol}" expects ${numOperands} operands, ${this.outputQueue.length} given`);
+      throw new Error(`Operator "${ stackTop.operator.symbol }" expects ${ numOperands } operands, ${ this.outputQueue.length } given`);
     }
   }
 }
