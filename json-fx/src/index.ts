@@ -27,6 +27,4 @@ import { polyfills } from "./polyfills";
 
 polyfills();
 
-export * from "./expressions/core";
-export * from "./expressions/math";
-export * from "./compiler/runtime/json-fx";
+export * from "./runtime/json-fx";

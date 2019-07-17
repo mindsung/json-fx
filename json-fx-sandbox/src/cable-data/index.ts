@@ -4,7 +4,7 @@ import { JsonFx } from "@mindsung/json-fx";
 import { exportJSON } from "../utils";
 import * as path from "path";
 
-const fx = JsonFx.std();
+const fx = new JsonFx();
 const script = fx.compile(CableDataTemplate);
 
 const output = script.evaluate({ name: "$", value: CableData });

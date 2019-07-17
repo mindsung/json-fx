@@ -1,0 +1,18 @@
+export type FxTokenTag =
+  | ""
+  | "global"
+  | "identifier"
+  | "variable"
+  | "numeric"
+  | "indexer"
+  | "group"
+  | "group-close"
+  | "literal"
+  | "space"
+  | "template"
+  | "template-call"
+  | "signature"
+  | "array"
+  | "operator"
+  | "expression"
+  | "object";
