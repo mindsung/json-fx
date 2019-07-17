@@ -1,4 +1,4 @@
-export const $PLACES = [
+export const Places = [
   "Aaronsburg",
   "Abbeville",
   "Abbotsford",

@@ -1,6 +1,6 @@
 // https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json
 
-export const $POKEMON = [
+export const Pokemon = [
   {
     "id": 1,
     "num": "001",

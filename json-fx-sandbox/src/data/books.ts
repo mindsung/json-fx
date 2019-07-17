@@ -1,4 +1,4 @@
-export const $BOOKS = [
+export const Books = [
   {
     "author": "Chinua Achebe",
     "country": "Nigeria",

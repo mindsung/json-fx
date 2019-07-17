@@ -1,4 +1,4 @@
-export const $CABLE_DATA_1 = {
+export const CableData = {
   "Meter":
     {
       "SerialNumber": "1000EADS",

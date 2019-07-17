@@ -1,4 +1,4 @@
-export const cableDataTemplate = {
+export const CableDataTemplate = {
   "TemplateVersion": "'1.0'",
 
   "Meter": "$.Meter",
