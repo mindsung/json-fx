@@ -17,8 +17,12 @@ import { NumberLiteralDef, StringLiteralDef } from "./def/literal-def";
 import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
+import { _StringLiteralSymbol, _TokenRules } from "./lexer";
 
 export namespace Fx {
+
+  export const StringLiteralSymbol = _StringLiteralSymbol;
+  export const TokenRules = _TokenRules;
 
   export const Expressions: FxExpressionDefinition[] = []
     .concat(exprArithmetic)

@@ -1,8 +1,8 @@
 import { FxParser } from "./model/fx-parser";
-import { Lexer } from "./lexer";
 import { isArray } from "../common";
 import { FxTokenRule } from "./model/fx-token-rule";
 import { FxToken } from "./model/fx-token";
+import { Fx } from "../fx";
 
 export class Tokenizer implements FxParser<string, FxToken[]> {
   private tokens: FxToken[];
@@ -40,7 +40,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
       this.mergeBasedOnRule();
     }
 
-    if (this.nextChar == Lexer.literalSymbol) {
+    if (this.nextChar == Fx.StringLiteralSymbol) {
       this.toggleAsLiteralSequence();
     }
   }
@@ -64,7 +64,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
   }
 
   private getNextRule(): FxTokenRule {
-    for (const rule of Lexer.tokenRules) {
+    for (const rule of Fx.TokenRules) {
       if (rule.test && rule.test(this.nextChar)) {
         return Tokenizer.sanitizeRule(rule);
       }
@@ -88,7 +88,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
   private toggleAsLiteralSequence() {
     this.isLiteralSequence = !this.isLiteralSequence;
     this.lastToken.tag = "literal";
-    this.lastToken.symbol = this.lastToken.symbol.replace(Lexer.literalSymbol, "");
+    this.lastToken.symbol = this.lastToken.symbol.replace(Fx.StringLiteralSymbol, "");
   }
 
   private static sanitizeRule(rule: FxTokenRule): FxTokenRule {
