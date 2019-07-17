@@ -68,23 +68,22 @@ export class FxLoader {
 
   private getDefinition(node: FxTokenNode): FxDefinition {
     const tagDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, null)]);
-
-    let oprDef = {};
-    let strDef = {};
-    let symDef = {};
+    let operatorDef = {};
+    let strictDef = {};
+    let symbolDef = {};
 
     if (node.tag == "operator" || node.tag == "expression" || node.tag == "identifier") {
       if (this.operators[node.symbol]) { node.tag = "operator"; }
-      oprDef = FxLoader.sanitize(this.operators[node.symbol]);
+      operatorDef = FxLoader.sanitize(this.operators[node.symbol]);
     }
 
     if (node.tag != "literal" && node.tag != "numeric") {
-      strDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
-      symDef = FxLoader.sanitize(this.definitions[FxLoader.hash(null, node.symbol)]);
+      strictDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
+      symbolDef = FxLoader.sanitize(this.definitions[FxLoader.hash(null, node.symbol)]);
     }
 
 
-    return Object.assign({}, symDef, tagDef, strDef, oprDef);
+    return Object.assign({}, symbolDef, tagDef, strictDef, operatorDef);
   }
 
   private static sanitize(obj: any): any {

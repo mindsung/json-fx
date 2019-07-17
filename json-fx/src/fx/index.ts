@@ -5,7 +5,7 @@ import { exprConditional } from "./expr/expr-conditional";
 import { exprLogical } from "./expr/expr-logical";
 import { exprString } from "./expr/expr-string";
 import { exprError } from "./expr/expr-error";
-import { FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
+import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
 import { exprMath } from "./expr/expr-math";
 import { exprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
@@ -17,8 +17,15 @@ import { NumberLiteralDef, StringLiteralDef } from "./def/literal-def";
 import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
+import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules } from "./lexer";
+import { FxFunction } from "../runtime/model/fx-function";
+import { FxLambda } from "../runtime/model/fx-lambda";
+import { FxExpression } from "../runtime/model/fx-expression";
 
 export namespace Fx {
+
+  export const StringLiteralSymbol = _StringLiteralSymbol;
+  export const TokenRules = _TokenRules;
 
   export const Expressions: FxExpressionDefinition[] = []
     .concat(exprArithmetic)
@@ -87,6 +94,46 @@ export namespace Fx {
           const evalFirstArg = result.args[0].evaluate();
           return evalFirstArg != null ? result.evaluate() : null;
         }
+      }
+    },
+    // TODO: Code cleanup
+    {
+      operator: { symbol: "for", precedence: 0.2 },
+    },
+    {
+      operator: { symbol: "in", precedence: 0.2 },
+      compiler: token => {
+        const lambdaNode = token.first.first;
+        const varName = token.first.last;
+        const arrNode = token.last;
+
+        const lambdaExpr = new FxLambda([varName.symbol], lambdaNode.compile());
+        return new FxFunction((arr: any[], lambda: AnyFn) => arr.map(lambda), [arrNode.compile(), lambdaExpr]);
+      }
+    },
+    {
+      operator: { symbol: "if", precedence: 0.1 },
+    },
+    {
+      operator: { symbol: "else", precedence: 0.1 },
+      compiler: token => {
+        const conditionNode = token.first.last;
+        const thenNode = token.first.first;
+        const elseNode = token.last;
+
+        const result = new FxFunction();
+        result.deferEvaluation = true;
+        result.args = [conditionNode.compile(), thenNode.compile(), elseNode.compile()];
+
+        result.evaluator = (cond: FxExpression, thenYield: FxExpression, elseYield: FxExpression) => {
+          if (cond.evaluate()) {
+            return thenYield.evaluate();
+          } else {
+            return elseYield.evaluate();
+          }
+        };
+
+        return result;
       }
     }
   ];

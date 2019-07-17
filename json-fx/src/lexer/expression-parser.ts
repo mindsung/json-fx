@@ -26,14 +26,13 @@ export class ExpressionParser implements FxParser<FxTokenNode, void> {
 
   private lastWithNextIsCallable(): boolean {
     return this.next.tag == "group"
-      && this.last && (this.last.tag == "identifier" || this.last.tag == "template");
+      && this.last && (this.last.tag == "identifier" || this.last.tag == "template") && /*TODO: Super hack right here, fellas*/ this.last.symbol != "if";
   }
 
   private lastWithNextIsIndexer(): boolean {
     return this.next.tag == "array"
       && this.last && (
-        this.last.tag == "identifier"
-        || this.last.tag == "variable"
+        this.last.tag == "variable"
         || this.last.tag == "expression"
         || this.last.tag == "array"
         || this.last.tag == "object");
