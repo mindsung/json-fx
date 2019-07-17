@@ -12,14 +12,19 @@ export class JsonFx {
 
   private readonly context: FxContext;
   private readonly parser: TemplateParser;
+  public readonly scope: FxScope;
 
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
     this.context = new FxContext(new FxLoader(...expressions));
     this.parser = new TemplateParser(this.context);
+    this.scope = new FxScope();
   }
 
   public compile(template: any): FxCompiledTemplate {
-    return new FxCompiledTemplateImpl(this.parser.parse(template));
+    const subScope = new FxScope();
+    subScope.parentScope = this.scope;
+
+    return new FxCompiledTemplateImpl(this.parser.parse(template), subScope);
   }
 
   public define(def: FxExpressionDefinition): void {
@@ -29,32 +34,33 @@ export class JsonFx {
 
 export interface FxCompiledTemplate {
   evaluate(...inputs: FxInput[]): any;
+
   toString(): string;
 }
 
 class FxCompiledTemplateImpl implements FxCompiledTemplate {
 
-  private readonly global: FxScope;
-  public readonly parsed: FxTokenNode;
+  private readonly scope: FxScope;
+  public readonly root: FxTokenNode;
   public readonly expr: FxExpression;
 
-  constructor(parsed: FxTokenNode) {
-    this.parsed = parsed;
-    this.expr = parsed.compile();
-    this.global = new FxScope();
+  constructor(root: FxTokenNode, scope?: FxScope) {
+    this.root = root;
+    this.scope = scope || new FxScope();
+    this.expr = root.compile();
 
-    this.expr.bindScope(this.global);
-    this.expr.bindSourceRefPath();
+    this.expr.bindScope(this.scope);
+    // this.expr.bindSourceRefPath();
   }
 
   evaluate(...inputs: FxInput[]): any {
-    this.global.clearVariables();
+    this.scope.clearVariables();
 
     inputs.forEach(input => {
       if (input.name == null || !input.name.startsWith("$")) {
         throw new Error("Input variable names must begin with '$'.");
       }
-      this.global.setVariable(new FxScopeVariable(input.name, new FxConstant(input.value)));
+      this.scope.setVariable(new FxScopeVariable(input.name, new FxConstant(input.value)));
     });
     return this.expr.evaluate();
   }

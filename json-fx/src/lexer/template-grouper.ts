@@ -37,7 +37,9 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
     if (root.count > 1) {
       return root;
     } else if (root.count > 0) {
-      return root.first;
+      const first = root.first;
+      first.orphan();
+      return first;
     } else {
       return new FxTokenNode("identifier", "null");
     }
