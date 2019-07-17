@@ -60,10 +60,6 @@ export class FxLoader {
   public load(node: FxTokenNode): void {
     const def = this.getDefinition(node);
 
-    if (this.operators[node.symbol]) {
-      node.tag = "operator";
-    }
-
     node.operator = def.operator;
     node.evaluator = def.evaluator;
     node.optimizer = def.optimizer;
@@ -71,10 +67,22 @@ export class FxLoader {
   }
 
   private getDefinition(node: FxTokenNode): FxDefinition {
-    const oprDef = FxLoader.sanitize(this.operators[node.symbol]);
-    const strDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
     const tagDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, null)]);
-    const symDef = FxLoader.sanitize(this.definitions[FxLoader.hash(null, node.symbol)]);
+
+    let oprDef = {};
+    let strDef = {};
+    let symDef = {};
+
+    if (node.tag == "operator" || node.tag == "expression" || node.tag == "identifier") {
+      if (this.operators[node.symbol]) { node.tag = "operator"; }
+      oprDef = FxLoader.sanitize(this.operators[node.symbol]);
+    }
+
+    if (node.tag != "literal" && node.tag != "numeric") {
+      strDef = FxLoader.sanitize(this.definitions[FxLoader.hash(node.tag, node.symbol)]);
+      symDef = FxLoader.sanitize(this.definitions[FxLoader.hash(null, node.symbol)]);
+    }
+
 
     return Object.assign({}, symDef, tagDef, strDef, oprDef);
   }
@@ -95,6 +103,6 @@ export class FxLoader {
     tag = tag || "*";
     symbol = symbol || "*";
 
-    return `<${tag}>${symbol}`;
+    return `<${ tag }>${ symbol }`;
   }
 }
