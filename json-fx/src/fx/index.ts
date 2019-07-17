@@ -5,7 +5,7 @@ import { exprConditional } from "./expr/expr-conditional";
 import { exprLogical } from "./expr/expr-logical";
 import { exprString } from "./expr/expr-string";
 import { exprError } from "./expr/expr-error";
-import { FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
+import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
 import { exprMath } from "./expr/expr-math";
 import { exprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
@@ -17,7 +17,9 @@ import { NumberLiteralDef, StringLiteralDef } from "./def/literal-def";
 import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
-import { _StringLiteralSymbol, _TokenRules } from "./lexer";
+import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules } from "./lexer";
+import { FxFunction } from "../runtime/model/fx-function";
+import { FxLambda } from "../runtime/model/fx-lambda";
 
 export namespace Fx {
 
@@ -91,6 +93,20 @@ export namespace Fx {
           const evalFirstArg = result.args[0].evaluate();
           return evalFirstArg != null ? result.evaluate() : null;
         }
+      }
+    },
+    {
+      operator: { symbol: "for", precedence: 0.1 },
+    },
+    {
+      operator: { symbol: "in", precedence: 0.1 },
+      compiler: token => {
+        const lambdaNode = token.first.first;
+        const varName = token.first.last;
+        const arrNode = token.last;
+
+        const lambdaExpr = new FxLambda([varName.symbol], lambdaNode.compile());
+        return new FxFunction((arr: any[], lambda: AnyFn) => arr.map(lambda), [arrNode.compile(), lambdaExpr]);
       }
     }
   ];

@@ -32,8 +32,7 @@ export class ExpressionParser implements FxParser<FxTokenNode, void> {
   private lastWithNextIsIndexer(): boolean {
     return this.next.tag == "array"
       && this.last && (
-        this.last.tag == "identifier"
-        || this.last.tag == "variable"
+        this.last.tag == "variable"
         || this.last.tag == "expression"
         || this.last.tag == "array"
         || this.last.tag == "object");

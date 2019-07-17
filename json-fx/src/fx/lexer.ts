@@ -1,8 +1,8 @@
 import { FxTokenRule } from "../lexer/model/fx-token-rule";
 
-export const _StringLiteralSymbol = "'";
+export const StringLiteralSymbol = "'";
 
-export const _TokenRules: ReadonlyArray<FxTokenRule> = [
+export const TokenRules: ReadonlyArray<FxTokenRule> = [
   {
     tag: "identifier",
     test: c => {

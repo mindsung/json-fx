@@ -11,18 +11,6 @@ export const exprConditional: ReadonlyArray<FxExpressionDefinition> = [
         : elseReturn == null ? null : elseReturn.evaluate()
   },
   {
-    name: "for",
-    evaluate: (start, end, lambda) => {
-      const result = [];
-
-      for (let i = start; i < end; i++) {
-        result.push(lambda(i));
-      }
-
-      return result;
-    }
-  },
-  {
     name: "if",
     evaluate: (condition) => !!condition
   },
