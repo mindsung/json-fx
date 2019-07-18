@@ -5,6 +5,7 @@ import { FxTokenTag } from "../../lexer/model/fx-token-tag";
 import { FxDef } from "./model/fx-def";
 import { FxFunction } from "../../runtime/model/fx-function";
 import { FxConstant } from "../../runtime/model/fx-constant";
+import { FxEvaluatorDefinition } from "../../lexer/model/fx-definition";
 
 export class ExpressionDef extends FxDef {
 
@@ -16,7 +17,7 @@ export class ExpressionDef extends FxDef {
     const evaluator = token.evaluator;
 
     if (!evaluator) {
-      throw new FxCompileError(`Expression "${token.symbol}" is undefined`, null);
+      throw new FxCompileError(`Expression "${ token.symbol }" is undefined`, null);
     }
 
     const result = new FxFunction(evaluator.evaluate);
@@ -37,7 +38,20 @@ export class IdentifierDef extends ExpressionDef {
     if (token.evaluator) {
       return super.compile(token);
     } else {
-      return new FxConstant(token.symbol);
+      return new FxConstant(IdentifierDef.parseConstant(token.symbol));
+    }
+  }
+
+  private static parseConstant(symbol: string): any {
+    switch (symbol) {
+      case "true":
+        return true;
+      case "false":
+        return false;
+      case "null":
+        return null;
+      default:
+        return symbol;
     }
   }
 }
@@ -45,5 +59,18 @@ export class IdentifierDef extends ExpressionDef {
 export class OperatorDef extends ExpressionDef {
   public get tag(): FxTokenTag {
     return "operator";
+  }
+}
+
+export class IndexerDef extends ExpressionDef {
+  public get tag(): FxTokenTag {
+    return "indexer";
+  }
+
+  public get evaluator(): FxEvaluatorDefinition {
+    return {
+      name: "item",
+      evaluate: (obj: any, key: any) => obj[key]
+    };
   }
 }

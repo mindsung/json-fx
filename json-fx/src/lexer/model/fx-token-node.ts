@@ -4,12 +4,15 @@ import { FxToken } from "./fx-token";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxEvaluatorDefinition, FxOperatorDefinition } from "./fx-definition";
 import { FxFunction } from "../../runtime/model/fx-function";
+import { SourceRef } from "../../runtime/source-ref";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
   public tag: FxTokenTag;
   public symbol: string;
   public index: number;
+
+  public sourceRef: SourceRef;
 
   public operator: FxOperatorDefinition;
   public evaluator: FxEvaluatorDefinition;
@@ -21,6 +24,12 @@ export class FxTokenNode extends FxNode implements FxToken {
     this.tag = tag || "";
     this.symbol = symbol || "";
     this.index = index != undefined ? index : -1;
+
+    this.sourceRef = {
+      index: this.index,
+      symbol: this.symbol,
+      path: ""
+    };
   }
 
   private _isLvalue = false;
@@ -45,10 +54,8 @@ export class FxTokenNode extends FxNode implements FxToken {
   public compile(): FxExpression {
     if (this.compiler) {
       return this.compiler(this);
-    } else if (this.evaluator) {
-      return new FxFunction(this.evaluator.evaluate, this.children.map(c => c.compile()));
     } else {
-      return null;
+      throw new Error(`Token ${ this.toStringSelf() } has no compiler defined`);
     }
   }
 
@@ -74,13 +81,13 @@ export class FxTokenNode extends FxNode implements FxToken {
     let result = istr + this.toStringSelf();
 
     if (this.count > 0) {
-      result += `\n${this.children.map(v => v.toStringIndent(indent + 1)).join("\n")}`;
+      result += `\n${ this.children.map(v => v.toStringIndent(indent + 1)).join("\n") }`;
     }
 
     return result;
   }
 
   private toStringSelf(): string {
-    return (this.symbol != "" ? this.symbol : "<>") + ` [${this.tag}]`;
+    return (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;
   }
 }

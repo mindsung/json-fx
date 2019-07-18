@@ -6,6 +6,7 @@ export class ExpressionParser extends IteratorParser {
 
   private loader: Loader;
 
+  private parent: FxTokenNode;
   private current: FxTokenNode;
   private next: FxTokenNode;
 
@@ -14,7 +15,8 @@ export class ExpressionParser extends IteratorParser {
     this.loader = loader;
   }
 
-  protected parseItem(current: FxTokenNode, next: FxTokenNode): void {
+  protected parseItem(parent: FxTokenNode, current: FxTokenNode, next: FxTokenNode): void {
+    this.parent = parent;
     this.current = current;
     this.next = next;
 
@@ -59,9 +61,7 @@ export class ExpressionParser extends IteratorParser {
 
   private convertToIndexer(): void {
     const indexer = this.loader.createToken("indexer");
-    indexer.add(this.current);
+    this.current.wrap(indexer);
     indexer.add(this.next);
   }
-
-  private;
 }

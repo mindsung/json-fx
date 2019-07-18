@@ -1,8 +1,7 @@
 import { fx } from "../common";
 
 const template = {
-  "$a": ["'A'", "'B'", "'C'"],
-  "out": "$a[0]"
+  "$a": ["'A'", "'B'", "'C'"]
 };
 const args = [];
 

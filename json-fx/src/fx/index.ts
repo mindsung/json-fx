@@ -9,7 +9,7 @@ import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/m
 import { exprMath } from "./expr/expr-math";
 import { exprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
-import { ExpressionDef, IdentifierDef, OperatorDef } from "./def/expression-def";
+import { ExpressionDef, IdentifierDef, IndexerDef, OperatorDef } from "./def/expression-def";
 import { ObjectDef } from "./def/object-def";
 import { ArrayDef } from "./def/array-def";
 import { TemplateDef, VariableDef } from "./def/variable-def";
@@ -47,6 +47,7 @@ export namespace Fx {
     new TemplateDef(),
     new OperatorDef(),
     new ExpressionDef(),
+    new IndexerDef(),
     new StringLiteralDef(),
     new NumberLiteralDef(),
     new LambdaDef(),
@@ -93,15 +94,6 @@ export namespace Fx {
         evaluate: result => {
           const evalFirstArg = result.args[0].evaluate();
           return evalFirstArg != null ? result.evaluate() : null;
-        }
-      }
-    },
-    {
-      tag: "indexer",
-      evaluator: {
-        name: "item",
-        evaluate: (source: any, key: any) => {
-          return source[key];
         }
       }
     },

@@ -5,23 +5,23 @@ export abstract class IteratorParser implements FxParser<FxTokenNode> {
 
   private i: number;
 
-  protected abstract parseItem(current: FxTokenNode, next: FxTokenNode): void;
+  protected abstract parseItem(parent: FxTokenNode, current: FxTokenNode, next: FxTokenNode): void;
 
-  public parse(item: FxTokenNode): void {
-    if (item.count == 0) {
+  public parse(token: FxTokenNode): void {
+    if (token.count == 0) {
       return;
     }
 
     let current: FxTokenNode;
 
-    for (this.i = 0; this.i < item.count; this.i++) {
+    for (this.i = 0; this.i < token.count; this.i++) {
       if (current) {
-        this.parseItem(current, item.children[this.i]);
+        this.parseItem(token, current, token.children[this.i]);
       }
-      current = item.children[this.i];
+      current = token.children[this.i];
     }
 
-    this.parseItem(current, null);
+    this.parseItem(token, current, null);
     this.i = null;
   }
 

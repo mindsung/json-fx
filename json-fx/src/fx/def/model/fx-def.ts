@@ -21,7 +21,7 @@ export class FxDef implements FxIntrinsicDefinition {
   public get compiler(): IFxCompiler {
     return (token) => {
       const expression = this.compile(token);
-      expression.sourceRef = { symbol: token.symbol, index: token.index, path: "" };
+      expression.sourceRef = token.sourceRef;
 
       return expression;
     };
