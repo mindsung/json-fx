@@ -19,7 +19,7 @@ describe("JsonTreeComponent", () => {
     fixture.detectChanges();
   });
 
-  it("should create", () => {
+  it("should createToken", () => {
     expect(component).toBeTruthy();
   });
 });

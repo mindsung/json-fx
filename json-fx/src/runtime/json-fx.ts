@@ -1,4 +1,4 @@
-import { FxLoader } from "../lexer/fx-loader";
+import { Loader } from "../lexer/loader";
 import { FxContext } from "../lexer/model/fx-context";
 import { TemplateParser } from "../lexer/template-parser";
 import { FxExpression } from "./model/fx-expression";
@@ -15,7 +15,7 @@ export class JsonFx {
   public readonly scope: FxScope;
 
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
-    this.context = new FxContext(new FxLoader(...expressions));
+    this.context = new FxContext(new Loader(...expressions));
     this.parser = new TemplateParser(this.context);
     this.scope = new FxScope();
   }

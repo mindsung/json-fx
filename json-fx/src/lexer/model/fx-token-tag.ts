@@ -11,7 +11,7 @@ export type FxTokenTag =
   | "space"
   | "template"
   | "template-call"
-  | "signature"
+  | "args"
   | "array"
   | "operator"
   | "expression"

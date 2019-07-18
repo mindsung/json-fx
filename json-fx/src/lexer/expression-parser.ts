@@ -1,57 +1,67 @@
-import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
+import { IteratorParser } from "./iterator-parser";
+import { Loader } from "./loader";
 
-export class ExpressionParser implements FxParser<FxTokenNode, void> {
-  private last: FxTokenNode;
+export class ExpressionParser extends IteratorParser {
+
+  private loader: Loader;
+
+  private current: FxTokenNode;
   private next: FxTokenNode;
 
-  parse(root: FxTokenNode): void {
-    this.last = null;
+  constructor(loader: Loader) {
+    super();
+    this.loader = loader;
+  }
 
-    for (this.next of root.children) {
-      if (this.lastWithNextIsCallable()) {
-        this.makeLastAnExpression();
-        this.next.orphan();
+  protected parseItem(current: FxTokenNode, next: FxTokenNode): void {
+    this.current = current;
+    this.next = next;
 
-      } else if (this.lastWithNextIsIndexer()) {
-        // TODO: This is tightly coupled with item() expression
-        this.next.unshift(this.last);
-        this.next.tag = "expression";
-        this.next.symbol = "item";
-      } else {
-        this.last = this.next;
-      }
+    if (this.isCall()) {
+      this.convertToCall();
+      super.moveLast();
+    } else if (this.isIndexer()) {
+      this.convertToIndexer();
+      super.moveLast();
     }
   }
 
-  private lastWithNextIsCallable(): boolean {
-    return this.next.tag == "group"
-      && this.last && (this.last.tag == "identifier" || this.last.tag == "template") && /*TODO: Super hack right here, fellas*/ this.last.symbol != "if";
+  private isCall(): boolean {
+    return this.next && this.next.tag == "group"
+      && (this.current.tag == "identifier" || this.current.tag == "template");
   }
 
-  private lastWithNextIsIndexer(): boolean {
-    return this.next.tag == "array"
-      && this.last && (
-        this.last.tag == "variable"
-        || this.last.tag == "expression"
-        || this.last.tag == "array"
-        || this.last.tag == "object");
-  }
+  private convertToCall(): void {
+    const args = this.loader.createToken("args");
 
-  private makeLastAnExpression() {
-    let group: FxTokenNode;
-
-    if (this.last.tag == "identifier") {
-      this.last.tag = "expression";
-      group = this.last;
-    } else if (this.last.tag == "template") {
-      this.last.tag = "template-call";
-      group = new FxTokenNode("signature");
-      this.last.add(group);
+    if (this.current.tag == "identifier") {
+      this.current.tag = "expression";
+    } else if (this.current.tag == "template") {
+      this.current.tag = "template-call";
     }
 
-    while (this.next.count) {
-      group.add(this.next.first);
+    while (this.next.first) {
+      args.add(this.next.first);
     }
+
+    this.current.add(args);
+    this.next.orphan();
   }
+
+  private isIndexer(): boolean {
+    return this.next && this.next.tag == "array"
+      && (this.current.tag == "variable"
+        || this.current.tag == "expression"
+        || this.current.tag == "array"
+        || this.current.tag == "object");
+  }
+
+  private convertToIndexer(): void {
+    const indexer = this.loader.createToken("indexer");
+    indexer.add(this.current);
+    indexer.add(this.next);
+  }
+
+  private;
 }

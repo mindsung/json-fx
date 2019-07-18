@@ -12,11 +12,11 @@ export class LambdaDef extends FxDef {
 
   protected optimize(token: FxTokenNode): void {
     if (token.first.tag != "group") {
-      const wrapper = new FxTokenNode("signature");
+      const wrapper = new FxTokenNode("args");
       wrapper.isLvalue = true;
       token.first.wrap(wrapper);
     } else {
-      token.first.tag = "signature";
+      token.first.tag = "args";
     }
   }
 

@@ -3,6 +3,7 @@ import { FxTokenTag } from "./fx-token-tag";
 import { FxToken } from "./fx-token";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxEvaluatorDefinition, FxOperatorDefinition } from "./fx-definition";
+import { FxFunction } from "../../runtime/model/fx-function";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -42,9 +43,13 @@ export class FxTokenNode extends FxNode implements FxToken {
   }
 
   public compile(): FxExpression {
-    return this.compiler
-      ? this.compiler(this)
-      : null;
+    if (this.compiler) {
+      return this.compiler(this);
+    } else if (this.evaluator) {
+      return new FxFunction(this.evaluator.evaluate, this.children.map(c => c.compile()));
+    } else {
+      return null;
+    }
   }
 
   public static from(root: FxToken): FxTokenNode {
@@ -69,13 +74,13 @@ export class FxTokenNode extends FxNode implements FxToken {
     let result = istr + this.toStringSelf();
 
     if (this.count > 0) {
-      result += `\n${ this.children.map(v => v.toStringIndent(indent + 1)).join("\n") }`;
+      result += `\n${this.children.map(v => v.toStringIndent(indent + 1)).join("\n")}`;
     }
 
     return result;
   }
 
   private toStringSelf(): string {
-    return (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;
+    return (this.symbol != "" ? this.symbol : "<>") + ` [${this.tag}]`;
   }
 }

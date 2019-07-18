@@ -13,7 +13,7 @@ describe("lexer/Grouper", function () {
     return grouper.parse(tokenizer.parse(expr));
   }
 
-  it("Creates global token (no groups)", function () {
+  it("Creates global createToken (no groups)", function () {
     const grouper = new Grouper();
     const result = parse("foo");
 

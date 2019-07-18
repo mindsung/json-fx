@@ -1,14 +1,16 @@
 import { FxTokenNode } from "../../lexer/model/fx-token-node";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxCompileError } from "../../fx-error";
-import { FxFunction } from "../../runtime/model/fx-function";
 import { FxTokenTag } from "../../lexer/model/fx-token-tag";
-import { FxConstant } from "../../runtime/model/fx-constant";
 import { FxDef } from "./model/fx-def";
+import { FxFunction } from "../../runtime/model/fx-function";
+import { FxConstant } from "../../runtime/model/fx-constant";
 
 export class ExpressionDef extends FxDef {
 
-  public get tag(): FxTokenTag { return "expression"; }
+  public get tag(): FxTokenTag {
+    return "expression";
+  }
 
   protected compile(token: FxTokenNode): FxExpression {
     const evaluator = token.evaluator;
@@ -27,7 +29,9 @@ export class ExpressionDef extends FxDef {
 
 export class IdentifierDef extends ExpressionDef {
 
-  public get tag(): FxTokenTag { return "identifier"; }
+  public get tag(): FxTokenTag {
+    return "identifier";
+  }
 
   protected compile(token: FxTokenNode): FxExpression {
     if (token.evaluator) {
@@ -39,5 +43,7 @@ export class IdentifierDef extends ExpressionDef {
 }
 
 export class OperatorDef extends ExpressionDef {
-  public get tag(): FxTokenTag { return "operator"; }
+  public get tag(): FxTokenTag {
+    return "operator";
+  }
 }

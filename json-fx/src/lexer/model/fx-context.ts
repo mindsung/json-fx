@@ -1,9 +1,9 @@
-import { FxLoader } from "../fx-loader";
+import { Loader } from "../loader";
 
 export class FxContext {
-  public readonly loader: FxLoader;
+  public readonly loader: Loader;
 
-  constructor(loader: FxLoader) {
+  constructor(loader: Loader) {
     this.loader = loader;
   }
 }

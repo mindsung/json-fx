@@ -1,19 +1,10 @@
-import { JsonFx } from "@mindsung/json-fx";
-import { exportJSON } from "../common";
+import { exportJSON, fx } from "../common";
 import { CableData } from "./cable-data";
-import { CableDataTemplate } from "./cable-data-template";
 import * as path from "path";
+import { CableDataTemplate } from "./cable-data-template";
 
-const fx = new JsonFx();
-const script = fx.compile(CableDataTemplate);
+const out = fx(CableDataTemplate, [{ name: "$", value: CableData }]);
+const json = JSON.stringify(out, null, 2);
 
-const output = script.evaluate({ name: "$", value: CableData });
-
-exportJSON(path.resolve(__dirname, "out/cable-data.json"), output);
-
-let print = JSON.stringify(output, null, 2);
-if (print.length > 10000) {
-  print = print.substr(0, 9997) + "...";
-}
-
-console.log(print);
+exportJSON(path.resolve(__dirname, "out/cable-data.json"), json);
+console.log(json.substr(0, 10000));

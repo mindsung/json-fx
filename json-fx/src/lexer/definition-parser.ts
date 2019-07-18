@@ -2,7 +2,7 @@ import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
 import { FxContext } from "./model/fx-context";
 
-export class OperatorContextParser implements FxParser<FxTokenNode, void> {
+export class DefinitionParser implements FxParser<FxTokenNode, void> {
 
   private context: FxContext;
 

@@ -2,26 +2,27 @@ import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
 import { FxContext } from "./model/fx-context";
 import { TemplateGrouper } from "./template-grouper";
-import { NodeParser } from "./node-parser";
+import { RecursiveParser } from "./recursive-parser";
 import { ExpressionParser } from "./expression-parser";
 import { OperatorParser } from "./operator-parser";
 import { Optimizer } from "./optimizer";
 import { ContextParser } from "./context-parser";
-import { OperatorContextParser } from "./operator-context-parser";
+import { DefinitionParser } from "./definition-parser";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
 
   private grouper: TemplateGrouper;
-  private parser: NodeParser;
+  private parser: RecursiveParser;
 
   constructor(context: FxContext) {
     this.grouper = new TemplateGrouper();
-    this.parser = new NodeParser(
-      new ExpressionParser(),
-      new OperatorContextParser(context),
+    this.parser = new RecursiveParser(
+      new DefinitionParser(context),
+      new ExpressionParser(context.loader),
       new OperatorParser(context),
       new Optimizer(),
-      new ContextParser());
+      new ContextParser()
+    );
   }
 
   parse(template: any): FxTokenNode {

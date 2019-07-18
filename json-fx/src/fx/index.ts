@@ -96,6 +96,15 @@ export namespace Fx {
         }
       }
     },
+    {
+      tag: "indexer",
+      evaluator: {
+        name: "item",
+        evaluate: (source: any, key: any) => {
+          return source[key];
+        }
+      }
+    },
     // TODO: Code cleanup
     {
       operator: { symbol: "for", precedence: 0.2 },

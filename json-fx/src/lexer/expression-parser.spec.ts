@@ -5,14 +5,14 @@ import { Tokenizer } from "./tokenizer";
 import { Grouper } from "./grouper";
 import { FxTokenNode } from "./model/fx-token-node";
 import { ExpressionParser } from "./expression-parser";
-import { NodeParser } from "./node-parser";
+import { RecursiveParser } from "./recursive-parser";
 
 describe("lexer/ExpressionParser", function () {
 
   function parse(expr: string) {
     const tokenizer = new Tokenizer();
     const grouper = new Grouper();
-    const parser = new NodeParser(new ExpressionParser());
+    const parser = new RecursiveParser(new ExpressionParser());
 
     const result = grouper.parse(tokenizer.parse(expr));
     parser.parse(result);
@@ -48,14 +48,14 @@ describe("lexer/ExpressionParser", function () {
         index: 0,
 
         children: [{
-          tag: "signature",
+          tag: "args",
           children: [{tag: "identifier", symbol: "bar", index: 5}]
         }]
       }]
     }));
   });
 
-  it("Won't create expression from [operator], [group]", function () {
+  it("Won't createToken expression from [operator], [group]", function () {
     const result = parse("*(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({

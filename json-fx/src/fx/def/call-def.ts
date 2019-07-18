@@ -14,7 +14,7 @@ export class CallDef extends FxDef {
     const result: FxExpression = new FxVariableReference(token.symbol);
     let params: FxExpression[];
 
-    if (token.first && token.first.tag == "signature") {
+    if (token.first && token.first.tag == "args") {
       params = token.first.children.map(child => child.compile());
     } else {
       params = token.children.map(child => child.compile());
