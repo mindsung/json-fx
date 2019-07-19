@@ -16,7 +16,5 @@ export class ContextParser implements FxParser<FxTokenNode> {
         lvalue.tag = "template";
         break;
     }
-
-    // lvalue.children.forEach(child => this.makeLValue(child));
   }
 }

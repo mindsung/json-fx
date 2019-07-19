@@ -21,6 +21,7 @@ import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules 
 import { FxFunction } from "../runtime/model/fx-function";
 import { FxLambda } from "../runtime/model/fx-lambda";
 import { FxExpression } from "../runtime/model/fx-expression";
+import { FxTokenNode } from "../lexer/model/fx-token-node";
 
 export namespace Fx {
 
@@ -81,8 +82,9 @@ export namespace Fx {
     },
     {
       operator: { symbol: "?:", precedence: 4 },
+      compiler:
       optimizer: token => {
-        token.last.unshift(token.first);
+        token.last.first.unshift(token.first);
 
         if (token.last.tag == "identifier") {
           token.last.tag = "expression";

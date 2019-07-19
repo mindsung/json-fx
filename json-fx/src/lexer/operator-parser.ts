@@ -1,48 +1,62 @@
 import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
-import { FxContext } from "./model/fx-context";
-
 
 export class OperatorParser implements FxParser<FxTokenNode, void> {
-  private context: FxContext;
-  private nextNode: FxTokenNode;
 
   private operatorStack: FxTokenNode[];
   private outputQueue: FxTokenNode[];
 
+  private current: FxTokenNode;
   private lastUnary: FxTokenNode;
-
-  constructor(context: FxContext) {
-    this.context = context;
-  }
 
   public parse(root: FxTokenNode): void {
     this.operatorStack = [];
     this.outputQueue = [];
 
-    for (this.nextNode of root.children) {
-      if (this.nextNode.tag == "operator") {
-        if (this.nextNode.operator.isUnary) {
-          this.lastUnary = this.nextNode;
-        } else {
-          while (this.operatorStack.length > 0 && this.operatorStack[0].operator.precedence >= this.nextNode.operator.precedence) {
-            this.shunt();
-          }
-          this.operatorStack.unshift(this.nextNode);
-        }
+    for (this.current of root.children) {
+      if (this.current.tag == "operator") {
+        this.parseOperator();
       } else {
-        if (this.lastUnary) {
-          this.lastUnary.add(this.nextNode);
-          this.outputQueue.push(this.lastUnary);
-          this.lastUnary = null;
-        } else {
-          this.outputQueue.push(this.nextNode);
-        }
+        this.parseTerm();
       }
     }
 
     while (this.operatorStack.length > 0) {
       this.shunt();
+    }
+  }
+
+  private parseOperator(): void {
+    if (this.current.operator.isUnary) {
+      this.parseUnary();
+    } else {
+      this.parseBinary();
+    }
+  }
+
+  private parseUnary(): void {
+    if (this.current.operator.assoc == "right") {
+      this.current.add(this.outputQueue.pop());
+      this.outputQueue.push(this.current);
+    } else {
+      this.lastUnary = this.current;
+    }
+  }
+
+  private parseBinary(): void {
+    while (this.operatorStack.length > 0 && this.operatorStack[0].operator.precedence >= this.current.operator.precedence) {
+      this.shunt();
+    }
+    this.operatorStack.unshift(this.current);
+  }
+
+  private parseTerm(): void {
+    if (this.lastUnary) {
+      this.lastUnary.add(this.current);
+      this.outputQueue.push(this.lastUnary);
+      this.lastUnary = null;
+    } else {
+      this.outputQueue.push(this.current);
     }
   }
 

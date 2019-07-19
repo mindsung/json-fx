@@ -21,7 +21,7 @@ export class ExpressionDef extends FxDef {
     }
 
     const result = new FxFunction(evaluator.evaluate);
-    result.args = token.children.map(child => child.compile());
+    result.args = token.first.children.map(child => child.compile());
     result.deferEvaluation = evaluator.deferEvaluation;
 
     return result;

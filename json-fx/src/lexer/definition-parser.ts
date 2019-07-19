@@ -1,13 +1,13 @@
 import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
-import { FxContext } from "./model/fx-context";
+import { Loader } from "./loader";
 
 export class DefinitionParser implements FxParser<FxTokenNode, void> {
 
-  private context: FxContext;
+  private loader: Loader;
 
-  constructor(context: FxContext) {
-    this.context = context;
+  constructor(loader: Loader) {
+    this.loader = loader;
   }
 
   public parse(token: FxTokenNode): void {
@@ -25,12 +25,12 @@ export class DefinitionParser implements FxParser<FxTokenNode, void> {
         child.symbol = ":a";
       }
 
-      this.context.loader.load(child);
+      this.loader.load(child);
       lastChild = child;
     }
 
     if (!token.parent) {
-      this.context.loader.load(token);
+      this.loader.load(token);
     }
   }
 }

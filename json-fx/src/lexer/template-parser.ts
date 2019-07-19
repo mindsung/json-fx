@@ -17,9 +17,9 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
   constructor(context: FxContext) {
     this.grouper = new TemplateGrouper();
     this.parser = new RecursiveParser(
-      new DefinitionParser(context),
+      new DefinitionParser(context.loader),
       new ExpressionParser(context.loader),
-      new OperatorParser(context),
+      new OperatorParser(),
       new Optimizer(),
       new ContextParser()
     );
