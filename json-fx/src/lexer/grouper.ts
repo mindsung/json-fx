@@ -7,11 +7,15 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
   private root: FxTokenNode;
   private nextToken: FxTokenNode;
 
+  public path: string;
+
   parse(tokens: FxToken[]): FxTokenNode {
     this.root = new FxTokenNode("group");
+    this.root.sourceRef.path = this.path;
 
     for (const t of tokens) {
       this.nextToken = new FxTokenNode(t.tag, t.symbol, t.index);
+      this.nextToken.sourceRef.path = this.path;
 
       switch (this.nextToken.tag) {
         case "group":
@@ -27,47 +31,38 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
     }
 
     if (!this.rootIsClosed()) {
-      throw new FxSyntaxError(`Unclosed "${ this.root.symbol }"`, this.root.index);
+      throw new FxSyntaxError(`Unclosed "${ this.root.symbol }"`, this.root.sourceRef);
     }
 
     return this.root;
   }
 
-  private descendRoot() {
+  private descendRoot(): void {
     this.root.add(this.nextToken);
     this.root = this.nextToken;
   }
 
-  private ascendRoot() {
-    if (!this.closeBracketMatchesRoot()) {
-      throw new FxSyntaxError(`Unexpected token "${ this.nextToken.symbol }"`, this.nextToken.index);
-    }
-
+  private ascendRoot(): void {
     this.root.symbol += this.nextToken.symbol;
 
     switch (this.root.symbol) {
+      case "()":
+        break;
       case "[]":
         this.root.tag = "array";
         break;
       case "{}":
         this.root.tag = "object";
         break;
+      default:
+        throw new FxSyntaxError(`Unexpected token "${ this.nextToken.symbol }"`, this.nextToken.sourceRef);
     }
 
     this.root = this.root.parent;
     this.nextToken.orphan();
   }
 
-  private rootIsClosed() {
+  private rootIsClosed(): boolean {
     return !this.root.parent;
-  }
-
-  private closeBracketMatchesRoot() {
-    const open = this.root.symbol;
-    const close = this.nextToken.symbol;
-
-    return open == "(" && close == ")"
-      || open == "[" && close == "]"
-      || open == "{" && close == "}";
   }
 }

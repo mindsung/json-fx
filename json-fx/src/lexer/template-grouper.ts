@@ -36,6 +36,8 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
 
   private parseString(str: string): FxTokenNode {
     const tokens = this.tokenizer.parse(str);
+
+    this.grouper.path = this.composePath();
     let root = this.grouper.parse(tokens);
 
     if (root.count == 1) {
@@ -43,11 +45,6 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
       root.orphan();
     } else if (root.count == 0) {
       root = new FxTokenNode("identifier", "null");
-    }
-
-    root.sourceRef.path = this.composePath();
-    for (const child of root.children) {
-      child.sourceRef.path = this.composePath();
     }
 
     return root;

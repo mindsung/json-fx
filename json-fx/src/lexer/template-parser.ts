@@ -5,7 +5,6 @@ import { TemplateGrouper } from "./template-grouper";
 import { RecursiveParser } from "./recursive-parser";
 import { ExpressionParser } from "./expression-parser";
 import { OperatorParser } from "./operator-parser";
-import { Optimizer } from "./optimizer";
 import { DefinitionParser } from "./definition-parser";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
@@ -19,13 +18,15 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
       new DefinitionParser(context.loader),
       new ExpressionParser(context.loader),
       new OperatorParser(),
-      new Optimizer(),
     );
   }
 
   parse(template: any): FxTokenNode {
     const root = this.grouper.parse(template);
+
     this.parser.parse(root);
+    root.optimize();
+
     return root;
   }
 }

@@ -15,17 +15,18 @@ export class ExpressionParser extends IteratorParser {
     this.loader = loader;
   }
 
-  protected parseItem(parent: FxTokenNode, current: FxTokenNode, next: FxTokenNode): void {
+  protected before(parent: FxTokenNode): void {
     this.parent = parent;
+  }
+
+  protected parseItem(current: FxTokenNode, next: FxTokenNode): void {
     this.current = current;
     this.next = next;
 
     if (this.isCall()) {
       this.convertToCall();
-      super.moveLast();
     } else if (this.isIndexer()) {
       this.convertToIndexer();
-      super.moveLast();
     }
   }
 

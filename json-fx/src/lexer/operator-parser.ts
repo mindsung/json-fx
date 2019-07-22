@@ -1,28 +1,33 @@
-import { FxParser } from "./model/fx-parser";
 import { FxTokenNode } from "./model/fx-token-node";
+import { IteratorParser } from "./iterator-parser";
 
-export class OperatorParser implements FxParser<FxTokenNode, void> {
+export class OperatorParser extends IteratorParser {
 
   private operatorStack: FxTokenNode[];
   private outputQueue: FxTokenNode[];
 
   private current: FxTokenNode;
-  private lastUnary: FxTokenNode;
+  private next: FxTokenNode;
 
-  public parse(root: FxTokenNode): void {
+  protected before(parent: FxTokenNode): void {
     this.operatorStack = [];
     this.outputQueue = [];
+  }
 
-    for (this.current of root.children) {
-      if (this.current.tag == "operator") {
-        this.parseOperator();
-      } else {
-        this.parseTerm();
-      }
-    }
-
+  protected after(): void {
     while (this.operatorStack.length > 0) {
       this.popOperator();
+    }
+  }
+
+  protected parseItem(current: FxTokenNode, next: FxTokenNode): void {
+    this.current = current;
+    this.next = next;
+
+    if (this.current.tag == "operator") {
+      this.parseOperator();
+    } else {
+      this.outputQueue.push(this.current);
     }
   }
 
@@ -39,38 +44,31 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
       this.current.add(this.outputQueue.pop());
       this.outputQueue.push(this.current);
     } else {
-      this.lastUnary = this.current;
+      this.current.add(this.next);
+      this.outputQueue.push(this.current);
     }
   }
 
   private parseBinary(): void {
-    while (this.operatorStack.length > 0 && this.operatorStack[0].operator.precedence >= this.current.operator.precedence) {
+    const stackOp = this.operatorStack[0] && this.operatorStack[0].operator;
+    const currentOp = this.current.operator;
+
+    while (stackOp && stackOp.precedence >= currentOp.precedence && currentOp.assoc != "right") {
       this.popOperator();
     }
+
     this.operatorStack.unshift(this.current);
   }
 
   private popOperator(): void {
     const stackTop = this.operatorStack.shift();
-    let numOperands = stackTop.operator.isUnary ? 1 : 2;
 
-    if (this.outputQueue.length >= numOperands) {
-      while (numOperands--) {
-        stackTop.unshift(this.outputQueue.pop());
-      }
+    if (this.outputQueue.length >= 2) {
+      stackTop.unshift(this.outputQueue.pop());
+      stackTop.unshift(this.outputQueue.pop());
       this.outputQueue.push(stackTop);
     } else {
-      throw new Error(`Operator "${ stackTop.operator.symbol }" expects ${ numOperands } operands, ${ this.outputQueue.length } given`);
-    }
-  }
-
-  private parseTerm(): void {
-    if (this.lastUnary) {
-      this.lastUnary.add(this.current);
-      this.outputQueue.push(this.lastUnary);
-      this.lastUnary = null;
-    } else {
-      this.outputQueue.push(this.current);
+      throw new Error(`Operator "${ stackTop.operator.symbol }" expects 2 operands, ${ this.outputQueue.length } given`);
     }
   }
 }

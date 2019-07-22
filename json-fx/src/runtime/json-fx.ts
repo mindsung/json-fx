@@ -24,7 +24,10 @@ export class JsonFx {
     const subScope = new FxScope();
     subScope.parentScope = this.scope;
 
-    return new FxCompiledTemplateImpl(this.parser.parse(template), subScope);
+    const root = this.parser.parse(template);
+    console.log(root.toString());
+
+    return new FxCompiledTemplateImpl(root, subScope);
   }
 
   public define(def: FxExpressionDefinition): void {

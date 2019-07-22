@@ -24,7 +24,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 import { polyfills } from "./polyfills";
+import { CableDataTemplate } from "../../json-fx-sandbox/src/cable-data/cable-data-template";
+import { CableData } from "../../json-fx-sandbox/src/cable-data/cable-data";
+import { JsonFx } from "./runtime/json-fx";
 
 polyfills();
 
 export * from "./runtime/json-fx";
+
+const fx = new JsonFx();
+const script = fx.compile("");
+
+const result = script.evaluate({ name: "$", value: CableData });
+console.log(JSON.stringify(result, null, 2));

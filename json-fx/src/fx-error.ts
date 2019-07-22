@@ -1,6 +1,6 @@
 import { SourceRef } from "./runtime/source-ref";
 
-export abstract class FxError implements Error {
+export abstract class FxError {
 
   private readonly _prefix: string;
   private readonly _message: string;
@@ -27,12 +27,13 @@ export abstract class FxError implements Error {
     this._sourceRef = sourceRef;
   }
 
-  name: string;
-  stack: string;
+  public toString(): string {
+    return this.message;
+  }
 }
 
 export class FxSyntaxError extends FxError {
-  constructor(message: string, index?: number) { super("Syntax error", message, { index: index, symbol: "" }); }
+  constructor(message: string, sourceRef?: SourceRef) { super("Syntax error", message, sourceRef); }
 }
 
 export class FxCompileError extends FxError {

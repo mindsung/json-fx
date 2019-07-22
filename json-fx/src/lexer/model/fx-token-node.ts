@@ -3,7 +3,6 @@ import { FxTokenTag } from "./fx-token-tag";
 import { FxToken } from "./fx-token";
 import { FxExpression } from "../../runtime/model/fx-expression";
 import { FxEvaluatorDefinition, FxOperatorDefinition } from "./fx-definition";
-import { FxFunction } from "../../runtime/model/fx-function";
 import { SourceRef } from "../../runtime/source-ref";
 
 export class FxTokenNode extends FxNode implements FxToken {
