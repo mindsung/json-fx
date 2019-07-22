@@ -5,7 +5,8 @@ import { TemplateGrouper } from "./template-grouper";
 import { RecursiveParser } from "./recursive-parser";
 import { ExpressionParser } from "./expression-parser";
 import { OperatorParser } from "./operator-parser";
-import { DefinitionParser } from "./definition-parser";
+import { DefinitionLoader } from "./definition-loader";
+import { OperatorLoader } from "./operator-loader";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
 
@@ -15,9 +16,10 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
   constructor(context: FxContext) {
     this.grouper = new TemplateGrouper();
     this.parser = new RecursiveParser(
-      new DefinitionParser(context.loader),
-      new ExpressionParser(context.loader),
+      new OperatorLoader(context.loader),
+      new ExpressionParser(),
       new OperatorParser(),
+      new DefinitionLoader(context.loader),
     );
   }
 

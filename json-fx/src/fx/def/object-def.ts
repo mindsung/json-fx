@@ -5,6 +5,7 @@ import { FxObject } from "../../runtime/model/fx-object";
 import { LambdaDef } from "./lambda-def";
 import { FxDef } from "./model/fx-def";
 import { FxScopeVariable } from "../../runtime/model/fx-scope-variable";
+import { FxLambda } from "../../runtime/model/fx-lambda";
 
 export class ObjectDef extends FxDef {
 
@@ -21,16 +22,20 @@ export class ObjectDef extends FxDef {
     const result = new FxObject();
 
     for (const child of token.children) {
-      switch (child.tag) {
+      const key = child.first;
+      const value = child.last;
+
+      switch (key.tag) {
         case "identifier":
-          result.items[child.symbol] = child.first.compile();
+          result.items[key.symbol] = value.compile();
           break;
         case "variable":
-          result.scope.setVariable(new FxScopeVariable(child.symbol, child.first.compile()));
+          result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile()));
           break;
         case "template":
         case "template-call":
-          result.scope.setVariable(new FxScopeVariable(child.symbol, this.lambda.compiler(child), false));
+          const paramNames = key.children.map(c => c.symbol);
+          result.scope.setVariable(new FxScopeVariable(key.symbol, new FxLambda(paramNames, value.compile()), false));
           break;
       }
     }

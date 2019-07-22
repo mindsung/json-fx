@@ -4,7 +4,7 @@ import { FxExpression } from "../../../runtime/model/fx-expression";
 import { FxTokenTag } from "../../../lexer/model/fx-token-tag";
 
 export type FxOptimizer = (token: FxTokenNode) => void;
-export type IFxCompiler = (token: FxTokenNode) => FxExpression;
+export type FxCompiler = (token: FxTokenNode) => FxExpression;
 
 export class FxDef implements FxIntrinsicDefinition {
 
@@ -18,7 +18,7 @@ export class FxDef implements FxIntrinsicDefinition {
     return this.optimize.bind(this);
   }
 
-  public get compiler(): IFxCompiler {
+  public get compiler(): FxCompiler {
     return (token) => {
       const expression = this.compile(token);
       expression.sourceRef = token.sourceRef;

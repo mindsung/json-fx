@@ -1,19 +1,11 @@
 import { FxTokenNode } from "./model/fx-token-node";
 import { IteratorParser } from "./iterator-parser";
-import { Loader } from "./loader";
 
 export class ExpressionParser extends IteratorParser {
-
-  private loader: Loader;
 
   private parent: FxTokenNode;
   private current: FxTokenNode;
   private next: FxTokenNode;
-
-  constructor(loader: Loader) {
-    super();
-    this.loader = loader;
-  }
 
   protected before(parent: FxTokenNode): void {
     this.parent = parent;
@@ -43,8 +35,7 @@ export class ExpressionParser extends IteratorParser {
       args = this.current;
     } else if (this.current.tag == "template") {
       this.current.tag = "template-call";
-      args = this.loader.createToken("args");
-      this.current.unshift(args);
+      args = this.current;
     }
 
     while (this.next.first) {
@@ -63,7 +54,7 @@ export class ExpressionParser extends IteratorParser {
   }
 
   private convertToIndexer(): void {
-    const indexer = this.loader.createToken("indexer");
+    const indexer = new FxTokenNode("indexer");
     this.current.wrap(indexer);
     indexer.add(this.next);
   }

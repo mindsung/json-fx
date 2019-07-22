@@ -45,6 +45,10 @@ export class FxTokenNode extends FxNode implements FxToken {
   }
 
   public optimize(): void {
+    for (const child of this.children) {
+      child.optimize();
+    }
+
     if (this.optimizer) {
       this.optimizer.call(this.optimizer, this);
     }

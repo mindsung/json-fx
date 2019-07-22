@@ -1,5 +1,6 @@
 import { FxTokenNode } from "./model/fx-token-node";
 import { IteratorParser } from "./iterator-parser";
+import { Loader } from "./loader";
 
 export class OperatorParser extends IteratorParser {
 
@@ -50,11 +51,12 @@ export class OperatorParser extends IteratorParser {
   }
 
   private parseBinary(): void {
-    const stackOp = this.operatorStack[0] && this.operatorStack[0].operator;
     const currentOp = this.current.operator;
+    let stackOp = this.operatorStack[0] && this.operatorStack[0].operator;
 
     while (stackOp && stackOp.precedence >= currentOp.precedence && currentOp.assoc != "right") {
       this.popOperator();
+      stackOp = this.operatorStack[0] && this.operatorStack[0].operator;
     }
 
     this.operatorStack.unshift(this.current);

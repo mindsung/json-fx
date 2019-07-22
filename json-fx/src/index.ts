@@ -31,9 +31,3 @@ import { JsonFx } from "./runtime/json-fx";
 polyfills();
 
 export * from "./runtime/json-fx";
-
-const fx = new JsonFx();
-const script = fx.compile("");
-
-const result = script.evaluate({ name: "$", value: CableData });
-console.log(JSON.stringify(result, null, 2));

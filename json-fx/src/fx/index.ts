@@ -65,10 +65,6 @@ export namespace Fx {
     },
     {
       operator: { symbol: ":a", precedence: -1 },
-      optimizer: token => {
-        token.first.add(token.last);
-        token.unwrap();
-      }
     },
     // TODO: Code cleanup
     {

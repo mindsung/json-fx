@@ -1,4 +1,4 @@
-import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition } from "./model/fx-definition";
+import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition, FxOperatorDefinition } from "./model/fx-definition";
 import { FxTokenNode } from "./model/fx-token-node";
 import { Fx } from "../fx";
 import { FxTokenTag } from "./model/fx-token-tag";
@@ -58,40 +58,31 @@ export class Loader {
     this.operators[symbol] = def;
   }
 
-  public createToken(tag: FxTokenTag, symbol?: string): FxTokenNode {
-    const token = new FxTokenNode(tag, symbol);
-    this.load(token);
-
-    return token;
+  public getOperator(symbol: string): FxOperatorDefinition {
+    const def = this.operators[symbol];
+    if (def) {
+      return def.operator;
+    } else {
+      return null;
+    }
   }
 
-  public load(node: FxTokenNode): void {
-    const def = this.getDefinition(node);
+  public getDefinition(symbol: string, tag: FxTokenTag): FxDefinition {
+    let tagDef: {};
+    let operatorDef: {};
+    let strictDef: {};
+    let symbolDef: {};
 
-    node.operator = def.operator;
-    node.evaluator = def.evaluator;
-    node.optimizer = def.optimizer;
-    node.compiler = def.compiler;
-  }
+    tagDef = Loader.sanitize(this.definitions[Loader.hash(tag, null)]);
 
-  private getDefinition(node: FxTokenNode): FxDefinition {
-    const tagDef = Loader.sanitize(this.definitions[Loader.hash(node.tag, null)]);
-    let operatorDef = {};
-    let strictDef = {};
-    let symbolDef = {};
-
-    if (node.tag == "operator" || node.tag == "expression" || node.tag == "identifier") {
-      if (this.operators[node.symbol]) {
-        node.tag = "operator";
-      }
-      operatorDef = Loader.sanitize(this.operators[node.symbol]);
+    if (tag == "operator" || tag == "expression" || tag == "identifier") {
+      operatorDef = Loader.sanitize(this.operators[symbol]);
     }
 
-    if (node.tag != "literal" && node.tag != "numeric") {
-      strictDef = Loader.sanitize(this.definitions[Loader.hash(node.tag, node.symbol)]);
-      symbolDef = Loader.sanitize(this.definitions[Loader.hash(null, node.symbol)]);
+    if (tag != "literal" && tag != "numeric") {
+      strictDef = Loader.sanitize(this.definitions[Loader.hash(tag, symbol)]);
+      symbolDef = Loader.sanitize(this.definitions[Loader.hash(null, symbol)]);
     }
-
 
     return Object.assign({}, symbolDef, tagDef, strictDef, operatorDef);
   }
@@ -112,6 +103,6 @@ export class Loader {
     tag = tag || "*";
     symbol = symbol || "*";
 
-    return `<${tag}>${symbol}`;
+    return `<${ tag }>${ symbol }`;
   }
 }
