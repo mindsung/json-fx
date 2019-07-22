@@ -17,12 +17,6 @@ export abstract class FxExpression {
 
   public evaluate(): any {}
 
-  public bindSourceRefPath(): void {
-    for (const child of this.children) {
-      child.sourceRef.path = this.sourceRef.path;
-    }
-  }
-
   public bindScope(parent: FxScope = null): void {
     if (this.scope.parentScope !== parent) {
       this.scope.parentScope = parent;

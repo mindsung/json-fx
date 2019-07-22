@@ -50,7 +50,6 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
     this.expr = root.compile();
 
     this.expr.bindScope(this.scope);
-    // this.expr.bindSourceRefPath();
   }
 
   evaluate(...inputs: FxInput[]): any {

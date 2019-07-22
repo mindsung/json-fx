@@ -22,7 +22,7 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
     }
 
     while (this.operatorStack.length > 0) {
-      this.shunt();
+      this.popOperator();
     }
   }
 
@@ -45,22 +45,12 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
 
   private parseBinary(): void {
     while (this.operatorStack.length > 0 && this.operatorStack[0].operator.precedence >= this.current.operator.precedence) {
-      this.shunt();
+      this.popOperator();
     }
     this.operatorStack.unshift(this.current);
   }
 
-  private parseTerm(): void {
-    if (this.lastUnary) {
-      this.lastUnary.add(this.current);
-      this.outputQueue.push(this.lastUnary);
-      this.lastUnary = null;
-    } else {
-      this.outputQueue.push(this.current);
-    }
-  }
-
-  private shunt(): void {
+  private popOperator(): void {
     const stackTop = this.operatorStack.shift();
     let numOperands = stackTop.operator.isUnary ? 1 : 2;
 
@@ -71,6 +61,16 @@ export class OperatorParser implements FxParser<FxTokenNode, void> {
       this.outputQueue.push(stackTop);
     } else {
       throw new Error(`Operator "${ stackTop.operator.symbol }" expects ${ numOperands } operands, ${ this.outputQueue.length } given`);
+    }
+  }
+
+  private parseTerm(): void {
+    if (this.lastUnary) {
+      this.lastUnary.add(this.current);
+      this.outputQueue.push(this.lastUnary);
+      this.lastUnary = null;
+    } else {
+      this.outputQueue.push(this.current);
     }
   }
 }

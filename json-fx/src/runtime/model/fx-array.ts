@@ -14,15 +14,6 @@ export class FxArray extends FxExpression {
     return this.items.map(item => item.evaluate());
   }
 
-  bindSourceRefPath(): void {
-    this.bindSourceRefPath();
-
-    for (let i = 0; i < this.items.length; i++) {
-      this.items[i].sourceRef.path += `[${ i }]`;
-      this.items[i].bindSourceRefPath();
-    }
-  }
-
   public toString(): string {
     return `[${ this.items.map(item => item.toString()) }]`;
   }

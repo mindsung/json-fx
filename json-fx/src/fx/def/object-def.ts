@@ -29,6 +29,7 @@ export class ObjectDef extends FxDef {
           result.scope.setVariable(new FxScopeVariable(child.symbol, child.first.compile()));
           break;
         case "template":
+        case "template-call":
           result.scope.setVariable(new FxScopeVariable(child.symbol, this.lambda.compiler(child), false));
           break;
       }

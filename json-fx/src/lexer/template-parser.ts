@@ -6,7 +6,6 @@ import { RecursiveParser } from "./recursive-parser";
 import { ExpressionParser } from "./expression-parser";
 import { OperatorParser } from "./operator-parser";
 import { Optimizer } from "./optimizer";
-import { ContextParser } from "./context-parser";
 import { DefinitionParser } from "./definition-parser";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
@@ -21,7 +20,6 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
       new ExpressionParser(context.loader),
       new OperatorParser(),
       new Optimizer(),
-      new ContextParser()
     );
   }
 

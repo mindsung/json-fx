@@ -23,16 +23,6 @@ export class FxObject extends FxExpression {
     return result;
   }
 
-  bindSourceRefPath(): void {
-    super.bindSourceRefPath();
-    const useDot = !!this.sourceRef.path;
-
-    for (const key of Object.keys(this.items)) {
-      this.items[key].sourceRef.path += useDot ? "." + key : key;
-      this.items[key].bindSourceRefPath();
-    }
-  }
-
   public toString(): string {
     const vars = Object.keys(this.scope.variables).map(key => `${ key }: ${ this.scope.variables[key].toString() }`);
     let items = Object.keys(this.items).map(key => `${ key }: ${ this.items[key].toString() }`);
