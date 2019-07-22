@@ -21,7 +21,7 @@ import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules 
 import { FxFunction } from "../runtime/model/fx-function";
 import { FxLambda } from "../runtime/model/fx-lambda";
 import { FxExpression } from "../runtime/model/fx-expression";
-import { FxTokenNode } from "../lexer/model/fx-token-node";
+import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
 
 export namespace Fx {
 
@@ -55,6 +55,8 @@ export namespace Fx {
     new PropertyDef(),
     new CallDef(),
     new NullPropertyDef(),
+    new InvokeDef(),
+    new NullInvokeDef(),
     {
       operator: { symbol: ",", precedence: -2 },
       optimizer: token => {
@@ -66,37 +68,6 @@ export namespace Fx {
       optimizer: token => {
         token.first.add(token.last);
         token.unwrap();
-      }
-    },
-    {
-      operator: { symbol: ":", precedence: 4 },
-      optimizer: token => {
-        token.last.unshift(token.first);
-
-        if (token.last.tag == "identifier") {
-          token.last.tag = "expression";
-        }
-
-        token.unwrap();
-      }
-    },
-    {
-      operator: { symbol: "?:", precedence: 4 },
-      compiler:
-      optimizer: token => {
-        token.last.first.unshift(token.first);
-
-        if (token.last.tag == "identifier") {
-          token.last.tag = "expression";
-        }
-      },
-      evaluator: {
-        name: "nullinvoke",
-        deferEvaluation: true,
-        evaluate: result => {
-          const evalFirstArg = result.args[0].evaluate();
-          return evalFirstArg != null ? result.evaluate() : null;
-        }
       }
     },
     // TODO: Code cleanup

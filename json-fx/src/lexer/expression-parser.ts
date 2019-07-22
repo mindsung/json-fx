@@ -35,19 +35,21 @@ export class ExpressionParser extends IteratorParser {
   }
 
   private convertToCall(): void {
-    const args = this.loader.createToken("args");
+    let args: FxTokenNode;
 
     if (this.current.tag == "identifier") {
       this.current.tag = "expression";
+      args = this.current;
     } else if (this.current.tag == "template") {
       this.current.tag = "template-call";
+      args = this.loader.createToken("args");
+      this.current.unshift(args);
     }
 
     while (this.next.first) {
       args.add(this.next.first);
     }
 
-    this.current.add(args);
     this.next.orphan();
   }
 
