@@ -82,6 +82,7 @@ export namespace Fx {
       }
     },
     {
+      // TODO: if/else right-hand associativity
       operator: { symbol: "if", precedence: 0.1 },
     },
     {

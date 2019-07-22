@@ -6,6 +6,7 @@ import { LambdaDef } from "./lambda-def";
 import { FxDef } from "./model/fx-def";
 import { FxScopeVariable } from "../../runtime/model/fx-scope-variable";
 import { FxLambda } from "../../runtime/model/fx-lambda";
+import { FxSyntaxError } from "../../fx-error";
 
 export class ObjectDef extends FxDef {
 
@@ -22,6 +23,10 @@ export class ObjectDef extends FxDef {
     const result = new FxObject();
 
     for (const child of token.children) {
+      if (!child.is("operator", ":a")) {
+        throw new FxSyntaxError("Invalid object literal, expected key-value pairs", child.sourceRef);
+      }
+
       if (child.count == 1) {
         result.output = child.first.compile();
       } else {

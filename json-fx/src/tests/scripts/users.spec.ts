@@ -28,7 +28,7 @@ describe("Scripts [users]", function (): void {
       {
         id: 3,
         name: "Jess Esper",
-        age: 23,
+        age: 16,
         gender: "f"
       },
       {
@@ -40,12 +40,107 @@ describe("Scripts [users]", function (): void {
     ]
   });
 
-  it("Evaluates script [simple]", function (): void {
-    const result = tester.run("{$a: 10, (): $a}");
-    console.log(JSON.stringify(result, null, 2));
+  it("Evaluates JSON number", function (): void {
+    const result = tester.run({ "()": 10 });
+    assert.equal(result, 10);
   });
 
-  it("Evaluates script [emails]", function (): void {
+  it("Evaluates JSON true/false", function (): void {
+    const result1 = tester.run({ "()": true });
+    const result2 = tester.run({ "()": false });
+    assert.equal(result1, true);
+    assert.equal(result2, false);
+  });
+
+  it("Evaluates JSON null", function (): void {
+    const result = tester.run({ "()": null });
+    assert.equal(result, null);
+  });
+
+  it("Evaluates variable reference", function (): void {
+    const result = tester.run({ "$a": 10, "()": "$a" });
+    assert.equal(result, 10);
+  });
+
+  it("Evaluates nested variable reference", function (): void {
+    const result = tester.run({ "$a": 10, "$b": "$a + 10", "()": "$b" });
+    assert.equal(result, 20);
+  });
+
+  it("Evaluates template reference (w/o args)", function (): void {
+    const result = tester.run({ "@templ": 50, "()": "@templ()" });
+    assert.equal(result, 50);
+  });
+
+  it("Evaluates template reference (w/ args)", function (): void {
+    const result = tester.run({ "@templ($)": "$ + 10", "()": "@templ(10)" });
+    assert.equal(result, 20);
+  });
+
+  it("Evaluates nested template reference", function (): void {
+    const result = tester.run({ "@A($)": "$ + 10", "@B($)": "@A($) + 20", "()": "@B(10)" });
+    assert.equal(result, 40);
+  });
+
+  it("Evaluates array literal", function (): void {
+    const result = tester.run("[0, 1, 2, 'A']");
+    assert.deepEqual(result, [0, 1, 2, "A"]);
+  });
+
+  it("Evaluates object literal", function (): void {
+    const result = tester.run("{ $a: 10, @templ($): $ * 2, (): @templ($a) }");
+    assert.equal(result, 20);
+  });
+
+  it("Evaluates unary (-)", function (): void {
+    const result1 = tester.run("-10");
+    const result2 = tester.run("2 * -10");
+    const result3 = tester.run("2 * -(5 + 5)");
+    assert.equal(result1, -10);
+    assert.equal(result2, -20);
+    assert.equal(result3, -20);
+  });
+
+  it("Throws unary (-) right of operand", function (): void {
+    assert.throw(function (): void {
+      tester.run("10-");
+    });
+    assert.throw(function (): void {
+      tester.run("(10 + 5)-");
+    });
+  });
+
+  it("Throws unclosed bracket", function (): void {
+    assert.throw(function (): void {
+      tester.run("(10");
+    });
+  });
+
+  it("Throws mismatched brackets", function (): void {
+    assert.throw(function (): void {
+      tester.run("(10]");
+    });
+  });
+
+  it("Throws undefined variable", function (): void {
+    assert.throw(function (): void {
+      tester.run("$a");
+    });
+  });
+
+  it("Throws undefined template", function (): void {
+    assert.throw(function (): void {
+      tester.run("@a");
+    });
+  });
+
+  it("Throws missing operand", function (): void {
+    assert.throw(function (): void {
+      tester.run("3 *");
+    });
+  });
+
+  it("Evaluates complex script [emails]", function (): void {
     const result = tester.run({
       "@email($first, $last, $domain)": "lowercase($first[0] + $last) + '@' + $domain",
       "@user($u)": {
@@ -53,7 +148,7 @@ describe("Scripts [users]", function (): void {
         "firstName": "$names[0]",
         "lastName": "$names[1]"
       },
-      "()": "$::@user:map($ => @email($.firstName, $.lastName, 'gmail.com'))"
+      "()": "$:map(@user):map($ => @email($.firstName, $.lastName, 'gmail.com'))"
     });
 
     assert.deepEqual(result, [
@@ -62,6 +157,43 @@ describe("Scripts [users]", function (): void {
       "aroache@gmail.com",
       "jesper@gmail.com",
       "cmelillo@gmail.com"
+    ]);
+  });
+
+  it("Evaluates complex script [class]", function (): void {
+    const result = tester.run({
+      "@class($age)": {
+        "$minor": "'MINOR' if $age < 18 else false",
+        "$under21": "'UNDER21' if $age < 21 else false",
+        "()": "$minor || $under21 || 'ADULT'"
+      },
+      "()": "$:map($ => { id: $.id, class: @class($.age) })"
+    });
+
+    assert.deepEqual(result, [
+      { "id": 0, "class": "UNDER21" },
+      { "id": 1, "class": "ADULT" },
+      { "id": 2, "class": "ADULT" },
+      { "id": 3, "class": "MINOR" },
+      { "id": 4, "class": "ADULT" }
+    ]);
+  });
+
+  it("Evaluates complex script [sanitizer]", function (): void {
+    const result = tester.run({
+      "@sanitizeGender($g)": {
+        "$code": "lowercase($g[0])",
+        "()": "'male' if $code == 'm' else 'female' if $code == 'f' else 'other'"
+      },
+      "()": "$:map($ => $:assign({ gender: @sanitizeGender($.gender) }))"
+    });
+
+    assert.deepEqual(result, [
+      { "id": 0, "class": "UNDER21" },
+      { "id": 1, "class": "ADULT" },
+      { "id": 2, "class": "ADULT" },
+      { "id": 3, "class": "MINOR" },
+      { "id": 4, "class": "ADULT" }
     ]);
   });
 });

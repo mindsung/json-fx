@@ -3,9 +3,9 @@ import { AnyFn, FxExpressionDefinition } from "../../lexer/model/fx-definition";
 
 export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
   {
-    name: "item",
-    evaluate: (arr: any[] | any, index: number | string) => {
-      return arr[index];
+    name: "assign",
+    evaluate: (...objects: any[]) => {
+      return Object.assign({}, ...objects);
     }
   },
   {
@@ -13,7 +13,6 @@ export const exprArray: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (arr: any[], lambda: AnyFn) => {
       return arr.map(lambda);
     },
-    operator: {symbol: "::", precedence: 4}
   },
   {
     name: "sort",

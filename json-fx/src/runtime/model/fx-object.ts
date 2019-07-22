@@ -1,5 +1,6 @@
 import { FxExpression } from "./fx-expression";
 import { isEmpty, isObject } from "../../common";
+import { FxCompileError } from "../../fx-error";
 
 export class FxObject extends FxExpression {
   public items: { [index: string]: FxExpression };
@@ -22,6 +23,9 @@ export class FxObject extends FxExpression {
 
   evaluate(): any {
     if (this.output) {
+      if (Object.keys(this.items).length > 0) {
+        throw new FxCompileError("Object with yield key \"()\" may only define variable and template keys", this.sourceRef);
+      }
       return this.output.evaluate();
     }
 
