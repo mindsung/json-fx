@@ -3,15 +3,28 @@ import { isEmpty, isObject } from "../../common";
 
 export class FxObject extends FxExpression {
   public items: { [index: string]: FxExpression };
+  public output: FxExpression;
 
   constructor(items?: { [index: string]: FxExpression }) {
     super();
     this.items = items || {};
   }
 
-  protected get children(): FxExpression[] { return Object.keys(this.items).map(key => this.items[key]); }
+  protected get children(): FxExpression[] {
+    const children = Object.keys(this.items).map(key => this.items[key]);
+
+    if (this.output) {
+      children.push(this.output);
+    }
+
+    return children;
+  }
 
   evaluate(): any {
+    if (this.output) {
+      return this.output.evaluate();
+    }
+
     const result = {};
     for (const key of Object.keys(this.items)) {
       const value = this.items[key].evaluate();

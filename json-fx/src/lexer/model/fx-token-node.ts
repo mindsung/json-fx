@@ -44,6 +44,10 @@ export class FxTokenNode extends FxNode implements FxToken {
     }
   }
 
+  public is(tag: FxTokenTag, symbol?: string): boolean {
+    return this.tag == tag && (!symbol || this.symbol == symbol);
+  }
+
   public optimize(): void {
     for (const child of this.children) {
       child.optimize();

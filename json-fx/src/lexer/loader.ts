@@ -88,15 +88,17 @@ export class Loader {
   }
 
   private static sanitize(obj: any): any {
-    const clone = Object.assign({}, obj);
+    const result = {};
 
-    for (const key of Object.keys(clone)) {
-      if (clone[key] == null) {
-        delete clone[key];
+    if (obj) {
+      for (const key of Object.keys(obj)) {
+        if (obj[key] != null) {
+          result[key] = obj[key];
+        }
       }
     }
 
-    return clone;
+    return result;
   }
 
   private static hash(tag?: string, symbol?: string): string {

@@ -40,6 +40,11 @@ describe("Scripts [users]", function (): void {
     ]
   });
 
+  it("Evaluates script [simple]", function (): void {
+    const result = tester.run("{$a: 10, (): $a}");
+    console.log(JSON.stringify(result, null, 2));
+  });
+
   it("Evaluates script [emails]", function (): void {
     const result = tester.run({
       "@email($first, $last, $domain)": "lowercase($first[0] + $last) + '@' + $domain",
@@ -48,12 +53,15 @@ describe("Scripts [users]", function (): void {
         "firstName": "$names[0]",
         "lastName": "$names[1]"
       },
-      "$users": "$::@user",
-      "emails": "$users:map($ => @email($.firstName, $.lastName, 'gmail.com'))"
+      "()": "$::@user:map($ => @email($.firstName, $.lastName, 'gmail.com'))"
     });
 
-    assert.deepEqual(result, {
-      emails: ["adrucker@gmail.com", "lveillon@gmail.com", "aroache@gmail.com", "jesper@gmail.com", "cmelillo@gmail.com"]
-    });
+    assert.deepEqual(result, [
+      "adrucker@gmail.com",
+      "lveillon@gmail.com",
+      "aroache@gmail.com",
+      "jesper@gmail.com",
+      "cmelillo@gmail.com"
+    ]);
   });
 });

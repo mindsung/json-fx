@@ -22,21 +22,25 @@ export class ObjectDef extends FxDef {
     const result = new FxObject();
 
     for (const child of token.children) {
-      const key = child.first;
-      const value = child.last;
+      if (child.count == 1) {
+        result.output = child.first.compile();
+      } else {
+        const key = child.first;
+        const value = child.last;
 
-      switch (key.tag) {
-        case "identifier":
-          result.items[key.symbol] = value.compile();
-          break;
-        case "variable":
-          result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile()));
-          break;
-        case "template":
-        case "template-call":
-          const paramNames = key.children.map(c => c.symbol);
-          result.scope.setVariable(new FxScopeVariable(key.symbol, new FxLambda(paramNames, value.compile()), false));
-          break;
+        switch (key.tag) {
+          case "identifier":
+            result.items[key.symbol] = value.compile();
+            break;
+          case "variable":
+            result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile()));
+            break;
+          case "template":
+          case "template-call":
+            const paramNames = key.children.map(c => c.symbol);
+            result.scope.setVariable(new FxScopeVariable(key.symbol, new FxLambda(paramNames, value.compile()), false));
+            break;
+        }
       }
     }
 
