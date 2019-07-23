@@ -1,5 +1,5 @@
-import { FxParser } from "./model/fx-parser";
-import { FxNode } from "./model/fx-node";
+import { FxParser } from "../model/fx-parser";
+import { FxNode } from "./node/fx-node";
 
 export class RecursiveParser implements FxParser<FxNode, void> {
   public parsers: FxParser<FxNode, void>[];

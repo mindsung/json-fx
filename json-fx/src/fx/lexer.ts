@@ -1,4 +1,4 @@
-import { FxTokenRule } from "../lexer/model/fx-token-rule";
+import { FxTokenRule } from "../model/fx-token-rule";
 
 export const StringLiteralSymbol = "'";
 

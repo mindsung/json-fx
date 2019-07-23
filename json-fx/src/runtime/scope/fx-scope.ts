@@ -1,5 +1,5 @@
-import { FxScopeVariable } from "./model/fx-scope-variable";
-import { FxExpression } from "./model/fx-expression";
+import { FxScopeVariable } from "./fx-scope-variable";
+import { FxExpression } from "../fx-expression";
 
 export class FxScope {
   public readonly owner: FxExpression;

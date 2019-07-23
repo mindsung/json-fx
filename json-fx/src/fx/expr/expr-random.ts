@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
 function randomint(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX_SAFE_INTEGER): number {
   return Math.floor(Math.random() * (max - min) + min);

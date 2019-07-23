@@ -1,8 +1,8 @@
-import { FxParser } from "./model/fx-parser";
+import { FxParser } from "../model/fx-parser";
 import { Tokenizer } from "./tokenizer";
 import { isArray, isBoolean, isNumber, isObject, isString } from "../common";
 import { Grouper } from "./grouper";
-import { FxTokenNode } from "./model/fx-token-node";
+import { FxTokenNode } from "./node/fx-token-node";
 
 export class TemplateGrouper implements FxParser<any, FxTokenNode> {
 
@@ -73,9 +73,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
         continue;
       }
 
-
       let keyToken = this.parse(key);
-      keyToken.isLvalue = true;
 
       // TODO: Hack for optional keys (e.g. "foo?")
       if (keyToken.count == 2 && keyToken.first.tag == "identifier" && keyToken.last.symbol == "?") {

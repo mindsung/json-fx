@@ -1,22 +1,21 @@
 import { Loader } from "../lexer/loader";
-import { FxContext } from "../lexer/model/fx-context";
 import { TemplateParser } from "../lexer/template-parser";
-import { FxExpression } from "./model/fx-expression";
-import { FxConstant } from "./model/fx-constant";
-import { FxScope } from "./fx-scope";
-import { FxScopeVariable } from "./model/fx-scope-variable";
-import { FxExpressionDefinition } from "../lexer/model/fx-definition";
-import { FxTokenNode } from "../lexer/model/fx-token-node";
+import { FxExpression } from "../runtime/fx-expression";
+import { FxConstant } from "../runtime/fx-constant";
+import { FxScope } from "../runtime/scope/fx-scope";
+import { FxScopeVariable } from "../runtime/scope/fx-scope-variable";
+import { FxExpressionDefinition } from "../model/fx-definition";
+import { FxTokenNode } from "../lexer/node/fx-token-node";
 
 export class JsonFx {
 
-  private readonly context: FxContext;
+  private readonly loader: Loader;
   private readonly parser: TemplateParser;
   public readonly scope: FxScope;
 
   constructor(...expressions: ReadonlyArray<FxExpressionDefinition>[]) {
-    this.context = new FxContext(new Loader(...expressions));
-    this.parser = new TemplateParser(this.context);
+    this.loader = new Loader(...expressions);
+    this.parser = new TemplateParser(this.loader);
     this.scope = new FxScope();
   }
 
@@ -31,7 +30,7 @@ export class JsonFx {
   }
 
   public define(def: FxExpressionDefinition): void {
-    this.context.loader.defineExpression(def);
+    this.loader.defineExpression(def);
   }
 }
 

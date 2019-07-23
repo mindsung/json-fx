@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
 function wordSplit(str: string): string[] {
   const words = [""];

@@ -1,6 +1,6 @@
 import { JsonFx } from "@mindsung/json-fx";
 import { cryptoExpressions } from "@mindsung/json-fx-crypto";
-import { FxScopeVariable } from "../../../json-fx/src/runtime/model/fx-scope-variable";
+import { FxScopeVariable } from "../../../json-fx/src/runtime/scope/fx-scope-variable";
 
 const io = require("readline").createInterface({
   input: process.stdin,

@@ -1,5 +1,5 @@
-import { FxTokenNode } from "./fx-token-node";
-import { FxExpression } from "../../runtime/model/fx-expression";
+import { FxTokenNode } from "../lexer/node/fx-token-node";
+import { FxExpression } from "../runtime/fx-expression";
 import { FxTokenTag } from "./fx-token-tag";
 
 export type AnyFn = (...args: any[]) => any;

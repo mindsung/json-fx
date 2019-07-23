@@ -1,4 +1,4 @@
-import { AnyFn, FxExpressionDefinition } from "../lexer/model/fx-definition";
+import { AnyFn, FxExpressionDefinition } from "../model/fx-definition";
 import { it } from "mocha";
 import { assert } from "chai";
 

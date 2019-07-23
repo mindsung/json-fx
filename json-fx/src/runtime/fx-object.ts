@@ -1,6 +1,6 @@
 import { FxExpression } from "./fx-expression";
-import { isEmpty, isObject } from "../../common";
-import { FxCompileError } from "../../fx-error";
+import { isEmpty, isObject } from "../common";
+import { FxCompileError } from "../model/fx-error";
 
 export class FxObject extends FxExpression {
   public items: { [index: string]: FxExpression };

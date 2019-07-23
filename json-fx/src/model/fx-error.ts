@@ -1,4 +1,4 @@
-import { SourceRef } from "./runtime/source-ref";
+import { SourceRef } from "./source-ref";
 
 export abstract class FxError {
 

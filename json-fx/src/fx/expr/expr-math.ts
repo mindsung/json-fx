@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 import { isFunction, isNumber } from "../../common";
 
 export const exprMath: ReadonlyArray<FxExpressionDefinition> = Object.getOwnPropertyNames(Math).map(key => {

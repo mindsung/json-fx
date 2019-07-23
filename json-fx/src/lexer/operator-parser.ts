@@ -1,4 +1,4 @@
-import { FxTokenNode } from "./model/fx-token-node";
+import { FxTokenNode } from "./node/fx-token-node";
 import { IteratorParser } from "./iterator-parser";
 import { Loader } from "./loader";
 
@@ -66,8 +66,8 @@ export class OperatorParser extends IteratorParser {
     const stackTop = this.operatorStack.shift();
 
     if (this.outputQueue.length >= 2) {
-      stackTop.unshift(this.outputQueue.pop());
-      stackTop.unshift(this.outputQueue.pop());
+      stackTop.add(this.outputQueue.pop(), 0);
+      stackTop.add(this.outputQueue.pop(), 0);
       this.outputQueue.push(stackTop);
     } else {
       throw new Error(`Operator "${ stackTop.operator.symbol }" expects 2 operands, ${ this.outputQueue.length } given`);

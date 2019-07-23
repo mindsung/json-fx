@@ -1,5 +1,5 @@
-import { FxScope } from "../fx-scope";
-import { SourceRef } from "../source-ref";
+import { FxScope } from "./scope/fx-scope";
+import { SourceRef } from "../model/source-ref";
 
 export abstract class FxExpression {
   private readonly _scope: FxScope;

@@ -1,7 +1,7 @@
 import { FxExpression } from "./fx-expression";
-import { FxCompileError } from "../../fx-error";
+import { FxCompileError } from "../model/fx-error";
 
-export class FxVariableReference extends FxExpression {
+export class FxReference extends FxExpression {
   public varName: string;
 
   constructor(varName: string) {

@@ -1,12 +1,12 @@
-import { FxTokenTag } from "../../lexer/model/fx-token-tag";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxObject } from "../../runtime/model/fx-object";
+import { FxTokenTag } from "../../model/fx-token-tag";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxObject } from "../../runtime/fx-object";
 import { LambdaDef } from "./lambda-def";
-import { FxDef } from "./model/fx-def";
-import { FxScopeVariable } from "../../runtime/model/fx-scope-variable";
-import { FxLambda } from "../../runtime/model/fx-lambda";
-import { FxSyntaxError } from "../../fx-error";
+import { FxDef } from "../../model/fx-def";
+import { FxScopeVariable } from "../../runtime/scope/fx-scope-variable";
+import { FxLambda } from "../../runtime/fx-lambda";
+import { FxSyntaxError } from "../../model/fx-error";
 
 export class ObjectDef extends FxDef {
 

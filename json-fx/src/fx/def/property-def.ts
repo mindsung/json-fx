@@ -1,9 +1,9 @@
-import { FxOperatorDefinition } from "../../lexer/model/fx-definition";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxProperty, FxPropertyPathItem } from "../../runtime/model/fx-property";
-import { FxConstant } from "../../runtime/model/fx-constant";
-import { FxDef } from "./model/fx-def";
+import { FxOperatorDefinition } from "../../model/fx-definition";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxProperty, FxPropertyPathItem } from "../../runtime/fx-property";
+import { FxConstant } from "../../runtime/fx-constant";
+import { FxDef } from "../../model/fx-def";
 
 export class PropertyDef extends FxDef {
 

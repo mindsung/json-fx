@@ -1,8 +1,8 @@
-import { FxDef } from "./model/fx-def";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxFunction } from "../../runtime/model/fx-function";
-import { FxOperatorDefinition } from "../../lexer/model/fx-definition";
+import { FxDef } from "../../model/fx-def";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxFunction } from "../../runtime/fx-function";
+import { FxOperatorDefinition } from "../../model/fx-definition";
 
 export class InvokeDef extends FxDef {
 

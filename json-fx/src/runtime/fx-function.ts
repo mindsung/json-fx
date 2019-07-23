@@ -1,5 +1,5 @@
 import { FxExpression } from "./fx-expression";
-import { AnyFn } from "../../lexer/model/fx-definition";
+import { AnyFn } from "../model/fx-definition";
 
 export class FxFunction extends FxExpression {
   public evaluator: AnyFn;

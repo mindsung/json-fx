@@ -1,8 +1,8 @@
-import { FxDef } from "./model/fx-def";
-import { FxTokenTag } from "../../lexer/model/fx-token-tag";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxArray } from "../../runtime/model/fx-array";
+import { FxDef } from "../../model/fx-def";
+import { FxTokenTag } from "../../model/fx-token-tag";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxArray } from "../../runtime/fx-array";
 
 export class ArrayDef extends FxDef {
 

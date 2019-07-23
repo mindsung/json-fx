@@ -1,4 +1,4 @@
-import { FxTokenNode } from "./model/fx-token-node";
+import { FxTokenNode } from "./node/fx-token-node";
 import { IteratorParser } from "./iterator-parser";
 
 export class ExpressionParser extends IteratorParser {

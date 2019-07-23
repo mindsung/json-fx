@@ -1,5 +1,5 @@
-import { FxTokenNode } from "./model/fx-token-node";
-import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./node/fx-token-node";
+import { FxParser } from "../model/fx-parser";
 import { Loader } from "./loader";
 import { IteratorParser } from "./iterator-parser";
 

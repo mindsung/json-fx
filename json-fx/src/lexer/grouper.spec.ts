@@ -3,7 +3,7 @@ import { assert } from "chai";
 
 import { Tokenizer } from "./tokenizer";
 import { Grouper } from "./grouper";
-import { FxTokenNode } from "./model/fx-token-node";
+import { FxTokenNode } from "./node/fx-token-node";
 
 describe("lexer/Grouper", function () {
 

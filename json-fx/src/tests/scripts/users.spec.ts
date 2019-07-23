@@ -163,19 +163,19 @@ describe("Scripts [users]", function (): void {
   it("Evaluates complex script [class]", function (): void {
     const result = tester.run({
       "@class($age)": {
-        "$minor": "'MINOR' if $age < 18 else false",
-        "$under21": "'UNDER21' if $age < 21 else false",
-        "()": "$minor || $under21 || 'ADULT'"
+        "$Minor": "'Minor' if $age < 18 else false",
+        "$under21": "'Under 21' if $age < 21 else false",
+        "()": "$Minor || $under21 || 'Adult'"
       },
       "()": "$:map($ => { id: $.id, class: @class($.age) })"
     });
 
     assert.deepEqual(result, [
-      { "id": 0, "class": "UNDER21" },
-      { "id": 1, "class": "ADULT" },
-      { "id": 2, "class": "ADULT" },
-      { "id": 3, "class": "MINOR" },
-      { "id": 4, "class": "ADULT" }
+      { "id": 0, "class": "Under 21" },
+      { "id": 1, "class": "Adult" },
+      { "id": 2, "class": "Adult" },
+      { "id": 3, "class": "Minor" },
+      { "id": 4, "class": "Adult" }
     ]);
   });
 
@@ -183,17 +183,44 @@ describe("Scripts [users]", function (): void {
     const result = tester.run({
       "@sanitizeGender($g)": {
         "$code": "lowercase($g[0])",
-        "()": "'male' if $code == 'm' else 'female' if $code == 'f' else 'other'"
+        "$m": "'male' if $code == 'm' else null",
+        "$f": "'female' if $code == 'f' else null",
+        "()": "$m || $f || 'other'"
       },
-      "()": "$:map($ => $:assign({ gender: @sanitizeGender($.gender) }))"
+      "()": "map($, $ => $:assign({ gender: @sanitizeGender($.gender) }))"
     });
 
     assert.deepEqual(result, [
-      { "id": 0, "class": "UNDER21" },
-      { "id": 1, "class": "ADULT" },
-      { "id": 2, "class": "ADULT" },
-      { "id": 3, "class": "MINOR" },
-      { "id": 4, "class": "ADULT" }
+      {
+        "age": 19,
+        "gender": "female",
+        "id": 0,
+        "name": "Alysa Drucker"
+      },
+      {
+        "age": 32,
+        "gender": "male",
+        "id": 1,
+        "name": "Lenny Veillon"
+      },
+      {
+        "age": 41,
+        "gender": "female",
+        "id": 2,
+        "name": "Alline Roache"
+      },
+      {
+        "age": 16,
+        "gender": "female",
+        "id": 3,
+        "name": "Jess Esper"
+      },
+      {
+        "age": 66,
+        "gender": "male",
+        "id": 4,
+        "name": "Colton Melillo"
+      }
     ]);
   });
 });

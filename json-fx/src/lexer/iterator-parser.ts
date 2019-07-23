@@ -1,5 +1,5 @@
-import { FxTokenNode } from "./model/fx-token-node";
-import { FxParser } from "./model/fx-parser";
+import { FxTokenNode } from "./node/fx-token-node";
+import { FxParser } from "../model/fx-parser";
 
 export abstract class IteratorParser implements FxParser<FxTokenNode> {
 

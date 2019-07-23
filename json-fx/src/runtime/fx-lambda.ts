@@ -1,6 +1,6 @@
 import { FxExpression } from "./fx-expression";
 import { FxConstant } from "./fx-constant";
-import { FxScopeVariable } from "./fx-scope-variable";
+import { FxScopeVariable } from "./scope/fx-scope-variable";
 
 export class FxLambda extends FxExpression {
   public readonly varNames: string[];

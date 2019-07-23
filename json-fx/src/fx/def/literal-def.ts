@@ -1,8 +1,8 @@
-import { FxDef } from "./model/fx-def";
-import { FxTokenTag } from "../../lexer/model/fx-token-tag";
-import { FxConstant } from "../../runtime/model/fx-constant";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
+import { FxDef } from "../../model/fx-def";
+import { FxTokenTag } from "../../model/fx-token-tag";
+import { FxConstant } from "../../runtime/fx-constant";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
 
 export class StringLiteralDef extends FxDef {
 

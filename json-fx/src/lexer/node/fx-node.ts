@@ -8,31 +8,31 @@ export class FxNode {
     this._children = [];
   }
 
-  public get parent() {
+  public get parent(): this {
     return <this>this._parent;
   }
 
-  public get children() {
+  public get children(): this[] {
     return <this[]>this._children.concat();
   }
 
-  public get count() {
+  public get count(): number {
     return this._children.length;
   }
 
-  public get first() {
+  public get first(): this {
     return <this>(this._children[0] || null);
   }
 
-  public get last() {
+  public get last(): this {
     return <this>(this._children[this._children.length - 1] || null);
   }
 
-  public add(item: FxNode, at?: number | FxNode) {
+  public add(item: FxNode, at?: number | FxNode): void {
     if (item) {
       at = this.toIndex(at);
 
-      if (!isNaN(at)) {
+      if (at != -1) {
         this._children.splice(at, 0, item);
       } else {
         this._children.push(item);
@@ -43,15 +43,11 @@ export class FxNode {
     }
   }
 
-  public unshift(item: FxNode) {
-    this.add(item, 0);
-  }
-
   public remove(at?: number | FxNode): FxNode {
     at = this.toIndex(at);
     let removed: FxNode;
 
-    if (!isNaN(at) && at >= 0 && at < this._children.length) {
+    if (at != -1) {
       removed = this._children.splice(at, 1)[0];
     } else {
       removed = this._children.pop();
@@ -61,17 +57,13 @@ export class FxNode {
     return removed;
   }
 
-  public shift(): FxNode {
-    return this.remove(0);
-  }
-
-  public orphan() {
+  public orphan(): void {
     if (this._parent) {
       this._parent.remove(this);
     }
   }
 
-  public wrap(wrapper: FxNode) {
+  public wrap(wrapper: FxNode): void {
     if (this._parent) {
       this._parent.add(wrapper, this);
     }
@@ -79,7 +71,7 @@ export class FxNode {
     wrapper.add(this);
   }
 
-  public unwrap() {
+  public unwrap(): void {
     if (this._parent) {
       while (this._children.length > 0) {
         this._parent.add(this.first, this);
@@ -91,12 +83,12 @@ export class FxNode {
 
   private toIndex(at: number | FxNode): number {
     if (at == undefined) {
-      return NaN;
+      return -1;
     } else if (at instanceof FxNode) {
-      const i = this._children.indexOf(at);
-      return i == -1 ? NaN : i;
+      at = this._children.indexOf(at);
+      return at != -1 ? at : -1;
     } else {
-      return at;
+      return at >= 0 && at < this._children.length ? at : -1;
     }
   }
 }

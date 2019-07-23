@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
 export const exprArithmetic: ReadonlyArray<FxExpressionDefinition> = [
   {

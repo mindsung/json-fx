@@ -1,7 +1,7 @@
-import { FxParser } from "./model/fx-parser";
-import { FxTokenNode } from "./model/fx-token-node";
-import { FxToken } from "./model/fx-token";
-import { FxSyntaxError } from "../fx-error";
+import { FxParser } from "../model/fx-parser";
+import { FxTokenNode } from "./node/fx-token-node";
+import { FxToken } from "../model/fx-token";
+import { FxSyntaxError } from "../model/fx-error";
 
 export class Grouper implements FxParser<FxToken[], FxTokenNode> {
   private root: FxTokenNode;

@@ -5,7 +5,7 @@ import { exprConditional } from "./expr/expr-conditional";
 import { exprLogical } from "./expr/expr-logical";
 import { exprString } from "./expr/expr-string";
 import { exprError } from "./expr/expr-error";
-import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
+import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../model/fx-definition";
 import { exprMath } from "./expr/expr-math";
 import { exprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
@@ -18,9 +18,9 @@ import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
 import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules } from "./lexer";
-import { FxFunction } from "../runtime/model/fx-function";
-import { FxLambda } from "../runtime/model/fx-lambda";
-import { FxExpression } from "../runtime/model/fx-expression";
+import { FxFunction } from "../runtime/fx-function";
+import { FxLambda } from "../runtime/fx-lambda";
+import { FxExpression } from "../runtime/fx-expression";
 import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
 
 export namespace Fx {

@@ -1,7 +1,7 @@
-import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition, FxOperatorDefinition } from "./model/fx-definition";
-import { FxTokenNode } from "./model/fx-token-node";
+import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition, FxOperatorDefinition } from "../model/fx-definition";
+import { FxTokenNode } from "./node/fx-token-node";
 import { Fx } from "../fx";
-import { FxTokenTag } from "./model/fx-token-tag";
+import { FxTokenTag } from "../model/fx-token-tag";
 
 export class Loader {
 

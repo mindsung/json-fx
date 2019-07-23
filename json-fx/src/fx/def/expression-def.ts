@@ -1,11 +1,11 @@
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxCompileError } from "../../fx-error";
-import { FxTokenTag } from "../../lexer/model/fx-token-tag";
-import { FxDef } from "./model/fx-def";
-import { FxFunction } from "../../runtime/model/fx-function";
-import { FxConstant } from "../../runtime/model/fx-constant";
-import { FxEvaluatorDefinition } from "../../lexer/model/fx-definition";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxCompileError } from "../../model/fx-error";
+import { FxTokenTag } from "../../model/fx-token-tag";
+import { FxDef } from "../../model/fx-def";
+import { FxFunction } from "../../runtime/fx-function";
+import { FxConstant } from "../../runtime/fx-constant";
+import { FxEvaluatorDefinition } from "../../model/fx-definition";
 
 export class ExpressionDef extends FxDef {
 
@@ -50,6 +50,8 @@ export class IdentifierDef extends ExpressionDef {
         return false;
       case "null":
         return null;
+      case "undefined":
+        return undefined;
       default:
         return symbol;
     }
