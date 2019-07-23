@@ -1,7 +1,5 @@
 import { FxTokenRule } from "../model/fx-token-rule";
 
-export const StringLiteralSymbol = "'";
-
 export const TokenRules: ReadonlyArray<FxTokenRule> = [
   {
     tag: "identifier",

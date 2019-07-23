@@ -39,12 +39,11 @@ export class ExpressionParser extends IteratorParser {
   }
 
   private isIndexer(): boolean {
-    return this.next && this.next.is("array") && this.current.is(["variable", "expression", "array", "object"]);
+    return this.next && this.next.is("array") && this.current.is(["literal", "identifier", "template-call", "variable", "expression", "array", "object"]);
   }
 
   private convertToIndexer(): void {
-    const indexer = new FxTokenNode("indexer");
-    this.current.wrap(indexer);
-    indexer.add(this.next);
+    this.next.tag = "indexer";
+    this.next.add(this.current, 0);
   }
 }

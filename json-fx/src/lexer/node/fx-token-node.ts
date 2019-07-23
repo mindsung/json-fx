@@ -40,7 +40,7 @@ export class FxTokenNode extends FxNode implements FxToken {
   public is(tag: FxTokenTag | FxTokenTag[], symbol?: string | string[]): boolean {
     tag = isArray(tag) ? tag : [tag];
     symbol = !symbol || isArray(symbol) ? symbol : [symbol];
-    return tag.indexOf(this.tag) != -1 && (!symbol || symbol.indexOf(this.symbol) != -1);
+    return tag.includes(this.tag) && (!symbol || symbol.includes(this.symbol));
   }
 
   public optimize(): void {
@@ -57,7 +57,7 @@ export class FxTokenNode extends FxNode implements FxToken {
     if (this.definition.compiler) {
       return this.definition.compiler(this);
     } else {
-      throw new Error(`Token ${ this.toString(false) } has no compiler defined`);
+      throw new Error(`Token ${ this.toString() } has no compiler defined`);
     }
   }
 
@@ -74,7 +74,7 @@ export class FxTokenNode extends FxNode implements FxToken {
   }
 
   public toString(recursive?: boolean, indent?: number): string {
-    recursive = recursive != undefined ? recursive : true;
+    recursive = !!recursive;
     indent = indent != undefined ? indent : 0;
 
     let result = (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;

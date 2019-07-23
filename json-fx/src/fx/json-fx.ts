@@ -24,7 +24,7 @@ export class JsonFx {
     subScope.parentScope = this.scope;
 
     const root = this.parser.parse(template);
-    console.log(root.toString());
+    console.log(root.toString(true));
 
     return new FxCompiledTemplateImpl(root, subScope);
   }

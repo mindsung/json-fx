@@ -17,7 +17,7 @@ import { NumberLiteralDef, StringLiteralDef } from "./def/literal-def";
 import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
-import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules } from "./lexer";
+import { TokenRules as _TokenRules } from "./lexer";
 import { FxFunction } from "../runtime/fx-function";
 import { FxLambda } from "../runtime/fx-lambda";
 import { FxExpression } from "../runtime/fx-expression";
@@ -27,11 +27,11 @@ export namespace Fx {
 
   export const SymbolAssign = ":a";
   export const SymbolNegative = "-u";
+  export const SymbolLiteral = "'";
 
-  export const StringLiteralSymbol = _StringLiteralSymbol;
   export const TokenRules = _TokenRules;
 
-  export const Expressions: FxExpressionDefinition[] = []
+  export const Expressions: ReadonlyArray<FxExpressionDefinition> = []
     .concat(exprArithmetic)
     .concat(exprArray)
     .concat(exprComparative)
@@ -42,7 +42,7 @@ export namespace Fx {
     .concat(exprMath)
     .concat(exprRandom);
 
-  export const Intrinsics: FxIntrinsicDefinition[] = [
+  export const Intrinsics: ReadonlyArray<FxIntrinsicDefinition> = [
     new GroupDef(),
     new IdentifierDef(),
     new ObjectDef(),

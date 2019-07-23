@@ -140,6 +140,13 @@ describe("Scripts [users]", function (): void {
     });
   });
 
+  it("TEST", function (): void {
+    const result = tester.run({
+      "$a": 10,
+      "$b": "$a"
+    });
+  });
+
   it("Evaluates complex script [emails]", function (): void {
     const result = tester.run({
       "@email($first, $last, $domain)": "lowercase($first[0] + $last) + '@' + $domain",
