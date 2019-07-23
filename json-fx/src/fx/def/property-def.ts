@@ -8,7 +8,7 @@ import { FxDef } from "../../model/fx-def";
 export class PropertyDef extends FxDef {
 
   public get operator(): FxOperatorDefinition {
-    return {symbol: ".", precedence: 4};
+    return { symbol: ".", precedence: 4 };
   }
 
   protected compile(token: FxTokenNode): FxExpression {
@@ -39,17 +39,17 @@ export class PropertyDef extends FxDef {
   }
 
   private static isProp(node: FxTokenNode): boolean {
-    return node.tag == "operator" && (node.symbol == "." || node.symbol == "?.");
+    return node.is("operator", [".", "?."]);
   }
 
   private static isNullProp(node: FxTokenNode): boolean {
-    return node.tag == "operator" && node.symbol == "?.";
+    return node.is("operator", "?.");
   }
 }
 
 export class NullPropertyDef extends PropertyDef {
 
   public get operator(): FxOperatorDefinition {
-    return {symbol: "?.", precedence: 4};
+    return { symbol: "?.", precedence: 4 };
   }
 }

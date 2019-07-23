@@ -8,9 +8,9 @@ describe("Expressions [array]", function (): void {
 
   const tester = new ExpressionTester(exprArray);
 
-  it("Evaluates [item]", function (): void {
-    const fn = tester.get("item");
-    assert.equal(fn([2, 4, 6], 1), 4);
+  it("Evaluates [assign]", function (): void {
+    const fn = tester.get("assign");
+    assert.deepEqual(fn({ a: 10, b: 20 }, { a: 5, c: 30 }), { a: 5, b: 20, c: 30 });
   });
 
   it("Evaluates [map]", function (): void {
@@ -47,9 +47,9 @@ describe("Expressions [array]", function (): void {
   it("Evaluates [min]", function (): void {
     const fn = tester.get("min");
     const data = [
-      {id: 0, name: "AAA"},
-      {id: 1, name: "BBB"},
-      {id: 2, name: "CCC"},
+      { id: 0, name: "AAA" },
+      { id: 1, name: "BBB" },
+      { id: 2, name: "CCC" },
     ];
 
     assert.equal(fn([0, 1, 2, 3]), 0);
@@ -59,21 +59,21 @@ describe("Expressions [array]", function (): void {
   it("Evaluates [findMin]", function (): void {
     const fn = tester.get("findMin");
     const data = [
-      {id: 0, name: "AAA"},
-      {id: 1, name: "BBB"},
-      {id: 2, name: "CCC"},
+      { id: 0, name: "AAA" },
+      { id: 1, name: "BBB" },
+      { id: 2, name: "CCC" },
     ];
 
     assert.equal(fn([0, 1, 2, 3]), 0);
-    assert.deepEqual(fn(data, i => i.id), {id: 0, name: "AAA"});
+    assert.deepEqual(fn(data, i => i.id), { id: 0, name: "AAA" });
   });
 
   it("Evaluates [max]", function (): void {
     const fn = tester.get("max");
     const data = [
-      {id: 0, name: "AAA"},
-      {id: 1, name: "BBB"},
-      {id: 2, name: "CCC"},
+      { id: 0, name: "AAA" },
+      { id: 1, name: "BBB" },
+      { id: 2, name: "CCC" },
     ];
 
     assert.equal(fn([0, 1, 2, 3]), 3);
@@ -83,13 +83,13 @@ describe("Expressions [array]", function (): void {
   it("Evaluates [findMax]", function (): void {
     const fn = tester.get("findMax");
     const data = [
-      {id: 0, name: "AAA"},
-      {id: 1, name: "BBB"},
-      {id: 2, name: "CCC"},
+      { id: 0, name: "AAA" },
+      { id: 1, name: "BBB" },
+      { id: 2, name: "CCC" },
     ];
 
     assert.equal(fn([0, 1, 2, 3]), 3);
-    assert.deepEqual(fn(data, i => i.id), {id: 2, name: "CCC"});
+    assert.deepEqual(fn(data, i => i.id), { id: 2, name: "CCC" });
   });
 
   it("Evaluates [avg]", function (): void {

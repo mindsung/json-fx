@@ -23,34 +23,23 @@ export class ExpressionParser extends IteratorParser {
   }
 
   private isCall(): boolean {
-    return this.next && this.next.tag == "group"
-      && (this.current.tag == "identifier" || this.current.tag == "template");
+    return this.next && this.next.is("group") && this.current.is(["identifier", "template"]);
   }
 
   private convertToCall(): void {
-    let args: FxTokenNode;
-
-    if (this.current.tag == "identifier") {
-      this.current.tag = "expression";
-      args = this.current;
-    } else if (this.current.tag == "template") {
+    if (this.current.is("template")) {
       this.current.tag = "template-call";
-      args = this.current;
     }
 
     while (this.next.first) {
-      args.add(this.next.first);
+      this.current.add(this.next.first);
     }
 
     this.next.orphan();
   }
 
   private isIndexer(): boolean {
-    return this.next && this.next.tag == "array"
-      && (this.current.tag == "variable"
-        || this.current.tag == "expression"
-        || this.current.tag == "array"
-        || this.current.tag == "object");
+    return this.next && this.next.is("array") && this.current.is(["variable", "expression", "array", "object"]);
   }
 
   private convertToIndexer(): void {

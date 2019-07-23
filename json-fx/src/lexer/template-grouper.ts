@@ -9,7 +9,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
   private tokenizer: Tokenizer;
   private grouper: Grouper;
 
-  private path: (string | number)[];
+  private readonly path: (string | number)[];
 
   constructor() {
     this.tokenizer = new Tokenizer();
@@ -18,7 +18,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
     this.path = [];
   }
 
-  parse(template: any): FxTokenNode {
+  public parse(template: any): FxTokenNode {
     if (isString(template)) {
       return this.parseString(template);
     } else if (isNumber(template)) {
@@ -76,7 +76,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
       let keyToken = this.parse(key);
 
       // TODO: Hack for optional keys (e.g. "foo?")
-      if (keyToken.count == 2 && keyToken.first.tag == "identifier" && keyToken.last.symbol == "?") {
+      if (keyToken.count == 2 && keyToken.first.is("identifier") && keyToken.last.is("operator", "?")) {
         keyToken = keyToken.first;
         keyToken.symbol += "?";
       }

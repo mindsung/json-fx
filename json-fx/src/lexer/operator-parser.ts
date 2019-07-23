@@ -25,7 +25,7 @@ export class OperatorParser extends IteratorParser {
     this.current = current;
     this.next = next;
 
-    if (this.current.tag == "operator") {
+    if (this.current.is("operator")) {
       this.parseOperator();
     } else {
       this.outputQueue.push(this.current);

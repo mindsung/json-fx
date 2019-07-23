@@ -1,7 +1,7 @@
 import { FxTokenNode } from "./node/fx-token-node";
-import { FxParser } from "../model/fx-parser";
 import { Loader } from "./loader";
 import { IteratorParser } from "./iterator-parser";
+import { Fx } from "../fx";
 
 export class OperatorLoader extends IteratorParser {
 
@@ -36,7 +36,7 @@ export class OperatorLoader extends IteratorParser {
     if (this.parent.is("object")) {
       this.parseObject();
     } else if (this.isUnaryMinus()) {
-      this.current.symbol = "-u";
+      this.current.symbol = Fx.SymbolNegative;
     }
 
     this.loadOperator(current);
@@ -44,7 +44,7 @@ export class OperatorLoader extends IteratorParser {
   }
 
   private loadOperator(token: FxTokenNode): void {
-    if (token.is("literal") || token.is("numeric")) {
+    if (token.is(["literal", "numeric"])) {
       return;
     }
 
@@ -57,7 +57,7 @@ export class OperatorLoader extends IteratorParser {
 
   private parseObject(): void {
     if (this.isAssignment()) {
-      this.current.symbol = ":a";
+      this.current.symbol = Fx.SymbolAssign;
       this.expectAssign = false;
     } else if (this.isComma()) {
       this.expectAssign = true;

@@ -12,11 +12,6 @@ export class InvokeDef extends FxDef {
 
   protected optimize(token: FxTokenNode): void {
     token.last.add(token.first, 0);
-
-    if (token.last.tag == "identifier") {
-      token.last.tag = "expression";
-    }
-
     token.unwrap();
   }
 }

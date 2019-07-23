@@ -25,6 +25,9 @@ import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
 
 export namespace Fx {
 
+  export const SymbolAssign = ":a";
+  export const SymbolNegative = "-u";
+
   export const StringLiteralSymbol = _StringLiteralSymbol;
   export const TokenRules = _TokenRules;
 

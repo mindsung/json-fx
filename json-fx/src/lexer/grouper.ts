@@ -4,20 +4,21 @@ import { FxToken } from "../model/fx-token";
 import { FxSyntaxError } from "../model/fx-error";
 
 export class Grouper implements FxParser<FxToken[], FxTokenNode> {
-  private root: FxTokenNode;
-  private nextToken: FxTokenNode;
 
   public path: string;
 
+  private root: FxTokenNode;
+  private current: FxTokenNode;
+
   parse(tokens: FxToken[]): FxTokenNode {
     this.root = new FxTokenNode("group");
-    this.root.sourceRef.path = this.path;
+    this.root.sourceRef.path = this.path || "";
 
     for (const t of tokens) {
-      this.nextToken = new FxTokenNode(t.tag, t.symbol, t.index);
-      this.nextToken.sourceRef.path = this.path;
+      this.current = new FxTokenNode(t.tag, t.symbol, t.index);
+      this.current.sourceRef.path = this.path || "";
 
-      switch (this.nextToken.tag) {
+      switch (this.current.tag) {
         case "group":
           this.descendRoot();
           break;
@@ -25,7 +26,7 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
           this.ascendRoot();
           break;
         default:
-          this.root.add(this.nextToken);
+          this.root.add(this.current);
           break;
       }
     }
@@ -38,14 +39,14 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
   }
 
   private descendRoot(): void {
-    this.root.add(this.nextToken);
-    this.root = this.nextToken;
+    this.root.add(this.current);
+    this.root = this.current;
   }
 
   private ascendRoot(): void {
-    this.root.symbol += this.nextToken.symbol;
+    const brackets = this.root.symbol + this.current.symbol;
 
-    switch (this.root.symbol) {
+    switch (brackets) {
       case "()":
         break;
       case "[]":
@@ -55,11 +56,11 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
         this.root.tag = "object";
         break;
       default:
-        throw new FxSyntaxError(`Unexpected token "${ this.nextToken.symbol }"`, this.nextToken.sourceRef);
+        throw new FxSyntaxError(`Unexpected "${ this.current.symbol }"`, this.current.sourceRef);
     }
 
     this.root = this.root.parent;
-    this.nextToken.orphan();
+    this.current.orphan();
   }
 
   private rootIsClosed(): boolean {

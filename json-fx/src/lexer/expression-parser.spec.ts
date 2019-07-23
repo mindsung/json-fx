@@ -9,7 +9,7 @@ import { RecursiveParser } from "./recursive-parser";
 
 describe("lexer/ExpressionParser", function () {
 
-  function parse(expr: string) {
+  function parse(expr: string): FxTokenNode {
     const tokenizer = new Tokenizer();
     const grouper = new Grouper();
     const parser = new RecursiveParser(new ExpressionParser());
@@ -27,11 +27,11 @@ describe("lexer/ExpressionParser", function () {
       tag: "group",
 
       children: [{
-        tag: "expression",
+        tag: "identifier",
         symbol: "foo",
         index: 0,
 
-        children: [{tag: "identifier", symbol: "bar", index: 4}]
+        children: [{ tag: "identifier", symbol: "bar", index: 4 }]
       }]
     }));
   });
@@ -47,49 +47,46 @@ describe("lexer/ExpressionParser", function () {
         symbol: "@foo",
         index: 0,
 
-        children: [{
-          tag: "args",
-          children: [{tag: "identifier", symbol: "bar", index: 5}]
-        }]
+        children: [{ tag: "identifier", symbol: "bar", index: 5 }]
       }]
     }));
   });
 
-  it("Won't createToken expression from [operator], [group]", function () {
+  it("Won't create expression from [operator], [group]", function () {
     const result = parse("*(bar)");
 
     assert.deepEqual(result, FxTokenNode.from({
       tag: "group",
 
       children: [
-        {tag: "operator", symbol: "*", index: 0},
+        { tag: "operator", symbol: "*", index: 0 },
         {
           tag: "group",
-          symbol: "()",
+          symbol: "(",
           index: 1,
 
-          children: [{tag: "identifier", symbol: "bar", index: 2}]
+          children: [{ tag: "identifier", symbol: "bar", index: 2 }]
         }]
     }));
   });
 
-  it("Creates Fx from nested calls", function () {
+  it("Creates expressions from nested calls", function () {
     const result = parse("foo(bar(baz))");
 
     assert.deepEqual(result, FxTokenNode.from({
       tag: "group",
 
       children: [{
-        tag: "expression",
+        tag: "identifier",
         symbol: "foo",
         index: 0,
 
         children: [{
-          tag: "expression",
+          tag: "identifier",
           symbol: "bar",
           index: 4,
 
-          children: [{tag: "identifier", symbol: "baz", index: 8}]
+          children: [{ tag: "identifier", symbol: "baz", index: 8 }]
         }]
       }]
     }));

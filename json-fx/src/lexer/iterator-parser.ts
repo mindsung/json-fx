@@ -13,18 +13,13 @@ export abstract class IteratorParser implements FxParser<FxTokenNode> {
     this.before(token);
 
     if (token.count > 0) {
-      const children = token.children;
       let current: FxTokenNode;
 
-
-      for (let i = 0; i < children.length; i++) {
-        const next = children[i];
-        if (next.parent == token) {
-          if (current) {
-            this.parseItem(current, next);
-          }
-          current = next;
+      for (const next of token.children) {
+        if (current && current.parent == token) {
+          this.parseItem(current, next);
         }
+        current = next;
       }
 
       if (current.parent == token) {

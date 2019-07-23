@@ -23,12 +23,11 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
     );
   }
 
-  parse(template: any): FxTokenNode {
+  public parse(template: any): FxTokenNode {
     const root = this.grouper.parse(template);
-
     this.parser.parse(root);
-    root.optimize();
 
+    root.optimize();
     return root;
   }
 }

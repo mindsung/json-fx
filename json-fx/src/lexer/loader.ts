@@ -1,5 +1,4 @@
 import { FxDefinition, FxExpressionDefinition, FxIntrinsicDefinition, FxOperatorDefinition } from "../model/fx-definition";
-import { FxTokenNode } from "./node/fx-token-node";
 import { Fx } from "../fx";
 import { FxTokenTag } from "../model/fx-token-tag";
 
@@ -12,8 +11,8 @@ export class Loader {
     this.operators = {};
     this.definitions = {};
 
-    Fx.Expressions.forEach(expr => this.defineExpression(expr));
     Fx.Intrinsics.forEach(intr => this.defineIntrinsic(intr));
+    Fx.Expressions.forEach(expr => this.defineExpression(expr));
 
     for (const set of expressions) {
       set.forEach(expr => this.defineExpression(expr));
@@ -21,17 +20,15 @@ export class Loader {
   }
 
   public defineIntrinsic(def: FxIntrinsicDefinition): void {
-    const hash = Loader.hash(def.tag);
-
-    const fxdef: FxDefinition = {
+    const fxdef = Loader.sanitize({
       operator: def.operator,
       evaluator: def.evaluator,
-      compiler: def.compiler,
-      optimizer: def.optimizer
-    };
+      optimizer: def.optimizer,
+      compiler: def.compiler
+    });
 
     if (def.tag) {
-      this.definitions[hash] = fxdef;
+      this.definitions[Loader.hash(def.tag)] = fxdef;
     }
 
     if (def.operator) {
@@ -40,14 +37,12 @@ export class Loader {
   }
 
   public defineExpression(def: FxExpressionDefinition): void {
-    const hash = Loader.hash(null, def.name);
-
-    const fxdef: FxDefinition = {
+    const fxdef = Loader.sanitize({
       operator: def.operator,
       evaluator: def
-    };
+    });
 
-    this.definitions[hash] = fxdef;
+    this.definitions[Loader.hash(null, def.name)] = fxdef;
 
     if (def.operator) {
       this.defineOperator(def.operator.symbol, fxdef);
@@ -60,31 +55,27 @@ export class Loader {
 
   public getOperator(symbol: string): FxOperatorDefinition {
     const def = this.operators[symbol];
-    if (def) {
-      return def.operator;
-    } else {
-      return null;
-    }
+    return def ? def.operator : null;
   }
 
   public getDefinition(symbol: string, tag: FxTokenTag): FxDefinition {
-    let tagDef: {};
     let operatorDef: {};
     let strictDef: {};
     let symbolDef: {};
-
-    tagDef = Loader.sanitize(this.definitions[Loader.hash(tag, null)]);
+    let tagDef: {};
 
     if (tag == "operator" || tag == "expression" || tag == "identifier") {
-      operatorDef = Loader.sanitize(this.operators[symbol]);
+      operatorDef = this.operators[symbol];
     }
 
     if (tag != "literal" && tag != "numeric") {
-      strictDef = Loader.sanitize(this.definitions[Loader.hash(tag, symbol)]);
-      symbolDef = Loader.sanitize(this.definitions[Loader.hash(null, symbol)]);
+      strictDef = this.definitions[Loader.hash(tag, symbol)];
+      symbolDef = this.definitions[Loader.hash(null, symbol)];
     }
 
-    return Object.assign({}, symbolDef, tagDef, strictDef, operatorDef);
+    tagDef = this.definitions[Loader.hash(tag, null)];
+
+    return Object.assign({}, tagDef, symbolDef, strictDef, operatorDef);
   }
 
   private static sanitize(obj: any): any {
@@ -105,6 +96,6 @@ export class Loader {
     tag = tag || "*";
     symbol = symbol || "*";
 
-    return `<${ tag }>${ symbol }`;
+    return `${ symbol } [${ tag }]`;
   }
 }

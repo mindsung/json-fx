@@ -4,6 +4,7 @@ import { FxToken } from "../../model/fx-token";
 import { FxExpression } from "../../runtime/fx-expression";
 import { FxDefinition, FxEvaluatorDefinition, FxOperatorDefinition } from "../../model/fx-definition";
 import { SourceRef } from "../../model/source-ref";
+import { isArray } from "../../common";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -36,8 +37,10 @@ export class FxTokenNode extends FxNode implements FxToken {
     this.definition.evaluator = evaluator;
   }
 
-  public is(tag: FxTokenTag, symbol?: string): boolean {
-    return this.tag == tag && (!symbol || this.symbol == symbol);
+  public is(tag: FxTokenTag | FxTokenTag[], symbol?: string | string[]): boolean {
+    tag = isArray(tag) ? tag : [tag];
+    symbol = !symbol || isArray(symbol) ? symbol : [symbol];
+    return tag.indexOf(this.tag) != -1 && (!symbol || symbol.indexOf(this.symbol) != -1);
   }
 
   public optimize(): void {
@@ -54,7 +57,7 @@ export class FxTokenNode extends FxNode implements FxToken {
     if (this.definition.compiler) {
       return this.definition.compiler(this);
     } else {
-      throw new Error(`Token ${ this.toString() } has no compiler defined`);
+      throw new Error(`Token ${ this.toString(false) } has no compiler defined`);
     }
   }
 
