@@ -20,10 +20,10 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
 
       switch (this.current.tag) {
         case "group":
-          this.descendRoot();
+          this.descend();
           break;
         case "group-close":
-          this.ascendRoot();
+          this.ascend();
           break;
         default:
           this.root.add(this.current);
@@ -38,12 +38,12 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
     return this.root;
   }
 
-  private descendRoot(): void {
+  private descend(): void {
     this.root.add(this.current);
     this.root = this.current;
   }
 
-  private ascendRoot(): void {
+  private ascend(): void {
     const brackets = this.root.symbol + this.current.symbol;
 
     switch (brackets) {

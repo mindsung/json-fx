@@ -11,20 +11,12 @@ export const TokenRules: ReadonlyArray<FxTokenRule> = [
     mergeWith: ["variable", "template"]
   },
   {
-    tag: "numeric",
-    test: c => {
-      const code = c.charCodeAt(0);
-      return code >= 48 && code <= 57; // 0 - 9
-    },
-    mergeWith: ["identifier", "variable", "template"]
-  },
-  {
     tag: "variable",
     test: c => c == "$"
   },
   {
-    tag: "template",
-    test: c => c == "@"
+    tag: "space",
+    test: c => /\s/.test(c)
   },
   {
     tag: "group",
@@ -37,8 +29,16 @@ export const TokenRules: ReadonlyArray<FxTokenRule> = [
     preventMerge: true
   },
   {
-    tag: "space",
-    test: c => /\s/.test(c)
+    tag: "template",
+    test: c => c == "@"
+  },
+  {
+    tag: "numeric",
+    test: c => {
+      const code = c.charCodeAt(0);
+      return code >= 48 && code <= 57; // 0 - 9
+    },
+    mergeWith: ["identifier", "variable", "template"]
   },
   {
     tag: "operator",

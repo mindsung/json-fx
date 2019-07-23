@@ -6,6 +6,7 @@ import { FxScope } from "../runtime/scope/fx-scope";
 import { FxScopeVariable } from "../runtime/scope/fx-scope-variable";
 import { FxExpressionDefinition } from "../model/fx-definition";
 import { FxTokenNode } from "../lexer/node/fx-token-node";
+import { Tokenizer } from "../lexer/tokenizer";
 
 export class JsonFx {
 
@@ -24,7 +25,7 @@ export class JsonFx {
     subScope.parentScope = this.scope;
 
     const root = this.parser.parse(template);
-    console.log(root.toString(true));
+    // console.log(root.toString(true));
 
     return new FxCompiledTemplateImpl(root, subScope);
   }

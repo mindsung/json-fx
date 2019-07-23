@@ -14,8 +14,9 @@ export abstract class IteratorParser implements FxParser<FxTokenNode> {
 
     if (token.count > 0) {
       let current: FxTokenNode;
+      let next: FxTokenNode;
 
-      for (const next of token.children) {
+      for (next of token.children) {
         if (current) {
           this.parseItem(current, next);
         }
@@ -24,7 +25,7 @@ export abstract class IteratorParser implements FxParser<FxTokenNode> {
         }
       }
 
-      if (current.parent == token) {
+      if (next.parent == token) {
         this.parseItem(current, null);
       }
     }

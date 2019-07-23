@@ -140,13 +140,6 @@ describe("Scripts [users]", function (): void {
     });
   });
 
-  it("TEST", function (): void {
-    const result = tester.run({
-      "$a": 10,
-      "$b": "$a"
-    });
-  });
-
   it("Evaluates complex script [emails]", function (): void {
     const result = tester.run({
       "@email($first, $last, $domain)": "lowercase($first[0] + $last) + '@' + $domain",
@@ -170,9 +163,9 @@ describe("Scripts [users]", function (): void {
   it("Evaluates complex script [class]", function (): void {
     const result = tester.run({
       "@class($age)": {
-        "$Minor": "'Minor' if $age < 18 else false",
+        "$minor": "'Minor' if $age < 18 else false",
         "$under21": "'Under 21' if $age < 21 else false",
-        "()": "$Minor || $under21 || 'Adult'"
+        "()": "$minor || $under21 || 'Adult'"
       },
       "()": "$:map($ => { id: $.id, class: @class($.age) })"
     });
