@@ -1,4 +1,4 @@
-import { exprArray } from "./expr-array";
+import { ExprArray } from "./expr-array";
 import { describe, it } from "mocha";
 import { assert } from "chai";
 import { ExpressionTester } from "../../tests/expression-tester";
@@ -6,7 +6,7 @@ import { ExpressionTester } from "../../tests/expression-tester";
 
 describe("Expressions [array]", function (): void {
 
-  const tester = new ExpressionTester(exprArray);
+  const tester = new ExpressionTester(ExprArray);
 
   it("Evaluates [assign]", function (): void {
     const fn = tester.get("assign");

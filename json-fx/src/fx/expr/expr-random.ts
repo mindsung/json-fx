@@ -4,7 +4,7 @@ function randomint(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.M
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-export const exprRandom: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprRandom: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "math~rand",
     evaluate: (min: number = 0, max: number = 1) => Math.random() * (max - min) + min

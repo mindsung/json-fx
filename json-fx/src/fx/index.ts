@@ -1,13 +1,13 @@
-import { exprArray } from "./expr/expr-array";
-import { exprComparative } from "./expr/expr-comparative";
-import { exprArithmetic } from "./expr/expr-arithmetic";
-import { exprConditional } from "./expr/expr-conditional";
-import { exprLogical } from "./expr/expr-logical";
-import { exprString } from "./expr/expr-string";
-import { exprError } from "./expr/expr-error";
+import { ExprArray } from "./expr/expr-array";
+import { ExprComparative } from "./expr/expr-comparative";
+import { ExprArithmetic } from "./expr/expr-arithmetic";
+import { ExprConditional } from "./expr/expr-conditional";
+import { ExprLogical } from "./expr/expr-logical";
+import { ExprString } from "./expr/expr-string";
+import { ExprError } from "./expr/expr-error";
 import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../model/fx-definition";
-import { exprMath } from "./expr/expr-math";
-import { exprRandom } from "./expr/expr-random";
+import { ExprMath } from "./expr/expr-math";
+import { ExprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
 import { ExpressionDef, IdentifierDef, IndexerDef, OperatorDef } from "./def/expression-def";
 import { ObjectDef } from "./def/object-def";
@@ -17,7 +17,7 @@ import { NumberLiteralDef, StringLiteralDef } from "./def/literal-def";
 import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
-import { TokenRules as _TokenRules } from "./lexer";
+import { TokenRules as _TokenRules } from "./rules";
 import { FxFunction } from "../runtime/fx-function";
 import { FxLambda } from "../runtime/fx-lambda";
 import { FxExpression } from "../runtime/fx-expression";
@@ -32,15 +32,15 @@ export namespace Fx {
   export const TokenRules = _TokenRules;
 
   export const Expressions: ReadonlyArray<FxExpressionDefinition> = []
-    .concat(exprArithmetic)
-    .concat(exprArray)
-    .concat(exprComparative)
-    .concat(exprConditional)
-    .concat(exprLogical)
-    .concat(exprString)
-    .concat(exprError)
-    .concat(exprMath)
-    .concat(exprRandom);
+    .concat(ExprArithmetic)
+    .concat(ExprArray)
+    .concat(ExprComparative)
+    .concat(ExprConditional)
+    .concat(ExprLogical)
+    .concat(ExprString)
+    .concat(ExprError)
+    .concat(ExprMath)
+    .concat(ExprRandom);
 
   export const Intrinsics: ReadonlyArray<FxIntrinsicDefinition> = [
     new GroupDef(),
@@ -60,6 +60,12 @@ export namespace Fx {
     new NullPropertyDef(),
     new InvokeDef(),
     new NullInvokeDef(),
+    {
+      operator: { symbol: "as", precedence: -3 },
+      optimizer: token => {
+        token.unwrap();
+      }
+    },
     {
       operator: { symbol: ",", precedence: -2 },
       optimizer: token => {

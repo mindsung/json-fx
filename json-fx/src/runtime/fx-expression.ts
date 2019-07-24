@@ -18,7 +18,7 @@ export abstract class FxExpression {
   public evaluate(): any {}
 
   public bindScope(parent: FxScope = null): void {
-    if (this.scope.parentScope !== parent) {
+    if (this.scope.parentScope != parent) {
       this.scope.parentScope = parent;
       this.scope.bind();
     }

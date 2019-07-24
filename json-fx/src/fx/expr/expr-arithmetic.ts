@@ -1,6 +1,6 @@
 import { FxExpressionDefinition } from "../../model/fx-definition";
 
-export const exprArithmetic: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprArithmetic: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "add",
     evaluate: (a, b) => a + b,

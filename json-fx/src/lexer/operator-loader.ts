@@ -56,7 +56,9 @@ export class OperatorLoader extends IteratorParser {
   }
 
   private parseObject(): void {
-    if (this.isAssignment()) {
+    if (this.current.is("object") && this.expectAssign) {
+      this.current.tag = "dynamic";
+    } else if (this.isAssignment()) {
       this.current.symbol = Fx.SymbolAssign;
       this.expectAssign = false;
     } else if (this.isComma()) {

@@ -140,6 +140,14 @@ describe("Scripts [users]", function (): void {
     });
   });
 
+  it("Evaluates simple script", function (): void {
+    const result = tester.run({
+      "$a": { "x": 0, "y": 1, "z": 2 },
+      "{ $a, $k }": "$k"
+    });
+    console.log(JSON.stringify(result, null, 2));
+  });
+
   it("Evaluates complex script [emails]", function (): void {
     const result = tester.run({
       "@email($first, $last, $domain)": "lowercase($first[0] + $last) + '@' + $domain",
@@ -187,7 +195,11 @@ describe("Scripts [users]", function (): void {
         "$f": "'female' if $code == 'f' else null",
         "()": "$m || $f || 'other'"
       },
-      "()": "map($, $ => $:assign({ gender: @sanitizeGender($.gender) }))"
+      "@user($u)": {
+        "{ $u as $key, $value }": "$value",
+        "gender": "@sanitizeGender($u.gender)"
+      },
+      "()": "map($, @user)"
     });
 
     assert.deepEqual(result, [

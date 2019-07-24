@@ -1,10 +1,10 @@
-import { exprComparative } from "./expr-comparative";
+import { ExprComparative } from "./expr-comparative";
 import { assert } from "chai";
 import { ExpressionTester } from "../../tests/expression-tester";
 
 describe("Expressions [comparative]", function (): void {
 
-  const tester = new ExpressionTester(exprComparative);
+  const tester = new ExpressionTester(ExprComparative);
 
   it("Evaluates [eq]", function (): void {
     const fn = tester.get("eq");

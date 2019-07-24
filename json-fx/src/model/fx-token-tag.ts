@@ -15,4 +15,5 @@ export type FxTokenTag =
   | "array"
   | "operator"
   | "expression"
-  | "object";
+  | "object"
+  | "dynamic";

@@ -1,6 +1,6 @@
 import { FxExpressionDefinition } from "../../model/fx-definition";
 
-export const exprLogical: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprLogical: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "or",
     evaluate: (a, b) => a || b,

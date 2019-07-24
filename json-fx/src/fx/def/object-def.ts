@@ -7,6 +7,8 @@ import { FxDef } from "../../model/fx-def";
 import { FxScopeVariable } from "../../runtime/scope/fx-scope-variable";
 import { FxLambda } from "../../runtime/fx-lambda";
 import { FxSyntaxError } from "../../model/fx-error";
+import { FxDynamicField } from "../../runtime/fx-dynamic-field";
+import { FxStaticField } from "../../runtime/fx-static-field";
 
 export class ObjectDef extends FxDef {
 
@@ -34,8 +36,11 @@ export class ObjectDef extends FxDef {
         const value = child.last;
 
         switch (key.tag) {
+          case "dynamic":
+            result.addField(new FxDynamicField(key.first.compile(), new FxLambda(key.children.slice(1).map(c => c.symbol), value.compile())));
+            break;
           case "identifier":
-            result.items[key.symbol] = value.compile();
+            result.addField(new FxStaticField(key.symbol, value.compile()));
             break;
           case "variable":
             result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile()));
