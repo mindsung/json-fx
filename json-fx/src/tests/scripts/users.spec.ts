@@ -92,6 +92,11 @@ describe("Scripts [users]", function (): void {
     assert.equal(result, 20);
   });
 
+  it("Evaluates binary operation", function (): void {
+    const result = tester.run("9.5 + 0.5");
+    assert.equal(result, 10);
+  });
+
   it("Evaluates unary (-)", function (): void {
     const result1 = tester.run("-10");
     const result2 = tester.run("2 * -10");
@@ -140,14 +145,6 @@ describe("Scripts [users]", function (): void {
     });
   });
 
-  it("Evaluates simple script", function (): void {
-    const result = tester.run({
-      "$a": { "x": 0, "y": 1, "z": 2 },
-      "{ $a, $k }": "$k"
-    });
-    console.log(JSON.stringify(result, null, 2));
-  });
-
   it("Evaluates complex script [emails]", function (): void {
     const result = tester.run({
       "@email($first, $last, $domain)": "lowercase($first[0] + $last) + '@' + $domain",
@@ -175,7 +172,7 @@ describe("Scripts [users]", function (): void {
         "$under21": "'Under 21' if $age < 21 else false",
         "()": "$minor || $under21 || 'Adult'"
       },
-      "()": "$:map($ => { id: $.id, class: @class($.age) })"
+      "()": "$:map($ => ${id}:assign({ class: @class($.age) }))"
     });
 
     assert.deepEqual(result, [
@@ -196,7 +193,7 @@ describe("Scripts [users]", function (): void {
         "()": "$m || $f || 'other'"
       },
       "@user($u)": {
-        "{ $u as $key, $value }": "$value",
+        "{ $u as $ }": "$",
         "gender": "@sanitizeGender($u.gender)"
       },
       "()": "map($, @user)"

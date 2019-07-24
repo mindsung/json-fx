@@ -64,15 +64,50 @@ export class OperatorDef extends ExpressionDef {
   }
 }
 
-export class IndexerDef extends ExpressionDef {
+export class IndexerDef extends FxDef {
   public get tag(): FxTokenTag {
     return "indexer";
   }
 
-  public get evaluator(): FxEvaluatorDefinition {
-    return {
-      name: "item",
-      evaluate: (obj: any, key: any) => obj[key]
-    };
+  protected compile(token: FxTokenNode): FxExpression {
+    const arrToken = token.first;
+    const indexerToken = token.last;
+
+    if (indexerToken.is("group")) {
+      return new FxFunction((collection, ...indices) => {
+        return indices.map(i => collection[i]);
+      }, [arrToken.compile(), ...indexerToken.children.map(c => c.compile())]);
+    } else {
+      return new FxFunction((collection, index) => {
+        return collection[index];
+      }, [arrToken.compile(), indexerToken.compile()]);
+    }
+  }
+}
+
+export class KeyIndexerDef extends FxDef {
+  public get tag(): FxTokenTag {
+    return "key-indexer";
+  }
+
+  protected compile(token: FxTokenNode): FxExpression {
+    const objToken = token.first;
+    const propToken = token.last;
+
+    const args = [objToken.compile()];
+
+    if (propToken.is("group")) {
+      args.push(...propToken.children.map(c => c.compile()));
+    } else {
+      args.push(propToken.compile());
+    }
+
+    return new FxFunction((obj, ...keys) => {
+      const result = {};
+      for (const key of keys) {
+        result[key] = obj[key];
+      }
+      return result;
+    }, args);
   }
 }

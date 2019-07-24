@@ -1,4 +1,4 @@
-import { ExprArray } from "./expr/expr-array";
+import { ExprCollection } from "./expr/expr-collection";
 import { ExprComparative } from "./expr/expr-comparative";
 import { ExprArithmetic } from "./expr/expr-arithmetic";
 import { ExprConditional } from "./expr/expr-conditional";
@@ -9,7 +9,7 @@ import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../model/f
 import { ExprMath } from "./expr/expr-math";
 import { ExprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
-import { ExpressionDef, IdentifierDef, IndexerDef, OperatorDef } from "./def/expression-def";
+import { ExpressionDef, IdentifierDef, IndexerDef, KeyIndexerDef, OperatorDef } from "./def/expression-def";
 import { ObjectDef } from "./def/object-def";
 import { ArrayDef } from "./def/array-def";
 import { TemplateDef, VariableDef } from "./def/variable-def";
@@ -22,6 +22,8 @@ import { FxFunction } from "../runtime/fx-function";
 import { FxLambda } from "../runtime/fx-lambda";
 import { FxExpression } from "../runtime/fx-expression";
 import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
+import { FxSyntaxError } from "../model/fx-error";
+import { FxConstant } from "../runtime/fx-constant";
 
 export namespace Fx {
 
@@ -33,7 +35,7 @@ export namespace Fx {
 
   export const Expressions: ReadonlyArray<FxExpressionDefinition> = []
     .concat(ExprArithmetic)
-    .concat(ExprArray)
+    .concat(ExprCollection)
     .concat(ExprComparative)
     .concat(ExprConditional)
     .concat(ExprLogical)
@@ -52,6 +54,7 @@ export namespace Fx {
     new OperatorDef(),
     new ExpressionDef(),
     new IndexerDef(),
+    new KeyIndexerDef(),
     new StringLiteralDef(),
     new NumberLiteralDef(),
     new LambdaDef(),
@@ -62,7 +65,10 @@ export namespace Fx {
     new NullInvokeDef(),
     {
       operator: { symbol: "as", precedence: -3 },
-      optimizer: token => {
+      validator: token => {
+        if (!token.below("dynamic")) {
+          throw new FxSyntaxError("\"as\" is only valid within a dynamic key declaration", token.sourceRef);
+        }
         token.unwrap();
       }
     },

@@ -20,9 +20,9 @@ export class FxDynamicField extends FxField {
     const value = this.expression.evaluate();
 
     if (isObject(value)) {
-      return Object.keys(value).map(key => ({ key: key, value: this.lambda.evaluator(key, value[key]) }));
+      return Object.keys(value).map(key => ({ key: key, value: this.lambda.evaluator(value[key], key) }));
     } else if (isArray(value)) {
-      return value.map(item => ({ key: item.toString(), value: this.lambda.evaluator(item) }));
+      return value.map((item, index) => ({ key: item.toString(), value: this.lambda.evaluator(item, index) }));
     } else {
       return [{ key: value.toString(), value: this.lambda.evaluator(value) }];
     }

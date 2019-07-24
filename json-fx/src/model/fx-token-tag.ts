@@ -5,6 +5,7 @@ export type FxTokenTag =
   | "variable"
   | "numeric"
   | "indexer"
+  | "key-indexer"
   | "group"
   | "group-close"
   | "literal"

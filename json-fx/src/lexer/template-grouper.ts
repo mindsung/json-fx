@@ -82,16 +82,13 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
       }
 
       root.add(keyToken);
-
-
       root.add(this.setPath(new FxTokenNode("operator", ":")));
 
-      this.path.push(key);
+      this.path.push(this.getKeyPath(key));
       root.add(this.parse(obj[key]));
       this.path.pop();
 
       root.add(this.setPath(new FxTokenNode("operator", ",")));
-
     }
 
     if (root.count > 0) {
@@ -104,6 +101,19 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
   private setPath(token: FxTokenNode): FxTokenNode {
     token.sourceRef.path = this.composePath();
     return token;
+  }
+
+  private getKeyPath(key: string): string {
+    if (key == "()") {
+      return key;
+    }
+
+    const openParen = key.indexOf("(");
+    if (openParen != -1) {
+      return key.substr(0, openParen);
+    } else {
+      return key;
+    }
   }
 
   private composePath(): string {

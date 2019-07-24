@@ -19,6 +19,8 @@ export class ExpressionParser extends IteratorParser {
       this.convertToCall();
     } else if (this.isIndexer()) {
       this.convertToIndexer();
+    } else if (this.isKeyIndexer()) {
+      this.convertToKeyIndexer();
     }
   }
 
@@ -39,11 +41,30 @@ export class ExpressionParser extends IteratorParser {
   }
 
   private isIndexer(): boolean {
-    return this.next && this.next.is("array") && this.current.is(["literal", "identifier", "template-call", "variable", "expression", "array", "object"]);
+    return this.next && this.next.is("array") && this.currentIsIndexable();
   }
 
   private convertToIndexer(): void {
-    this.next.tag = "indexer";
-    this.next.add(this.current, 0);
+    const indexer = new FxTokenNode("indexer");
+    indexer.add(this.current);
+
+    this.next.tag = "group";
+    this.next.wrap(indexer);
+  }
+
+  private isKeyIndexer(): boolean {
+    return this.next && this.next.is("object") && this.currentIsIndexable();
+  }
+
+  private convertToKeyIndexer(): void {
+    const indexer = new FxTokenNode("key-indexer");
+    indexer.add(this.current);
+
+    this.next.tag = "group";
+    this.next.wrap(indexer);
+  }
+
+  private currentIsIndexable(): boolean {
+    return this.current.is(["literal", "identifier", "template-call", "variable", "expression", "array", "object"]);
   }
 }

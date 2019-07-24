@@ -1,7 +1,7 @@
 import { isArray, isNumber } from "../../common";
 import { AnyFn, FxExpressionDefinition } from "../../model/fx-definition";
 
-export const ExprArray: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "assign",
     evaluate: (...objects: any[]) => {

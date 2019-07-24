@@ -21,14 +21,18 @@ export class ObjectDef extends FxDef {
 
   public get tag(): FxTokenTag { return "object"; }
 
-  protected compile(token: FxTokenNode): FxExpression {
-    const result = new FxObject();
-
+  protected validate(token: FxTokenNode): void {
     for (const child of token.children) {
       if (!child.is("operator", ":a")) {
         throw new FxSyntaxError("Invalid object literal, expected key-value pairs", child.sourceRef);
       }
+    }
+  }
 
+  protected compile(token: FxTokenNode): FxExpression {
+    const result = new FxObject();
+
+    for (const child of token.children) {
       if (child.count == 1) {
         result.output = child.first.compile();
       } else {
@@ -36,11 +40,13 @@ export class ObjectDef extends FxDef {
         const value = child.last;
 
         switch (key.tag) {
+          case "identifier":
+          case "literal":
+          case "numeric":
+            result.addField(new FxStaticField(key.symbol, value.compile()));
+            break;
           case "dynamic":
             result.addField(new FxDynamicField(key.first.compile(), new FxLambda(key.children.slice(1).map(c => c.symbol), value.compile())));
-            break;
-          case "identifier":
-            result.addField(new FxStaticField(key.symbol, value.compile()));
             break;
           case "variable":
             result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile()));

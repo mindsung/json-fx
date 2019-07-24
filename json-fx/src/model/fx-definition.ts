@@ -8,6 +8,7 @@ export interface FxDefinition {
   operator?: FxOperatorDefinition;
   evaluator?: FxEvaluatorDefinition;
   optimizer?: (token: FxTokenNode) => void;
+  validator?: (token: FxTokenNode) => void;
   compiler?: (token: FxTokenNode) => FxExpression;
 }
 

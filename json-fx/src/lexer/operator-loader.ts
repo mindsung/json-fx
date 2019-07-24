@@ -58,6 +58,12 @@ export class OperatorLoader extends IteratorParser {
   private parseObject(): void {
     if (this.current.is("object") && this.expectAssign) {
       this.current.tag = "dynamic";
+
+      // TODO: This prevents inline object literals passed as a dynamic key emitter from being classified as dynamic. Implementation is messy.
+      if (this.current.first && this.current.first.is("dynamic")) {
+        this.current.first.tag = "object";
+      }
+
     } else if (this.isAssignment()) {
       this.current.symbol = Fx.SymbolAssign;
       this.expectAssign = false;

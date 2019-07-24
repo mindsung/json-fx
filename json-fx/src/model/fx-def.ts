@@ -4,6 +4,7 @@ import { FxExpression } from "../runtime/fx-expression";
 import { FxTokenTag } from "./fx-token-tag";
 
 export type FxOptimizer = (token: FxTokenNode) => void;
+export type FxValidator = (token: FxTokenNode) => void;
 export type FxCompiler = (token: FxTokenNode) => FxExpression;
 
 export class FxDef implements FxIntrinsicDefinition {
@@ -13,6 +14,10 @@ export class FxDef implements FxIntrinsicDefinition {
   public get operator(): FxOperatorDefinition { return undefined; }
 
   public get evaluator(): FxEvaluatorDefinition { return undefined; }
+
+  public get validator(): FxValidator {
+    return this.validate.bind(this);
+  }
 
   public get optimizer(): FxOptimizer {
     return this.optimize.bind(this);
@@ -28,6 +33,8 @@ export class FxDef implements FxIntrinsicDefinition {
   }
 
   protected optimize(token: FxTokenNode): void { return; }
+
+  protected validate(token: FxTokenNode): void { return; }
 
   protected compile(token: FxTokenNode): FxExpression { return null; }
 }

@@ -37,12 +37,6 @@ export class FxTokenNode extends FxNode implements FxToken {
     this.definition.evaluator = evaluator;
   }
 
-  public is(tag: FxTokenTag | FxTokenTag[], symbol?: string | string[]): boolean {
-    tag = isArray(tag) ? tag : [tag];
-    symbol = !symbol || isArray(symbol) ? symbol : [symbol];
-    return tag.includes(this.tag) && (!symbol || symbol.includes(this.symbol));
-  }
-
   public optimize(): void {
     for (const child of this.children) {
       child.optimize();
@@ -53,12 +47,40 @@ export class FxTokenNode extends FxNode implements FxToken {
     }
   }
 
+  public validate(): void {
+    for (const child of this.children) {
+      child.validate();
+    }
+
+    if (this.definition.validator) {
+      this.definition.validator(this);
+    }
+  }
+
   public compile(): FxExpression {
     if (this.definition.compiler) {
       return this.definition.compiler(this);
     } else {
       throw new Error(`Token ${ this.toString() } has no compiler defined`);
     }
+  }
+
+  public is(tag: FxTokenTag | FxTokenTag[], symbol?: string | string[]): boolean {
+    tag = isArray(tag) ? tag : [tag];
+    symbol = !symbol || isArray(symbol) ? symbol : [symbol];
+    return tag.includes(this.tag) && (!symbol || symbol.includes(this.symbol));
+  }
+
+  public below(tag: FxTokenTag | FxTokenTag[], symbol?: string | string[]): boolean {
+    let parent = this.parent;
+    while (parent) {
+      if (parent.is(tag, symbol)) {
+        return true;
+      } else {
+        parent = parent.parent;
+      }
+    }
+    return false;
   }
 
   public static from(token: FxToken): FxTokenNode {

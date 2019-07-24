@@ -28,6 +28,10 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
     this.parser.parse(root);
 
     root.optimize();
+    console.log(root.toString(true));
+
+    root.validate();
+
     return root;
   }
 }

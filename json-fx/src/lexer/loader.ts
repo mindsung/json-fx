@@ -24,6 +24,7 @@ export class Loader {
       operator: def.operator,
       evaluator: def.evaluator,
       optimizer: def.optimizer,
+      validator: def.validator,
       compiler: def.compiler
     });
 

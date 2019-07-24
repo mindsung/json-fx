@@ -2,16 +2,20 @@ import { FxInput, JsonFx } from "..";
 
 export class ScriptTester {
 
-  private readonly data: any[];
+  private readonly inputs: any[];
   private readonly fx: JsonFx;
 
-  constructor(...data: FxInput[]) {
-    this.data = data;
+  constructor(...inputs: FxInput[]) {
+    this.inputs = inputs;
     this.fx = new JsonFx();
+  }
+
+  public input(...inputs: FxInput[]): void {
+    this.inputs.push(...inputs);
   }
 
   public run(script: any): any {
     const compiled = this.fx.compile(script);
-    return compiled.evaluate(...this.data);
+    return compiled.evaluate(...this.inputs);
   }
 }
