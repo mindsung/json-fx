@@ -9,6 +9,8 @@
 *.sublime-workspace
 
 # IDE - VSCode
+.idea/*.xml
+.idea/*.iml
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
