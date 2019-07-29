@@ -1,32 +1,47 @@
-import { ExpressionTester } from "./expression.spec";
-import { exprArithmetic } from "./expr-arithmetic";
+import { ExprArithmetic } from "./expr-arithmetic";
+import { describe, it, before, after } from "mocha";
 import { assert } from "chai";
+import { ExpressionTester } from "../../tests/expression-tester";
 
-const tester = new ExpressionTester("Arithmetic", exprArithmetic);
 
-tester.run(() => {
+describe("Expressions [arithmetic]", function (): void {
 
-  tester.test("add", fn => {
+  const tester = new ExpressionTester(ExprArithmetic);
+
+  it("Evaluates [add]", function (): void {
+    const fn = tester.get("add");
     assert.equal(fn(1, 2), 3);
   });
 
-  tester.test("sub", fn => {
+  it("Evaluates [sub]", function (): void {
+    const fn = tester.get("sub");
     assert.equal(fn(1, 2), -1);
   });
 
-  tester.test("mul", fn => {
+  it("Evaluates [mul]", function (): void {
+    const fn = tester.get("mul");
     assert.equal(fn(2, 3), 6);
   });
 
-  tester.test("div", fn => {
+  it("Evaluates [div]", function (): void {
+    const fn = tester.get("div");
     assert.equal(fn(1, 2), 0.5);
   });
 
-  tester.test("pow", fn => {
+  it("Evaluates [pow]", function (): void {
+    const fn = tester.get("pow");
     assert.equal(fn(2, 3), 8);
   });
 
-  tester.test("mod", fn => {
+  it("Evaluates [mod]", function (): void {
+    const fn = tester.get("mod");
     assert.equal(fn(3, 2), 1);
   });
+
+  it("Evaluates [neg]", function (): void {
+    const fn = tester.get("neg");
+    assert.equal(fn(2), -2);
+  });
+
+  tester.done();
 });

@@ -1,4 +1,4 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
 function wordSplit(str: string): string[] {
   const words = [""];
@@ -22,7 +22,7 @@ function wordSplit(str: string): string[] {
   return words;
 }
 
-export const exprString: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "substr",
     evaluate: (str: string, from: number, length: number) => str.substr(from, length)

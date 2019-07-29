@@ -1,97 +1,94 @@
-import { FxParser } from "./model/fx-parser";
+import { FxParser } from "../model/fx-parser";
 import { isArray } from "../common";
-import { FxTokenRule } from "./model/fx-token-rule";
-import { FxToken } from "./model/fx-token";
+import { FxTokenRule } from "../model/fx-token-rule";
+import { FxToken } from "../model/fx-token";
 import { Fx } from "../fx";
 
 export class Tokenizer implements FxParser<string, FxToken[]> {
+
   private tokens: FxToken[];
-  private nextChar: string;
+  private next: string;
   private isLiteralSequence: boolean;
   private sourceIndex: number;
+  private prevToken: FxToken;
 
-  private get lastToken(): FxToken {
-    return this.tokens[this.tokens.length - 1] || null;
+  private initialize(): void {
+    this.tokens = [{ symbol: "", tag: "", index: 0 }];
+    this.isLiteralSequence = false;
+    this.sourceIndex = 0;
+    this.next = "";
+    this.prevToken = this.tokens[0];
   }
 
   public parse(expr: string): FxToken[] {
     this.initialize();
 
-    for (this.nextChar of expr) {
+    for (this.next of expr) {
       this.parseNextChar();
       this.sourceIndex++;
     }
 
-    this.removeWhitespaceTokens();
+    this.removeWhitespace();
     return this.tokens;
   }
 
-  private initialize() {
-    this.tokens = [{symbol: "", tag: "", index: 0}];
-    this.isLiteralSequence = false;
-    this.sourceIndex = 0;
-    this.nextChar = "";
-  }
-
-  private parseNextChar() {
+  private parseNextChar(): void {
     if (this.isLiteralSequence) {
       this.mergeNextWithLast(null);
     } else {
       this.mergeBasedOnRule();
     }
 
-    if (this.nextChar == Fx.StringLiteralSymbol) {
-      this.toggleAsLiteralSequence();
+    this.prevToken = this.tokens[this.tokens.length - 1] || null;
+
+    if (this.next == Fx.SymbolLiteral) {
+      this.toggleLiteralSequence();
     }
   }
 
-  private removeWhitespaceTokens() {
+  private removeWhitespace(): void {
     this.tokens = this.tokens.filter(token => token.tag != "space" && token.tag != "");
   }
 
-  private mergeBasedOnRule() {
+  private mergeBasedOnRule(): void {
     const rule = this.getNextRule();
 
     if (this.canMergeNextWithLast(rule)) {
       this.mergeNextWithLast(rule);
     } else {
-      this.tokens.push({
-        symbol: this.nextChar,
-        tag: rule.tag,
-        index: this.sourceIndex
-      });
+      this.tokens.push({ symbol: this.next, tag: rule.tag, index: this.sourceIndex });
     }
   }
 
   private getNextRule(): FxTokenRule {
     for (const rule of Fx.TokenRules) {
-      if (rule.test && rule.test(this.nextChar)) {
-        return Tokenizer.sanitizeRule(rule);
+      if (rule.test && rule.test(this.next)) {
+        return Tokenizer.sanitize(rule);
       }
     }
     return null;
   }
 
   private canMergeNextWithLast(rule: FxTokenRule): boolean {
-    return !this.lastToken.tag
-      || !rule.preventMerge && (rule.tag == this.lastToken.tag || rule.mergeWith.includes(this.lastToken.tag));
+    return !this.prevToken.tag
+      || !rule.preventMerge && (rule.tag == this.prevToken.tag || rule.mergeWith.includes(this.prevToken.tag));
   }
 
-  private mergeNextWithLast(rule: FxTokenRule) {
-    this.lastToken.symbol += this.nextChar;
+  private mergeNextWithLast(rule: FxTokenRule): void {
+    this.prevToken.symbol += this.next;
 
-    if (!this.lastToken.tag) {
-      this.lastToken.tag = rule.tag;
+    if (!this.prevToken.tag) {
+      this.prevToken.tag = rule.tag;
     }
   }
 
-  private toggleAsLiteralSequence() {
+  private toggleLiteralSequence(): void {
     this.isLiteralSequence = !this.isLiteralSequence;
-    this.lastToken.tag = "literal";
-    this.lastToken.symbol = this.lastToken.symbol.replace(Fx.StringLiteralSymbol, "");
+    this.prevToken.tag = "literal";
+    this.prevToken.symbol = this.prevToken.symbol.replace(Fx.SymbolLiteral, "");
   }
 
-  private static sanitizeRule(rule: FxTokenRule): FxTokenRule {
+  private static sanitize(rule: FxTokenRule): FxTokenRule {
     rule.tag = rule.tag || "";
     rule.preventMerge = !!rule.preventMerge;
 

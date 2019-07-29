@@ -1,8 +1,8 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
-import { FxCompileError } from "../../fx-error";
-import { FxExpression } from "../../runtime/model/fx-expression";
+import { FxExpressionDefinition } from "../../model/fx-definition";
+import { FxCompileError } from "../../model/fx-error";
+import { FxExpression } from "../../runtime/fx-expression";
 
-export const exprError: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprError: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "notnull",
     evaluate: (value: any) => {

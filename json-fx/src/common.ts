@@ -10,12 +10,12 @@ export function isBoolean(value: any): value is boolean {
   return value != null && (typeof value == "boolean" || toString.call(value) == "[object Boolean]");
 }
 
-export function isArray(value: any): value is Array<any> {
+export function isArray(value: any): value is any[] {
   return value != null && Array.isArray(value);
 }
 
-export function isObject(value: any): boolean {
-  return value != null && typeof value == "object";
+export function isObject(value: any): value is { [index: string]: any } {
+  return value != null && (toString.call(value) == "[object Object]");
 }
 
 export function isFunction(value: any): value is (...args: any[]) => any {

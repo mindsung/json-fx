@@ -1,7 +1,7 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
-import { FxExpression } from "../../runtime/model/fx-expression";
+import { FxExpressionDefinition } from "../../model/fx-definition";
+import { FxExpression } from "../../runtime/fx-expression";
 
-export const exprConditional: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprConditional: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "ifelse",
     deferEvaluation: true,

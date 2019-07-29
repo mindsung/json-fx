@@ -1,32 +1,37 @@
-import { FxParser } from "./model/fx-parser";
-import { FxTokenNode } from "./model/fx-token-node";
-import { FxContext } from "./model/fx-context";
+import { FxParser } from "../model/fx-parser";
+import { FxTokenNode } from "./node/fx-token-node";
 import { TemplateGrouper } from "./template-grouper";
-import { NodeParser } from "./node-parser";
+import { RecursiveParser } from "./recursive-parser";
 import { ExpressionParser } from "./expression-parser";
 import { OperatorParser } from "./operator-parser";
-import { Optimizer } from "./optimizer";
-import { ContextParser } from "./context-parser";
-import { OperatorContextParser } from "./operator-context-parser";
+import { DefinitionLoader } from "./definition-loader";
+import { OperatorLoader } from "./operator-loader";
+import { Loader } from "./loader";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
 
   private grouper: TemplateGrouper;
-  private parser: NodeParser;
+  private parser: RecursiveParser;
 
-  constructor(context: FxContext) {
+  constructor(loader: Loader) {
     this.grouper = new TemplateGrouper();
-    this.parser = new NodeParser(
+    this.parser = new RecursiveParser(
+      new OperatorLoader(loader),
       new ExpressionParser(),
-      new OperatorContextParser(context),
-      new OperatorParser(context),
-      new Optimizer(),
-      new ContextParser());
+      new OperatorParser(),
+      new DefinitionLoader(loader),
+    );
   }
 
-  parse(template: any): FxTokenNode {
+  public parse(template: any): FxTokenNode {
     const root = this.grouper.parse(template);
     this.parser.parse(root);
+
+    root.optimize();
+    console.log(root.toString(true));
+
+    root.validate();
+
     return root;
   }
 }

@@ -1,15 +1,15 @@
-import { exprArray } from "./expr/expr-array";
-import { exprComparative } from "./expr/expr-comparative";
-import { exprArithmetic } from "./expr/expr-arithmetic";
-import { exprConditional } from "./expr/expr-conditional";
-import { exprLogical } from "./expr/expr-logical";
-import { exprString } from "./expr/expr-string";
-import { exprError } from "./expr/expr-error";
-import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../lexer/model/fx-definition";
-import { exprMath } from "./expr/expr-math";
-import { exprRandom } from "./expr/expr-random";
+import { ExprCollection } from "./expr/expr-collection";
+import { ExprComparative } from "./expr/expr-comparative";
+import { ExprArithmetic } from "./expr/expr-arithmetic";
+import { ExprConditional } from "./expr/expr-conditional";
+import { ExprLogical } from "./expr/expr-logical";
+import { ExprString } from "./expr/expr-string";
+import { ExprError } from "./expr/expr-error";
+import { AnyFn, FxExpressionDefinition, FxIntrinsicDefinition } from "../model/fx-definition";
+import { ExprMath } from "./expr/expr-math";
+import { ExprRandom } from "./expr/expr-random";
 import { GroupDef } from "./def/group-def";
-import { ExpressionDef, IdentifierDef, OperatorDef } from "./def/expression-def";
+import { ExpressionDef, IdentifierDef, IndexerDef, KeyIndexerDef, OperatorDef } from "./def/expression-def";
 import { ObjectDef } from "./def/object-def";
 import { ArrayDef } from "./def/array-def";
 import { TemplateDef, VariableDef } from "./def/variable-def";
@@ -17,28 +17,34 @@ import { NumberLiteralDef, StringLiteralDef } from "./def/literal-def";
 import { LambdaDef } from "./def/lambda-def";
 import { NullPropertyDef, PropertyDef } from "./def/property-def";
 import { CallDef } from "./def/call-def";
-import { StringLiteralSymbol as _StringLiteralSymbol, TokenRules as _TokenRules } from "./lexer";
-import { FxFunction } from "../runtime/model/fx-function";
-import { FxLambda } from "../runtime/model/fx-lambda";
-import { FxExpression } from "../runtime/model/fx-expression";
+import { TokenRules as _TokenRules } from "./rules";
+import { FxFunction } from "../runtime/fx-function";
+import { FxLambda } from "../runtime/fx-lambda";
+import { FxExpression } from "../runtime/fx-expression";
+import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
+import { FxSyntaxError } from "../model/fx-error";
+import { FxConstant } from "../runtime/fx-constant";
 
 export namespace Fx {
 
-  export const StringLiteralSymbol = _StringLiteralSymbol;
+  export const SymbolAssign = ":a";
+  export const SymbolNegative = "-u";
+  export const SymbolLiteral = "'";
+
   export const TokenRules = _TokenRules;
 
-  export const Expressions: FxExpressionDefinition[] = []
-    .concat(exprArithmetic)
-    .concat(exprArray)
-    .concat(exprComparative)
-    .concat(exprConditional)
-    .concat(exprLogical)
-    .concat(exprString)
-    .concat(exprError)
-    .concat(exprMath)
-    .concat(exprRandom);
+  export const Expressions: ReadonlyArray<FxExpressionDefinition> = []
+    .concat(ExprArithmetic)
+    .concat(ExprCollection)
+    .concat(ExprComparative)
+    .concat(ExprConditional)
+    .concat(ExprLogical)
+    .concat(ExprString)
+    .concat(ExprError)
+    .concat(ExprMath)
+    .concat(ExprRandom);
 
-  export const Intrinsics: FxIntrinsicDefinition[] = [
+  export const Intrinsics: ReadonlyArray<FxIntrinsicDefinition> = [
     new GroupDef(),
     new IdentifierDef(),
     new ObjectDef(),
@@ -47,12 +53,25 @@ export namespace Fx {
     new TemplateDef(),
     new OperatorDef(),
     new ExpressionDef(),
+    new IndexerDef(),
+    new KeyIndexerDef(),
     new StringLiteralDef(),
     new NumberLiteralDef(),
     new LambdaDef(),
     new PropertyDef(),
     new CallDef(),
     new NullPropertyDef(),
+    new InvokeDef(),
+    new NullInvokeDef(),
+    {
+      operator: { symbol: "as", precedence: -3 },
+      validator: token => {
+        if (!token.below("dynamic")) {
+          throw new FxSyntaxError("\"as\" is only valid within a dynamic key declaration", token.sourceRef);
+        }
+        token.unwrap();
+      }
+    },
     {
       operator: { symbol: ",", precedence: -2 },
       optimizer: token => {
@@ -61,40 +80,6 @@ export namespace Fx {
     },
     {
       operator: { symbol: ":a", precedence: -1 },
-      optimizer: token => {
-        token.first.add(token.last);
-        token.unwrap();
-      }
-    },
-    {
-      operator: { symbol: ":", precedence: 4 },
-      optimizer: token => {
-        token.last.unshift(token.first);
-
-        if (token.last.tag == "identifier") {
-          token.last.tag = "expression";
-        }
-
-        token.unwrap();
-      }
-    },
-    {
-      operator: { symbol: "?:", precedence: 4 },
-      optimizer: token => {
-        token.last.unshift(token.first);
-
-        if (token.last.tag == "identifier") {
-          token.last.tag = "expression";
-        }
-      },
-      evaluator: {
-        name: "nullinvoke",
-        deferEvaluation: true,
-        evaluate: result => {
-          const evalFirstArg = result.args[0].evaluate();
-          return evalFirstArg != null ? result.evaluate() : null;
-        }
-      }
     },
     // TODO: Code cleanup
     {
@@ -112,6 +97,7 @@ export namespace Fx {
       }
     },
     {
+      // TODO: if/else right-hand associativity
       operator: { symbol: "if", precedence: 0.1 },
     },
     {

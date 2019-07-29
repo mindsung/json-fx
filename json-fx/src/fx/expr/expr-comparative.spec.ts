@@ -1,12 +1,14 @@
-import { ExpressionTester } from "./expression.spec";
-import { exprComparative } from "./expr-comparative";
+import { ExprComparative } from "./expr-comparative";
 import { assert } from "chai";
+import { ExpressionTester } from "../../tests/expression-tester";
 
-const tester = new ExpressionTester("Comparative", exprComparative);
+describe("Expressions [comparative]", function (): void {
 
-tester.run(() => {
+  const tester = new ExpressionTester(ExprComparative);
 
-  tester.test("eq", fn => {
+  it("Evaluates [eq]", function (): void {
+    const fn = tester.get("eq");
+
     assert.isTrue(fn(0, 0));
     assert.isTrue(fn("foo", "foo"));
     assert.isTrue(fn(true, true));
@@ -18,7 +20,9 @@ tester.run(() => {
     assert.isFalse(fn(null, 0));
   });
 
-  tester.test("neq", fn => {
+  it("Evaluates [neq]", function (): void {
+    const fn = tester.get("neq");
+
     assert.isFalse(fn(0, 0));
     assert.isFalse(fn("foo", "foo"));
     assert.isFalse(fn(true, true));
@@ -30,27 +34,37 @@ tester.run(() => {
     assert.isTrue(fn(null, 0));
   });
 
-  tester.test("gt", fn => {
+  it("Evaluates [gt]", function (): void {
+    const fn = tester.get("gt");
+
     assert.isTrue(fn(1, 0));
     assert.isFalse(fn(1, 1));
     assert.isFalse(fn(1, 2));
   });
 
-  tester.test("gte", fn => {
+  it("Evaluates [gte]", function (): void {
+    const fn = tester.get("gte");
+
     assert.isTrue(fn(1, 0));
     assert.isTrue(fn(1, 1));
     assert.isFalse(fn(1, 2));
   });
 
-  tester.test("lt", fn => {
+  it("Evaluates [lt]", function (): void {
+    const fn = tester.get("lt");
+
     assert.isTrue(fn(0, 1));
     assert.isFalse(fn(1, 1));
     assert.isFalse(fn(2, 1));
   });
 
-  tester.test("lte", fn => {
+  it("Evaluates [lte]", function (): void {
+    const fn = tester.get("lte");
+
     assert.isTrue(fn(0, 1));
     assert.isTrue(fn(1, 1));
     assert.isFalse(fn(2, 1));
   });
+
+  tester.done();
 });

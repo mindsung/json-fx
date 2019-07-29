@@ -1,6 +1,6 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
-export const exprArithmetic: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprArithmetic: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "add",
     evaluate: (a, b) => a + b,
@@ -29,7 +29,7 @@ export const exprArithmetic: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "pow",
     evaluate: (a, b) => Math.pow(a, b),
-    operator: { symbol: "**", precedence: 3.2 }
+    operator: { symbol: "**", precedence: 3.2, assoc: "right" }
   },
   {
     name: "neg",

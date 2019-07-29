@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test-scripts" type="mocha-javascript-test-runner">
+    <node-interpreter>project</node-interpreter>
+    <node-options />
+    <mocha-package>$PROJECT_DIR$/json-fx/node_modules/mocha</mocha-package>
+    <working-directory>$PROJECT_DIR$/json-fx</working-directory>
+    <pass-parent-env>true</pass-parent-env>
+    <ui>bdd</ui>
+    <extra-mocha-options>-r ts-node/register</extra-mocha-options>
+    <test-kind>SUITE</test-kind>
+    <test-file>$PROJECT_DIR$/json-fx/src/tests/scripts/users.spec.ts</test-file>
+    <test-names>
+      <name value="Scripts [users]" />
+    </test-names>
+    <method v="2" />
+  </configuration>
+</component>

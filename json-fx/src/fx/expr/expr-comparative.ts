@@ -1,6 +1,6 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
-export const exprComparative: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprComparative: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "eq",
     evaluate: (a, b) => a === b,

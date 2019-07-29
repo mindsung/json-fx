@@ -1,14 +1,14 @@
-import { FxOperatorDefinition } from "../../lexer/model/fx-definition";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxProperty, FxPropertyPathItem } from "../../runtime/model/fx-property";
-import { FxConstant } from "../../runtime/model/fx-constant";
-import { FxDef } from "./model/fx-def";
+import { FxOperatorDefinition } from "../../model/fx-definition";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxProperty, FxPropertyPathItem } from "../../runtime/fx-property";
+import { FxConstant } from "../../runtime/fx-constant";
+import { FxDef } from "../../model/fx-def";
 
 export class PropertyDef extends FxDef {
 
   public get operator(): FxOperatorDefinition {
-    return {symbol: ".", precedence: 4};
+    return { symbol: ".", precedence: 4 };
   }
 
   protected compile(token: FxTokenNode): FxExpression {
@@ -39,17 +39,17 @@ export class PropertyDef extends FxDef {
   }
 
   private static isProp(node: FxTokenNode): boolean {
-    return node.tag == "operator" && (node.symbol == "." || node.symbol == "?.");
+    return node.is("operator", [".", "?."]);
   }
 
   private static isNullProp(node: FxTokenNode): boolean {
-    return node.tag == "operator" && node.symbol == "?.";
+    return node.is("operator", "?.");
   }
 }
 
 export class NullPropertyDef extends PropertyDef {
 
   public get operator(): FxOperatorDefinition {
-    return {symbol: "?.", precedence: 4};
+    return { symbol: "?.", precedence: 4 };
   }
 }

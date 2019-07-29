@@ -3,16 +3,16 @@ import { assert } from "chai";
 
 import { Tokenizer } from "./tokenizer";
 import { Grouper } from "./grouper";
-import { FxTokenNode } from "./model/fx-token-node";
+import { FxTokenNode } from "./node/fx-token-node";
 import { ExpressionParser } from "./expression-parser";
-import { NodeParser } from "./node-parser";
+import { RecursiveParser } from "./recursive-parser";
 
 describe("lexer/ExpressionParser", function () {
 
-  function parse(expr: string) {
+  function parse(expr: string): FxTokenNode {
     const tokenizer = new Tokenizer();
     const grouper = new Grouper();
-    const parser = new NodeParser(new ExpressionParser());
+    const parser = new RecursiveParser(new ExpressionParser());
 
     const result = grouper.parse(tokenizer.parse(expr));
     parser.parse(result);
@@ -27,11 +27,11 @@ describe("lexer/ExpressionParser", function () {
       tag: "group",
 
       children: [{
-        tag: "expression",
+        tag: "identifier",
         symbol: "foo",
         index: 0,
 
-        children: [{tag: "identifier", symbol: "bar", index: 4}]
+        children: [{ tag: "identifier", symbol: "bar", index: 4 }]
       }]
     }));
   });
@@ -47,10 +47,7 @@ describe("lexer/ExpressionParser", function () {
         symbol: "@foo",
         index: 0,
 
-        children: [{
-          tag: "signature",
-          children: [{tag: "identifier", symbol: "bar", index: 5}]
-        }]
+        children: [{ tag: "identifier", symbol: "bar", index: 5 }]
       }]
     }));
   });
@@ -62,34 +59,34 @@ describe("lexer/ExpressionParser", function () {
       tag: "group",
 
       children: [
-        {tag: "operator", symbol: "*", index: 0},
+        { tag: "operator", symbol: "*", index: 0 },
         {
           tag: "group",
-          symbol: "()",
+          symbol: "(",
           index: 1,
 
-          children: [{tag: "identifier", symbol: "bar", index: 2}]
+          children: [{ tag: "identifier", symbol: "bar", index: 2 }]
         }]
     }));
   });
 
-  it("Creates Fx from nested calls", function () {
+  it("Creates expressions from nested calls", function () {
     const result = parse("foo(bar(baz))");
 
     assert.deepEqual(result, FxTokenNode.from({
       tag: "group",
 
       children: [{
-        tag: "expression",
+        tag: "identifier",
         symbol: "foo",
         index: 0,
 
         children: [{
-          tag: "expression",
+          tag: "identifier",
           symbol: "bar",
           index: 4,
 
-          children: [{tag: "identifier", symbol: "baz", index: 8}]
+          children: [{ tag: "identifier", symbol: "baz", index: 8 }]
         }]
       }]
     }));

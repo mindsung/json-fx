@@ -1,6 +1,6 @@
-import { FxExpressionDefinition } from "../../lexer/model/fx-definition";
+import { FxExpressionDefinition } from "../../model/fx-definition";
 
-export const exprLogical: ReadonlyArray<FxExpressionDefinition> = [
+export const ExprLogical: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "or",
     evaluate: (a, b) => a || b,
@@ -20,5 +20,12 @@ export const exprLogical: ReadonlyArray<FxExpressionDefinition> = [
     name: "notnot",
     evaluate: a => !!a,
     operator: { symbol: "!!", precedence: 1.2, isUnary: true, assoc: "left" }
+  },
+  {
+    name: "funny",
+    evaluate: a => {
+      return a == 1;
+    },
+    operator: { symbol: "?", precedence: 0, isUnary: true, assoc: "right" }
   }
 ];

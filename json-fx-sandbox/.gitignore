@@ -12,7 +12,6 @@ src/**/out
 /lib
 
 # IDEs and editors
-/.idea
 .project
 .classpath
 .c9/

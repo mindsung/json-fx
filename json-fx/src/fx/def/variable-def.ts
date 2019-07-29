@@ -1,15 +1,15 @@
-import { FxDef } from "./model/fx-def";
-import { FxTokenTag } from "../../lexer/model/fx-token-tag";
-import { FxExpression } from "../../runtime/model/fx-expression";
-import { FxTokenNode } from "../../lexer/model/fx-token-node";
-import { FxVariableReference } from "../../runtime/model/fx-variable-reference";
+import { FxDef } from "../../model/fx-def";
+import { FxTokenTag } from "../../model/fx-token-tag";
+import { FxExpression } from "../../runtime/fx-expression";
+import { FxTokenNode } from "../../lexer/node/fx-token-node";
+import { FxReference } from "../../runtime/fx-reference";
 
 export class VariableDef extends FxDef {
 
   public get tag(): FxTokenTag { return "variable"; }
 
   protected compile(token: FxTokenNode): FxExpression {
-    return new FxVariableReference(token.symbol);
+    return new FxReference(token.symbol);
   }
 }
 
