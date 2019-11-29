@@ -1,0 +1,6 @@
+{
+  "//": "Demo simple properties, addition of numbers, addition (concatenation) of text",
+  "prop": "$.a",
+  "sum": "$.a + $.b",
+  "text": "$.c + ' ' + $.a + ' ' + $.b"
+}

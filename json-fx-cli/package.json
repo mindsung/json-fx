@@ -1,0 +1,26 @@
+{
+  "name": "@mindsung/json-fx-cli",
+  "version": "1.0.0",
+  "description": "MindSung JSON-fx CLI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mindsung/json-fx.git"
+  },
+  "author": "Aaron Eads",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mindsung/json-fx/issues"
+  },
+  "homepage": "https://github.com/mindsung/json-fx#readme",
+  "bin": {
+    "@mindsung/json-fx": "bin/json-fx.js",
+    "json-fx": "bin/json-fx.js"
+  },
+  "dependencies": {
+    "esm": "^3.2.25"
+  }
+}

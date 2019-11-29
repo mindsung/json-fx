@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && ncp package.json dist/package.json",
     "test": "ts-node node_modules/mocha/bin/mocha \"./src/**/*.spec.ts\"",
     "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
     "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack",
