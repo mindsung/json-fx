@@ -4,6 +4,7 @@ import { FxNode } from "./node/fx-node";
 export class RecursiveParser implements FxParser<FxNode> {
 
   public parsers: FxParser<FxNode>[];
+  public parentFirst = false;
 
   constructor(...parsers: FxParser<FxNode>[]) {
     this.parsers = parsers;
@@ -16,9 +17,16 @@ export class RecursiveParser implements FxParser<FxNode> {
   }
 
   private parseTree(root: FxNode, parser: FxParser<FxNode>): void {
+    if (this.parentFirst) {
+      parser.parse(root);
+    }
+
     for (const node of root.children) {
       this.parseTree(node, parser);
     }
-    parser.parse(root);
+
+    if (!this.parentFirst) {
+      parser.parse(root);
+    }
   }
 }

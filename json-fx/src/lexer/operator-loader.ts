@@ -11,7 +11,8 @@ export class OperatorLoader extends IteratorParser {
   private current: FxTokenNode;
   private prev: FxTokenNode;
 
-  private expectAssign: boolean;
+  // TODO: Change to "isAssignment" and invert all conditionals
+  private isNotAssignment: boolean;
 
   constructor(loader: Loader) {
     super();
@@ -21,10 +22,11 @@ export class OperatorLoader extends IteratorParser {
   protected before(parent: FxTokenNode): void {
     this.parent = parent;
     this.prev = null;
-    this.expectAssign = true;
+    this.isNotAssignment = true;
   }
 
   protected after(): void {
+    // Ensures root operator is loaded since its null parent won't load its child operators
     if (this.parent.parent == null) {
       this.loadOperator(this.parent);
     }
@@ -56,7 +58,7 @@ export class OperatorLoader extends IteratorParser {
   }
 
   private parseObject(): void {
-    if (this.current.is("object") && this.expectAssign) {
+    if (this.current.is("object") && this.isNotAssignment) {
       this.current.tag = "dynamic";
 
       // TODO: This prevents inline object literals passed as a dynamic key emitter from being classified as dynamic. Implementation is messy.
@@ -66,9 +68,9 @@ export class OperatorLoader extends IteratorParser {
 
     } else if (this.isAssignment()) {
       this.current.symbol = Fx.SymbolAssign;
-      this.expectAssign = false;
+      this.isNotAssignment = false;
     } else if (this.isComma()) {
-      this.expectAssign = true;
+      this.isNotAssignment = true;
     }
   }
 
@@ -77,7 +79,7 @@ export class OperatorLoader extends IteratorParser {
   }
 
   private isAssignment(): boolean {
-    return this.current.is("operator", ":") && this.expectAssign;
+    return this.current.is("operator", ":") && this.isNotAssignment;
   }
 
   private isComma(): boolean {

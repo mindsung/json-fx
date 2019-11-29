@@ -28,7 +28,7 @@ export class FxScope {
     return undefined;
   }
 
-  public setVariable(value: FxScopeVariable) {
+  public setVariable(value: FxScopeVariable): void {
     if (value == null) {
       throw new Error("Cannot set null variable.");
     }
@@ -40,14 +40,14 @@ export class FxScope {
     this.variables[value.varName] = value;
   }
 
-  public clearVariables() {
+  public clearVariables(): void {
     for (const k of Object.keys(this.variables)) {
       this.variables[k].clearCache();
     }
     this.variables = {};
   }
 
-  public bind() {
+  public bind(): void {
     for (const key of Object.keys(this.variables)) {
       this.variables[key].bindScope(this);
     }

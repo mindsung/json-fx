@@ -12,6 +12,10 @@ export class FxNode {
     return <this>this._parent;
   }
 
+  public set parent(parent: this) {
+    this._parent = parent;
+  }
+
   public get children(): this[] {
     return <this[]>this._children.concat();
   }
