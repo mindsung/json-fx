@@ -40,4 +40,9 @@ describe("Scripts [dynamic fields]", function (): void {
     const result = tester.run({ "$arr": [2, 4, 8], "{$arr:map($ => $ ** 2) as $}": "$ ** 0.5" });
     assert.deepEqual(result, { "4": 2, "16": 4, "64": 8 });
   });
+
+  it("Evaluates literal key", function(): void {
+    const result = tester.run({"a-plus-b": "5 + 6"});
+    assert.deepEqual(result, {"a-plus-b": 11});
+  });
 });
