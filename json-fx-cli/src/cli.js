@@ -11,5 +11,5 @@ export function cli(args) {
   }
   const data = JSON.parse(fs.readFileSync(dataFile).toString());
   const tmpl = JSON.parse(fs.readFileSync(tmplFile).toString());
-  console.log(fx.compile(tmpl).evaluate({ name: "$", value: data }));
+  console.log(JSON.stringify(fx.compile(tmpl).evaluate({ name: "$", value: data }), null, 4));
 }

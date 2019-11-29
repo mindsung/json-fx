@@ -1,6 +1,14 @@
 {
-  "//": "Demo simple properties, addition of numbers, addition (concatenation) of text",
-  "prop": "$.a",
-  "sum": "$.a + $.b",
-  "text": "$.c + ' ' + $.a + ' ' + $.b"
+  "//": "Simple properties, operators",
+  "$": {
+    "a": 10,
+    "b": 20,
+    "c": "hello"
+  },
+  "prop-a": "$.a",
+  "prop-a-expect": 10,
+  "a-plus-b": "$.a + $.b",
+  "a-plus-b-expect": 30,
+  "text-concat": "$.c + ' ' + $.a + ' ' + $.b",
+  "text-concat-expect": "hello 10 20"
 }
