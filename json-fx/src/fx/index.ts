@@ -63,6 +63,7 @@ export namespace Fx {
     new NullPropertyDef(),
     new InvokeDef(),
     new NullInvokeDef(),
+    // TODO: Code cleanup
     {
       operator: { symbol: "as", precedence: -3 },
       validator: token => {
@@ -81,7 +82,6 @@ export namespace Fx {
     {
       operator: { symbol: ":_kv", precedence: -1 },
     },
-    // TODO: Code cleanup
     {
       operator: { symbol: "for", precedence: 0.2 },
     },
