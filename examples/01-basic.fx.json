@@ -1,0 +1,22 @@
+{
+  "//": "Simple properties, operators",
+  "$": {
+    "a": 10,
+    "b": 20,
+    "c": "hello"
+  },
+  "prop": "$.a",
+  "prop-expect": 10,
+  "math-ops": {
+    "add": "$.a + $.b",
+    "add-expect": 30,
+    "subtract": "$.a - $.b",
+    "subtract-expect": -10,
+    "multiply": "$.a * $.b",
+    "multiply-expect": 200,
+    "divide": "$.a / $.b",
+    "divide-expect": 0.5,
+    "text-concat": "$.c + ' ' + $.a + ' ' + $.b",
+    "text-concat-expect": "hello 10 20"
+  }
+}

@@ -1,43 +1,6 @@
 import { describe, it } from "mocha";
 import { assert } from "chai";
 import { ScriptTester } from "../script-tester";
-import { isObject } from "../../common";
-
-function separateExpects(templ: any, path: string = ""): { template: any, expects: any } {
-  return Object.keys(templ).reduce((acc, key) => {
-    const value = templ[key];
-
-    if (key.endsWith("-expects")) {
-      const trimKey = key.substring(0, key.indexOf("-expects"));
-      const subpath = path ? path + "." + trimKey : trimKey;
-
-      acc.expects[subpath] = value;
-    } else {
-      if (isObject(value)) {
-        const subpath = path != "" ? path + "." + key : key;
-        const sep = separateExpects(value, subpath);
-        acc.template[key] = sep.template;
-        Object.assign(acc.expects, sep.expects);
-      } else {
-        acc.template[key] = value;
-      }
-    }
-    return acc;
-  }, { template: {}, expects: {} });
-}
-
-function assertExpects(output: any, expects: any): void {
-  for (const eKey of Object.keys(expects)) {
-    const path = eKey.split(".");
-    let actual = output;
-
-    for (const pathItem of path) {
-      actual = actual[pathItem];
-    }
-
-    assert.deepEqual(actual, expects[eKey]);
-  }
-}
 
 describe("Scripts [dynamic fields]", function (): void {
 
@@ -81,11 +44,5 @@ describe("Scripts [dynamic fields]", function (): void {
   it("Evaluates literal key", function (): void {
     const result = tester.run("'a b c'");
     // assert.deepEqual(result, {"a-plus-b": 11});
-  });
-
-  it("Separates expects", function (): void {
-    const templ = { "foo": { "a": 10, "a-expects": 10 }, "foo-expects": { "a": 10 } };
-    const result = separateExpects(templ);
-    assertExpects(tester.run(result.template), result.expects);
   });
 });
