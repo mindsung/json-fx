@@ -3,10 +3,6 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist",
-    "target": "es5",
-    "module": "commonjs",
-    "declaration": true,
-    "sourceMap": false,
     "typeRoots": [
       "node_modules/@types"
     ]
