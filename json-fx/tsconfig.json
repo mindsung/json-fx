@@ -5,6 +5,7 @@
     "outDir": "./dist",
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "composite": true
   }
 }

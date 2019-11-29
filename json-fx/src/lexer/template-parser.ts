@@ -10,6 +10,8 @@ import { Loader } from "./loader";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
 
+  public static logExpressions = false;
+
   private grouper: TemplateGrouper;
   private parser: RecursiveParser;
 
@@ -28,7 +30,9 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
     this.parser.parse(root);
 
     root.optimize();
-    console.log(root.toString(true));
+    if (TemplateParser.logExpressions) {
+      console.log(root.toString(true));
+    }
 
     root.validate();
 

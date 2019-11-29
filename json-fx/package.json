@@ -16,6 +16,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "test": "ts-node node_modules/mocha/bin/mocha \"./src/**/*.spec.ts\"",
     "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
     "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack",
     "lint": "tslint src/**/*.ts",
@@ -24,7 +25,6 @@
   "devDependencies": {
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^8.10.59",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",
     "ncp": "^2.0.0",

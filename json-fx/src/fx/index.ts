@@ -27,7 +27,7 @@ import { FxConstant } from "../runtime/fx-constant";
 
 export namespace Fx {
 
-  export const SymbolAssign = ":a";
+  export const SymbolAssign = ":_kv";
   export const SymbolNegative = "-u";
   export const SymbolLiteral = "'";
 
@@ -79,7 +79,7 @@ export namespace Fx {
       }
     },
     {
-      operator: { symbol: ":a", precedence: -1 },
+      operator: { symbol: ":_kv", precedence: -1 },
     },
     // TODO: Code cleanup
     {

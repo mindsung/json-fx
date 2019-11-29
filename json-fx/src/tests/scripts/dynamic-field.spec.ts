@@ -37,7 +37,7 @@ describe("Scripts [dynamic fields]", function (): void {
   });
 
   it("Evaluates expression emitter", function (): void {
-    const result = tester.run({ "$arr": [2, 4, 8], "{ $arr:map($ => $ ** 2) as $ }": "$ ** 0.5" });
+    const result = tester.run({ "$arr": [2, 4, 8], "{($arr:map($ => $ ** 2) as $)}": "$ ** 0.5" });
     assert.deepEqual(result, { "4": 2, "16": 4, "64": 8 });
   });
 });

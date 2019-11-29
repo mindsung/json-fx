@@ -23,7 +23,7 @@ export class ObjectDef extends FxDef {
 
   protected validate(token: FxTokenNode): void {
     for (const child of token.children) {
-      if (!child.is("operator", ":a")) {
+      if (!child.is("operator", ":_kv")) {
         throw new FxSyntaxError("Invalid object literal, expected key-value pairs", child.sourceRef);
       }
     }
