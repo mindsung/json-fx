@@ -1,4 +1,4 @@
-import { isArray, isNumber } from "../../common";
+import { isArray, isNumber, isObject } from "../../common";
 import { AnyFn, FxExpressionDefinition } from "../../model/fx-definition";
 
 export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
@@ -31,8 +31,17 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "filter",
-    evaluate: (arr: any[], lambda: AnyFn) => {
-      return arr.filter(lambda);
+    evaluate: (value: any, lambda: AnyFn) => {
+      if (isArray(value)) {
+        return value.filter(lambda);
+      } else if (isObject(value)) {
+        return Object.keys(value).reduce((obj, key) => {
+          if (lambda(key, value[key])) {
+            obj[key] = value[key];
+          }
+          return obj;
+        }, {});
+      }
     }
   },
   {
