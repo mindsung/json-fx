@@ -75,7 +75,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
 
       let keyToken: FxTokenNode;
 
-      if (key.startsWith("{")) {
+      if (key.startsWith("{") || key.startsWith("$") || key.startsWith("@")) {
         keyToken = this.parse(key);
       } else {
         keyToken = new FxTokenNode("literal", key);
