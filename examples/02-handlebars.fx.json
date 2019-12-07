@@ -16,6 +16,8 @@
     "blue": "BLUE"
   },
 
+  "{{ for $c in $colors }}": "{{ titlecase($c) }}",
+
   "// 'notnull' ensures the predicate is a non-null value, or throws error": "",
 
   "colors-notnull {{ notnull }}": "$colors",
@@ -51,11 +53,17 @@
 
   "expect": {
     "colors-map": ["RED", "GREEN", "BLUE"],
+
     "colors-for": {
       "red": "RED",
       "green": "GREEN",
       "blue": "BLUE"
     },
+
+    "red": "Red",
+    "green": "Green",
+    "blue": "Blue",
+
     "colors-notnull": ["red", "green", "blue"],
     "cond": {
       "foo": 10,
