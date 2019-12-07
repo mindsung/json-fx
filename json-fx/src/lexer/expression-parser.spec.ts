@@ -12,7 +12,7 @@ describe("lexer/ExpressionParser", function () {
   function parse(expr: string): FxTokenNode {
     const tokenizer = new Tokenizer();
     const grouper = new Grouper();
-    const parser = new RecursiveParser(new ExpressionParser());
+    const parser = new RecursiveParser({ parser: new ExpressionParser() });
 
     const result = grouper.parse(tokenizer.parse(expr));
     parser.parse(result);

@@ -1,0 +1,66 @@
+{
+  "$colors": ["red", "green", "blue"],
+
+  "// 'map' evaluates to a value array": "",
+
+  "colors-map {{ map $c in $colors }}": "{{ uppercase($c) }}",
+  "colors-map-expect": ["RED", "GREEN", "BLUE"],
+
+  "// 'for' evaluates to an associative array": "",
+  "// Note that key-name 'colors-for' is optional. When omitted, key-values are inserted into parent scope": "",
+
+  "colors-for {{ for $c in $colors }}": "{{ uppercase($c) }}",
+  "colors-for-expect": {
+    "red": "RED",
+    "green": "GREEN",
+    "blue": "BLUE"
+  },
+
+  "// 'notnull' ensures the predicate is a non-null value, or throws error": "",
+
+  "colors-notnull {{ notnull }}": "$colors",
+  "colors-notnull-expect": ["red", "green", "blue"],
+
+  "// 'if' allows for expanded if/else statements": "",
+  "// Note that 'else' is optional. When omitted, the key-value is omitted if given a falsey condition": "",
+
+  "cond {{ if $colors:length() == 3 }}": {
+    "foo": 10,
+    "bar": 20,
+
+    "{{ else }}": {
+      "foo": 2,
+      "bar": 2
+    }
+  },
+  "cond-expect": {
+    "foo": 10,
+    "bar": 20
+  },
+
+  "// 'switch' behaves as you would expect": "",
+
+  "first-color {{ switch $colors[0] }}": {
+    "{{ case 'red' }}": "The color is red.",
+    "{{ case 'green' }}": "The color is green.",
+    "{{ case 'blue' }}": "The color is blue."
+  },
+  "first-color-expect": "The color is red.",
+
+  "// This is how the entire script should evaluate": "",
+
+  "expect": {
+    "colors-map": ["RED", "GREEN", "BLUE"],
+    "colors-for": {
+      "red": "RED",
+      "green": "GREEN",
+      "blue": "BLUE"
+    },
+    "colors-notnull": ["red", "green", "blue"],
+    "cond": {
+      "foo": 10,
+      "bar": 20
+    },
+    "first-color": "The color is red."
+  }
+}

@@ -1,32 +1,36 @@
 import { FxParser } from "../model/fx-parser";
 import { FxNode } from "./node/fx-node";
 
+interface RecursiveParserItem {
+  parser: FxParser<FxNode>;
+  rootFirst?: boolean;
+}
+
 export class RecursiveParser implements FxParser<FxNode> {
 
-  public parsers: FxParser<FxNode>[];
-  public parentFirst = false;
+  private readonly parsers: RecursiveParserItem[];
 
-  constructor(...parsers: FxParser<FxNode>[]) {
+  constructor(...parsers: RecursiveParserItem[]) {
     this.parsers = parsers;
   }
 
   public parse(root: FxNode): void {
-    for (const parser of this.parsers) {
-      this.parseTree(root, parser);
+    for (const item of this.parsers) {
+      this.parseRecursive(root, item);
     }
   }
 
-  private parseTree(root: FxNode, parser: FxParser<FxNode>): void {
-    if (this.parentFirst) {
-      parser.parse(root);
+  private parseRecursive(root: FxNode, item: RecursiveParserItem): void {
+    if (item.rootFirst) {
+      item.parser.parse(root);
     }
 
     for (const node of root.children) {
-      this.parseTree(node, parser);
+      this.parseRecursive(node, item);
     }
 
-    if (!this.parentFirst) {
-      parser.parse(root);
+    if (!item.rootFirst) {
+      item.parser.parse(root);
     }
   }
 }
