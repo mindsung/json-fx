@@ -1,6 +1,10 @@
 # JSON-fx Language Guide
 
-[TOC]
+- [Functions](#functions)
+  * [Overview](#overview)
+  * [Invocation](#invocation)
+    + [Multi-Argument Functions](#multi-argument-functions)
+    + [Chaining](#chaining)
 
 ## Functions
 
