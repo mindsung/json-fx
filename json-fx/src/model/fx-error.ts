@@ -1,5 +1,7 @@
 import { SourceRef } from "./source-ref";
 
+// TODO: Error.fileName, Error.columnNumber, Error.lineNumber
+
 export abstract class FxError {
 
   private readonly prefix: string;

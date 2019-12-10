@@ -9,6 +9,7 @@ import { OperatorLoader } from "./operator-loader";
 import { Loader } from "./loader";
 import { FxNode } from "./node/fx-node";
 import { Fx } from "../fx";
+import { ScriptParser } from "./script-parser";
 
 export class TemplateParser implements FxParser<any, FxTokenNode> {
 
@@ -19,16 +20,7 @@ export class TemplateParser implements FxParser<any, FxTokenNode> {
 
   constructor(loader: Loader) {
     this.grouper = new TemplateGrouper();
-
-    this.parser = new RecursiveParser(
-      {
-        parser: new OperatorLoader(loader),
-        rootFirst: true
-      },
-      { parser: new ExpressionParser() },
-      { parser: new OperatorParser() },
-      { parser: new DefinitionLoader(loader) }
-    );
+    this.parser = new ScriptParser(loader);
   }
 
   public parse(template: any): FxTokenNode {
