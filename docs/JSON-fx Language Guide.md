@@ -28,7 +28,7 @@ The variable `$angle` is provided to both `sin` and `cos`. The function call syn
 
 ```json
 {
-    "$vector": { x: 6, y: 8 },
+    "$vector": { "x": 6, "y": 8 },
     "length": "<< sqrt(pow($vector.x, 2) + pow($vector.y, 2)) >>"    
 }
 ```
@@ -71,7 +71,7 @@ The invocation operator can also be used with multi-argument functions. Consider
 
 ```json
 {
-    "$vector": { x: 6, y: 8 },
+    "$vector": { "x": 6, "y": 8 },
     "length": "<< sqrt($vector.x::pow(2) + $vector.y::pow(2)) >>"
 }
 ```
