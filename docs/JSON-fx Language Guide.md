@@ -67,7 +67,7 @@ JSON-fx defines an invocation operator `::`, which invokes a function on its lef
 
 In this example, the value of `$angle` has changed to *180.0*, now representing degrees instead of radians. The math functions `sin` and `cos` operate in radians, so `$angle` is converted back to radians with the library function `radians($deg)`.
 
-*Line 4* demonstrates a typical nested function call, where `$angle` is converted to radians and then passed to `sin`. *Line 5* includes the invocation operator `::` which passes `$angle` to the function `radians`. The two approaches, `radians($angle)` and `$angle:radians()` are functionally equivalent, but using the invocation operator can make some expressions easier to read[^1].
+*Line 4* demonstrates a typical nested function call, where `$angle` is converted to radians and then passed to `sin`. *Line 5* includes the invocation operator `::` which passes `$angle` to the function `radians`. The two approaches, `radians($angle)` and `$angle:radians()` are functionally equivalent, but using the invocation operator can make some expressions easier to read.
 
 #### Multi-Argument Functions
 
@@ -112,4 +112,4 @@ The value of `$email` is trimmed of whitespace, then converted to lowercase, the
 
 <br/>
 
-[^1]: The invocation operator aims to improve code clarity and emulate the behavior of object-oriented member functions. Its left operand can be perceived as a *this* pointer (or *self* in Python). Most library functions are designed to take advantage of invocation by placing the contextual argument first. For example, the function `endswith($string, $suffix)` places the contextual `$string` first such that it reads `$string:endswith($suffix)` upon invocation.
+> The invocation operator aims to improve code clarity and emulate the behavior of object-oriented member functions. Its left operand can be perceived as a *this* pointer (or *self* in Python). Most library functions are designed to take advantage of invocation by placing the contextual argument first. For example, the function `endswith($string, $suffix)` places the contextual `$string` first such that it reads `$string:endswith($suffix)` upon invocation.
