@@ -28,6 +28,14 @@ export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (str: string, from: number, length: number) => str.substr(from, length)
   },
   {
+    name: "startsWith",
+    evaluate: (str: string, test: string) => str.startsWith(test)
+  },
+  {
+    name: "endsWith",
+    evaluate: (str: string, test: string) => str.endsWith(test)
+  },
+  {
     name: "split",
     evaluate: (str: string, separator: string) => str.split(separator)
   },

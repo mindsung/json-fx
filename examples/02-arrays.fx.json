@@ -1,0 +1,26 @@
+{
+  "$": {
+    "numbers": [2, 4, 6, 8, 10, 11, 13, 15, 17, 19],
+    "words": ["orange", "grape", "apple", "berry", "lemon", "bricks", "watermelon"]
+  },
+  "length": "$.words:length()",
+  "length-expect": 7,
+  "min-number": "$.numbers:min()",
+  "min-number-expect": 2,
+  "min-word": "$.words:min()",
+  "min-word-expect": "apple",
+  "find-number": "$.numbers:find($n => $n > 10)",
+  "find-number-expect": 11,
+  "find-word": "$.words:find($w => $w:uppercase() == 'GRAPE')",
+  "find-word-expect": "grape",
+  "find-max": "$.words:filter($w => $w:startsWith('b')):findMax($w => $w:substr(0, 2))",
+  "find-max-expect": "bricks",
+  "range": "range(2, 6)",
+  "range-expect": [2, 3, 4, 5],
+  "slice": "$.numbers:slice(2, 5)",
+  "slice-expect": [6, 8, 10],
+  "filter": "$.numbers:filter($n => $n >= 10 && $n < 17)",
+  "filter-expect": [10, 11, 13, 15],
+  "item": "$.words:item(2)",
+  "item-expect": "apple"
+}

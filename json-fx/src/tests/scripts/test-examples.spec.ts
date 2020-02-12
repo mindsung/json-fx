@@ -48,6 +48,9 @@ fs.readdirSync("../examples").filter(f => f.endsWith(".fx.json")).forEach(f => {
   describe("Test example file: " + f, () => {
     const te = separateExpects(JSON.parse(fs.readFileSync("../examples/" + f).toString()));
     const output = new JsonFx().compile(te.template).evaluate();
+    if (process.argv.indexOf("--log") >= 0) {
+      console.log("values:", output);
+    }
     testExpects(output, te.expects);
   });
 });

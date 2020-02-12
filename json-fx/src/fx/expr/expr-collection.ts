@@ -139,6 +139,10 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (arr: any[]) => arr.length
   },
   {
+    name: "slice",
+    evaluate: (arr: any[], start: number, end: number) => arr.slice(start, end)
+  },
+  {
     name: "range",
     evaluate: (min: number, max: number) => {
       const result = [];
@@ -147,6 +151,10 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
       }
       return result;
     }
+  },
+  {
+    name: "item",
+    evaluate: (arr: any[], index: number) => arr[index]
   }
 ];
 
