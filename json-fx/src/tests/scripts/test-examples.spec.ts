@@ -45,12 +45,18 @@ function testExpects(output: any, expects: any): void {
 // TODO: Recurse into directories
 
 fs.readdirSync("../examples").filter(f => f.endsWith(".fx.json")).forEach(f => {
-  describe("Test example file: " + f, () => {
-    const te = separateExpects(JSON.parse(fs.readFileSync("../examples/" + f).toString()));
-    const output = new JsonFx().compile(te.template).evaluate();
-    if (process.argv.indexOf("--log") >= 0) {
-      console.log("values:", output);
+  describe("Example: " + f, () => {
+    const test = JSON.parse(fs.readFileSync("../examples/" + f).toString());
+    let te: any, output: any;
+
+    try {
+      te = separateExpects(test);
+      output = new JsonFx().compile(te.template).evaluate();
+      testExpects(output, te.expects);
+    } catch (e) {
+      it("Executes successfully", function (): void {
+        assert.fail(null, null, e.message);
+      });
     }
-    testExpects(output, te.expects);
   });
 });
