@@ -1,6 +1,6 @@
 {
   "name": "@mindsung/json-fx",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "MindSung JSON-Fx Library",
   "repository": "https://github.com/mindsung/json-fx",
   "main": "index.js",
@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc && ncp package.json dist/package.json",
+    "build": "rimraf dist/prod && tsc --build tsconfig.prod.json && ncp package.json dist/prod/package.json && ncp README.md dist/prod/README.md",
     "link": "npm run build && cd dist && npm link",
     "test": "ts-node node_modules/mocha/bin/mocha \"./src/**/*.spec.ts\"",
     "test:readme": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-readme.spec.ts\"",

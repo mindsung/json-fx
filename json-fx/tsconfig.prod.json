@@ -1,8 +1,10 @@
 {
   "extends": "../tsconfig.json",
+  "exclude": ["./src/**/*.spec.ts"],
   "compilerOptions": {
+    "sourceMap": false,
     "baseUrl": "./",
-    "outDir": "./dist/dev",
+    "outDir": "./dist/prod",
     "typeRoots": [
       "node_modules/@types"
     ]
