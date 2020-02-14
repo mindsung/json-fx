@@ -107,5 +107,15 @@ describe("Expressions [array]", function (): void {
     assert.deepEqual(fn(0, 10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   });
 
+  it("Evaluates [slice]", function (): void {
+    const fn = tester.get("slice");
+    assert.deepEqual(fn([0, 1, 2, 3], 1, 3), [1, 2]);
+  });
+
+  it("Evaluates [item]", function (): void {
+    const fn = tester.get("item");
+    assert.deepEqual(fn([0, 1, 2, 3], 2), 2);
+  });
+
   tester.done();
 });

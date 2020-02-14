@@ -1,3 +1,9 @@
+## Note
+If you've found this package, note that it is very early in development.
+It is currently useful, but is not well documented and needs a lot of clean-up.
+We needed to get this published for use outside our organization, but it is not yet ready for prime-time.
+Thanks for your understanding :)
+
 # JSON-fx
 **JSON-fx** is a query and transform engine for JavaScript objects.
 It defines an intuitive, declarative syntax for expressing an output value as a function of one or more input values.

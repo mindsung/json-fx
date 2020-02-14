@@ -3,6 +3,7 @@ import { JsonFx } from "../..";
 import { describe, it } from "mocha";
 import { assert } from "chai";
 import { isObject } from "../../common";
+import { TemplateParser } from "../../lexer/template-parser";
 
 function separateExpects(template: any, path: string = ""): { template: any, expects: any } {
   return Object.keys(template).reduce((acc, key) => {
@@ -43,6 +44,8 @@ function testExpects(output: any, expects: any): void {
 }
 
 // TODO: Recurse into directories
+
+// TemplateParser.LogExpressions = true;
 
 fs.readdirSync("../examples").filter(f => f.endsWith(".fx.json")).forEach(f => {
   describe("Example: " + f, () => {
