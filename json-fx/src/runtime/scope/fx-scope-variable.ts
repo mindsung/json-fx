@@ -1,14 +1,15 @@
 import { FxExpression } from "../fx-expression";
 import { FxScope } from "./fx-scope";
+import { FxConstant } from "../fx-constant";
 
 export class FxScopeVariable extends FxExpression {
   private readonly _fxScopeVariableExpressionType = "__FxScopeVariableExpression";
   public readonly varName: string;
-  private readonly inner: FxExpression;
-  private readonly canCache: boolean;
-  private readonly dependents: FxScopeVariable[] = [];
-  private cachedValue: any;
-  private isCached = false;
+  protected readonly inner: FxExpression;
+  protected readonly canCache: boolean;
+  protected readonly dependents: FxScopeVariable[] = [];
+  protected cachedValue: any;
+  protected isCached = false;
 
   constructor(name: string, inner: FxExpression, canCache = true) {
     super();
@@ -17,7 +18,7 @@ export class FxScopeVariable extends FxExpression {
     this.canCache = canCache;
   }
 
-  public evaluate(): any {
+  evaluate(): any {
     if (this.inner == null) {
       return null;
     } else if (this.canCache) {
@@ -52,5 +53,19 @@ export class FxScopeVariable extends FxExpression {
         this.dependents.push(dep);
       }
     }
+  }
+}
+
+export class FxConstantVariable extends FxScopeVariable {
+  constructor(name: string, private value: any) {
+    super(name, new FxConstant(value), true);
+    this.constant = this.inner as FxConstant;
+  }
+
+  private constant: FxConstant;
+
+  replaceValue(value: any) {
+    this.constant.replaceValue(value);
+    this.clearCache();
   }
 }

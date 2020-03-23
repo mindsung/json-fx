@@ -3,7 +3,7 @@ import { TemplateParser } from "../lexer/template-parser";
 import { FxExpression } from "../runtime/fx-expression";
 import { FxConstant } from "../runtime/fx-constant";
 import { FxScope } from "../runtime/scope/fx-scope";
-import { FxScopeVariable } from "../runtime/scope/fx-scope-variable";
+import { FxConstantVariable, FxScopeVariable } from "../runtime/scope/fx-scope-variable";
 import { FxExpressionDefinition } from "../model/fx-definition";
 import { FxTokenNode } from "../lexer/node/fx-token-node";
 import { Tokenizer } from "../lexer/tokenizer";
@@ -35,7 +35,7 @@ export class JsonFx {
 
 export interface FxCompiledTemplate {
   evaluate(...inputs: FxInput[]): any;
-
+  clearInputs(): void;
   toString(): string;
 }
 
@@ -53,16 +53,29 @@ class FxCompiledTemplateImpl implements FxCompiledTemplate {
     this.expr.bindScope(this.scope);
   }
 
-  evaluate(...inputs: FxInput[]): any {
-    this.scope.clearVariables();
+  private inputs: { [name: string]: FxConstantVariable } = {};
 
-    inputs.forEach(input => {
-      if (input.name == null || !input.name.startsWith("$")) {
-        throw new Error("Input variable names must begin with '$'.");
+  evaluate(...inputs: FxInput[]): any {
+    for (const input of inputs) {
+      const current = this.inputs[input.name];
+      if (current) {
+        current.replaceValue(input.value);
       }
-      this.scope.setVariable(new FxScopeVariable(input.name, new FxConstant(input.value)));
-    });
+      else {
+        if (input.name == null || !input.name.startsWith("$")) {
+          throw new Error("Input variable names must begin with '$'.");
+        }
+        const c = new FxConstantVariable(input.name, input.value);
+        this.scope.setVariable(c);
+        this.inputs[input.name] = c;
+      }
+    }
     return this.expr.evaluate();
+  }
+
+  clearInputs() {
+    this.inputs = {};
+    this.scope.clearVariables();
   }
 }
 

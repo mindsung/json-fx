@@ -7,8 +7,8 @@ export const ExprConditional: ReadonlyArray<FxExpressionDefinition> = [
     deferEvaluation: true,
     evaluate: (cond: FxExpression, thenReturn: FxExpression, elseReturn: FxExpression) =>
       cond.evaluate()
-        ? thenReturn == null ? null : thenReturn.evaluate()
-        : elseReturn == null ? null : elseReturn.evaluate()
+        ? thenReturn == null ? undefined : thenReturn.evaluate()
+        : elseReturn == null ? undefined : elseReturn.evaluate()
   },
   // {
   //   name: "if",

@@ -8,6 +8,10 @@ export class FxConstant extends FxExpression {
     this.value = value;
   }
 
+  public replaceValue(value: any) {
+    this.value = value;
+  }
+
   public evaluate() {
     return this.value;
   }

@@ -24,6 +24,7 @@ import { FxExpression } from "../runtime/fx-expression";
 import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
 import { FxSyntaxError } from "../model/fx-error";
 import { FxConstant } from "../runtime/fx-constant";
+import { ExprConversion } from "./expr/expr-conversion";
 
 export namespace Fx {
 
@@ -40,6 +41,7 @@ export namespace Fx {
     .concat(ExprConditional)
     .concat(ExprLogical)
     .concat(ExprString)
+    .concat(ExprConversion)
     .concat(ExprError)
     .concat(ExprMath)
     .concat(ExprRandom);
