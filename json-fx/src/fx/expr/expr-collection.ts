@@ -155,6 +155,14 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "item",
     evaluate: (arr: any[], index: number) => arr[index]
+  },
+  {
+    name: "first",
+    evaluate: (arr: any[]) => arr != null && arr.length > 0 ? arr[0] : undefined
+  },
+  {
+    name: "last",
+    evaluate: (arr: any[]) => arr != null && arr.length > 0 ? arr[arr.length - 1] : undefined
   }
 ];
 

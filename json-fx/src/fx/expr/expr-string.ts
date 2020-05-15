@@ -36,6 +36,10 @@ export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (str: string, test: string) => str.endsWith(test)
   },
   {
+    name: "contains",
+    evaluate: (str: string, test: string) => str.indexOf(test) >= 0
+  },
+  {
     name: "split",
     evaluate: (str: string, separator: string) => str.split(separator)
   },
