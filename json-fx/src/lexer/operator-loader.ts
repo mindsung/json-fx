@@ -58,7 +58,7 @@ export class OperatorLoader extends IteratorParser {
   }
 
   private parseObject(): void {
-    if (this.current.is("object") && this.isNotAssignment) {
+    if (this.current.is("array") && this.isNotAssignment) {
       this.current.tag = "dynamic";
 
       // TODO: This prevents inline object literals passed as a dynamic key emitter from being classified as dynamic. Implementation is messy.

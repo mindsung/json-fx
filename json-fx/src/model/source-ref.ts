@@ -1,5 +1,6 @@
 export interface SourceRef {
   symbol: string;
-  index: number;
+  line?: number;
+  index?: number;
   path?: string;
 }

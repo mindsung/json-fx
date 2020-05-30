@@ -1,0 +1,13 @@
+{
+  "@foo($)": "$:uppercase()",
+  "color": {
+    "red": "@foo('red')",
+    "green": "@foo('green')",
+    "blue": "@foo('blue')"
+  },
+  "color-expect": {
+    "red": "RED",
+    "green": "GREEN",
+    "blue": "BLUE"
+  }
+}

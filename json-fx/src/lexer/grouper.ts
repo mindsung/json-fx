@@ -15,7 +15,7 @@ export class Grouper implements FxParser<FxToken[], FxTokenNode> {
     this.root.sourceRef.path = this.path || "";
 
     for (const t of tokens) {
-      this.current = new FxTokenNode(t.tag, t.symbol, t.index);
+      this.current = new FxTokenNode(t.tag, t.symbol, t.line, t.index);
       this.current.sourceRef.path = this.path || "";
 
       switch (this.current.tag) {

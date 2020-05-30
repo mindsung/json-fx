@@ -1,10 +1,10 @@
-import { FxNode } from "./fx-node";
-import { FxTokenTag } from "../../model/fx-token-tag";
-import { FxToken } from "../../model/fx-token";
-import { FxExpression } from "../../runtime/fx-expression";
-import { FxDefinition, FxEvaluatorDefinition, FxOperatorDefinition } from "../../model/fx-definition";
-import { SourceRef } from "../../model/source-ref";
-import { isArray } from "../../common";
+import {FxNode} from "./fx-node";
+import {FxTokenTag} from "../../model/fx-token-tag";
+import {FxToken} from "../../model/fx-token";
+import {FxExpression} from "../../runtime/fx-expression";
+import {FxDefinition, FxEvaluatorDefinition, FxOperatorDefinition} from "../../model/fx-definition";
+import {SourceRef} from "../../model/source-ref";
+import {isArray} from "../../common";
 
 export class FxTokenNode extends FxNode implements FxToken {
 
@@ -13,11 +13,11 @@ export class FxTokenNode extends FxNode implements FxToken {
   public sourceRef: SourceRef;
   public definition: FxDefinition;
 
-  constructor(tag?: FxTokenTag, symbol?: string, index?: number) {
+  constructor(tag?: FxTokenTag, symbol?: string, line?: number, index?: number) {
     super();
     this.tag = tag || "";
     this.symbol = symbol || "";
-    this.sourceRef = { index: index, symbol: this.symbol, path: "" };
+    this.sourceRef = {line: line, index: index, symbol: this.symbol, path: ""};
     this.definition = {};
   }
 
@@ -61,7 +61,7 @@ export class FxTokenNode extends FxNode implements FxToken {
     if (this.definition.compiler) {
       return this.definition.compiler(this);
     } else {
-      throw new Error(`Token ${ this.toString() } has no compiler defined`);
+      throw new Error(`Token ${this.toString()} has no compiler defined`);
     }
   }
 
@@ -84,7 +84,7 @@ export class FxTokenNode extends FxNode implements FxToken {
   }
 
   public static from(token: FxToken): FxTokenNode {
-    const rootNode = new FxTokenNode(token.tag, token.symbol, token.index);
+    const rootNode = new FxTokenNode(token.tag, token.symbol, token.line, token.index);
 
     if (token.children) {
       for (const child of token.children) {
@@ -99,7 +99,7 @@ export class FxTokenNode extends FxNode implements FxToken {
     recursive = !!recursive;
     indent = indent != undefined ? indent : 0;
 
-    let result = (this.symbol != "" ? this.symbol : "<>") + ` [${ this.tag }]`;
+    let result = (this.symbol != "" ? this.symbol : "<>") + ` [${this.tag}]`;
 
     if (recursive) {
       const indentStr = indent > 0 ? "│ ".repeat(indent - 1) + "├─" : "";

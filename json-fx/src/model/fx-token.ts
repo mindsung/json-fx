@@ -4,6 +4,7 @@ export interface FxToken {
   tag: FxTokenTag;
 
   symbol?: string;
+  line?: number;
   index?: number;
   children?: FxToken[];
 }

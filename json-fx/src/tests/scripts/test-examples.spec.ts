@@ -1,9 +1,9 @@
 import * as fs from "fs";
-import { JsonFx } from "../..";
-import { describe, it } from "mocha";
-import { assert } from "chai";
-import { isObject } from "../../common";
-import { TemplateParser } from "../../lexer/template-parser";
+import {JsonFx} from "../..";
+import {describe, it} from "mocha";
+import {assert} from "chai";
+import {isObject} from "../../common";
+import {TemplateParser} from "../../lexer/template-parser";
 
 function separateExpects(template: any, path: string = ""): { template: any, expects: any } {
   return Object.keys(template).reduce((acc, key) => {
@@ -25,7 +25,7 @@ function separateExpects(template: any, path: string = ""): { template: any, exp
       }
     }
     return acc;
-  }, { template: {}, expects: {} });
+  }, {template: {}, expects: {}});
 }
 
 function testExpects(output: any, expects: any): void {
@@ -47,19 +47,32 @@ function testExpects(output: any, expects: any): void {
 
 // TemplateParser.LogExpressions = true;
 
-fs.readdirSync("../examples").filter(f => f.endsWith(".fx.json")).forEach(f => {
+fs.readdirSync("../examples").filter(f => f.endsWith(".fx") || f.endsWith(".fx.json")).forEach(f => {
   describe("Example: " + f, () => {
-    const test = JSON.parse(fs.readFileSync("../examples/" + f).toString());
-    let te: any, output: any;
+    const filepath = "../examples/" + f;
+    let test = fs.readFileSync("../examples/" + f).toString();
 
-    try {
-      te = separateExpects(test);
-      output = new JsonFx().compile(te.template).evaluate();
-      testExpects(output, te.expects);
-    } catch (e) {
-      it("Executes successfully", function (): void {
-        assert.fail(null, null, e.message);
-      });
+    if (filepath.endsWith(".json")) {
+      test = JSON.parse(test);
+      try {
+        const {template, expects} = separateExpects(test);
+        const output = new JsonFx().compile(template).evaluate();
+        testExpects(output, expects);
+      } catch (e) {
+        it("Executes successfully", function (): void {
+          assert.fail(null, null, e.message);
+        });
+      }
+    } else {
+      try {
+        const output = new JsonFx().compile(test).evaluate();
+        const {template, expects} = separateExpects(output);
+        testExpects(template, expects);
+      } catch (e) {
+        it("Executes successfully", function (): void {
+          assert.fail(null, null, e.message);
+        });
+      }
     }
   });
 });

@@ -3,7 +3,7 @@ import { FxExpression } from "./fx-expression";
 export class FxConstant extends FxExpression {
   public value: any;
 
-  constructor(value: any = null) {
+  constructor(value?: any) {
     super();
     this.value = value;
   }

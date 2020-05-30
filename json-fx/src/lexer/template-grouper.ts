@@ -1,8 +1,8 @@
-import { FxParser } from "../model/fx-parser";
-import { Tokenizer } from "./tokenizer";
-import { isArray, isBoolean, isNumber, isObject, isString } from "../common";
-import { Grouper } from "./grouper";
-import { FxTokenNode } from "./node/fx-token-node";
+import {FxParser} from "../model/fx-parser";
+import {Tokenizer} from "./tokenizer";
+import {isArray, isBoolean, isNumber, isObject, isString} from "../common";
+import {Grouper} from "./grouper";
+import {FxTokenNode} from "./node/fx-token-node";
 
 export class TemplateGrouper implements FxParser<any, FxTokenNode> {
 
@@ -22,10 +22,10 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
     if (isString(template)) {
       return this.parseString(template);
     } else if (isNumber(template)) {
-      return new FxTokenNode("numeric", template.toString(), 0);
+      return new FxTokenNode("numeric", template.toString(), 0, 0);
     } else if (isBoolean(template)) {
-      return new FxTokenNode("identifier", template.toString(), 0);
-    } else if (template === null || template === undefined) {
+      return new FxTokenNode("identifier", template.toString(), 0, 0);
+    } else if (template === null) {
       return new FxTokenNode("identifier", "null", 0);
     } else if (isArray(template)) {
       return this.parseArray(template);
@@ -131,7 +131,7 @@ export class TemplateGrouper implements FxParser<any, FxTokenNode> {
       if (isString(p)) {
         result += result ? "." + p : p;
       } else if (isNumber(p)) {
-        result += `[${ p }]`;
+        result += `[${p}]`;
       }
     }
 

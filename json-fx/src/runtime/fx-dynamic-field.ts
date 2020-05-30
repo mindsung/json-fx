@@ -1,7 +1,7 @@
-import { FxExpression } from "./fx-expression";
-import { FxLambda } from "./fx-lambda";
-import { isArray, isObject } from "../common";
-import { FxField, FxKeyValue } from "../model/fx-field";
+import {FxExpression} from "./fx-expression";
+import {FxLambda} from "./fx-lambda";
+import {isArray, isObject} from "../common";
+import {FxField, FxKeyValue} from "../model/fx-field";
 
 export class FxDynamicField extends FxField {
 
@@ -20,11 +20,11 @@ export class FxDynamicField extends FxField {
     const value = this.expression.evaluate();
 
     if (isObject(value)) {
-      return Object.keys(value).map(key => ({ key: key, value: this.lambda.evaluator(value[key], key) }));
+      return Object.keys(value).map(key => ({key: key, value: this.lambda.evaluator(key, value[key])}));
     } else if (isArray(value)) {
-      return value.map((item, index) => ({ key: item.toString(), value: this.lambda.evaluator(item, index) }));
+      return value.map((item, index) => ({key: item.toString(), value: this.lambda.evaluator(item, index)}));
     } else {
-      return [{ key: value.toString(), value: this.lambda.evaluator(value) }];
+      return [{key: value.toString(), value: this.lambda.evaluator(value)}];
     }
   }
 }

@@ -1,20 +1,22 @@
-import { FxParser } from "../model/fx-parser";
-import { isArray } from "../common";
-import { FxTokenRule } from "../model/fx-token-rule";
-import { FxToken } from "../model/fx-token";
-import { Fx } from "../fx";
+import {FxParser} from "../model/fx-parser";
+import {isArray} from "../common";
+import {FxTokenRule} from "../model/fx-token-rule";
+import {FxToken} from "../model/fx-token";
+import {Fx} from "../fx";
 
 export class Tokenizer implements FxParser<string, FxToken[]> {
 
   private tokens: FxToken[];
   private next: string;
   private isLiteralSequence: boolean;
+  private sourceLine: number;
   private sourceIndex: number;
   private prevToken: FxToken;
 
   private initialize(): void {
-    this.tokens = [{ symbol: "", tag: "", index: 0 }];
+    this.tokens = [{symbol: "", tag: "", index: 0}];
     this.isLiteralSequence = false;
+    this.sourceLine = 1;
     this.sourceIndex = 0;
     this.next = "";
     this.prevToken = this.tokens[0];
@@ -25,7 +27,13 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
 
     for (this.next of expr) {
       this.parseNextChar();
-      this.sourceIndex++;
+
+      if (this.next === "\n") {
+        this.sourceLine++;
+        this.sourceIndex = 0;
+      } else {
+        this.sourceIndex++;
+      }
     }
 
     this.removeWhitespace();
@@ -56,7 +64,7 @@ export class Tokenizer implements FxParser<string, FxToken[]> {
     if (this.canMergeNextWithLast(rule)) {
       this.mergeNextWithLast(rule);
     } else {
-      this.tokens.push({ symbol: this.next, tag: rule.tag, index: this.sourceIndex });
+      this.tokens.push({symbol: this.next, tag: rule.tag, line: this.sourceLine, index: this.sourceIndex});
     }
   }
 
