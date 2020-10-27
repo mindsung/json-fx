@@ -30,6 +30,24 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
+    name: "indexOf",
+    evaluate: (arr: any[], value: any) => {
+      if (isArray(arr)) {
+        return arr.indexOf(value);
+      }
+    }
+  },
+  {
+    name: "findIndex",
+    evaluate: (arr: any[], lambda: AnyFn) => {
+      if (isArray(arr)) {
+        if (lambda) {
+          return arr.findIndex(lambda);
+        }
+      }
+    }
+  },
+  {
     name: "filter",
     evaluate: (value: any, lambda: AnyFn) => {
       if (isArray(value)) {
