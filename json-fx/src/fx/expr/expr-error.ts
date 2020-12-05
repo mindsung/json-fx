@@ -4,7 +4,7 @@ import { FxExpression } from "../../runtime/fx-expression";
 
 export const ExprError: ReadonlyArray<FxExpressionDefinition> = [
   {
-    name: "notnull",
+    name: "notNull",
     evaluate: (value: any) => {
       if (value == null) {
         throw new FxCompileError("Value cannot be null.");

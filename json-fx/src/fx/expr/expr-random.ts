@@ -10,11 +10,11 @@ export const ExprRandom: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (min: number = 0, max: number = 1) => Math.random() * (max - min) + min
   },
   {
-    name: "math~randint",
+    name: "math~randInt",
     evaluate: randomint
   },
   {
-    name: "math~randselect",
+    name: "math~randSelect",
     evaluate: (arr: any[]) => arr[randomint(0, arr.length)]
   }
 ];

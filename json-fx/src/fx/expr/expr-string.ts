@@ -19,13 +19,17 @@ function wordSplit(str: string): string[] {
     lastChar = char;
   }
 
-  return words;
+  return words.filter(w => !!w);
 }
 
 export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "substr",
     evaluate: (str: string, from: number, length: number) => str.substr(from, length)
+  },
+  {
+    name: "substring",
+    evaluate: (str: string, from: number, length: number) => str.substring(from, length)
   },
   {
     name: "startsWith",
@@ -48,25 +52,28 @@ export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (items: any[], separator: string) => items.join(separator)
   },
   {
-    name: "uppercase",
+    name: "toUpperCase",
     evaluate: (str: string) => str.toUpperCase()
   },
   {
-    name: "lowercase",
+    name: "toLowerCase",
     evaluate: (str: string) => str.toLowerCase()
   },
   {
-    name: "titlecase",
+    // This doesn't work well - if there are series of digits, it puts a space between each.
+    // e.g. "1234" -> "1 2 3 4"
+    name: "toTitleCase",
     evaluate: (str: string) => {
       return wordSplit(str).map(word => word[0].toUpperCase() + word.substr(1)).join(" ");
     }
   },
   {
-    name: "snakecase",
+    // Same issue as toTitleCase.
+    name: "toSnakeCase",
     evaluate: (str: string) => wordSplit(str).join("_")
   },
   {
-    name: "camelcase",
+    name: "toCamelCase",
     evaluate: (str: string) => {
       const words = wordSplit(str);
       let result = "";
@@ -86,15 +93,19 @@ export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
-    name: "reverse",
-    evaluate: (str: string) => {
-      let result = "";
-
-      for (let i = str.length - 1; i >= 0; i--) {
-        result += str[i];
-      }
-
-      return result;
-    }
+    name: "trim",
+    evaluate: (str: string) => str.trim()
+  },
+  {
+    name: "trimLeft",
+    evaluate: (str: string) => str.trimLeft()
+  },
+  {
+    name: "trimRight",
+    evaluate: (str: string) => str.trimRight()
+  },
+  {
+    name: "replace",
+    evaluate: (val, orig, repl) => val.split(orig).join(repl || "")
   }
 ];

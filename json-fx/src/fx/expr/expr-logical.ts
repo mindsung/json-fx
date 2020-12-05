@@ -17,7 +17,7 @@ export const ExprLogical: ReadonlyArray<FxExpressionDefinition> = [
     operator: { symbol: "!", precedence: 1.2, isUnary: true, assoc: "left" }
   },
   {
-    name: "notnot",
+    name: "notNot",
     evaluate: a => !!a,
     operator: { symbol: "!!", precedence: 1.2, isUnary: true, assoc: "left" }
   },

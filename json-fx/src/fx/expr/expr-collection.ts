@@ -18,16 +18,20 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
     name: "sort",
     evaluate: (arr: any[], lambda: AnyFn) => {
       if (lambda) {
-        return arr.sort((a, b) => {
+        return arr.slice().sort((a, b) => {
           const evalA = lambda(a);
           const evalB = lambda(b);
 
           return evalA > evalB ? 1 : -1;
         });
       } else {
-        return arr.sort();
+        return arr.slice().sort();
       }
     }
+  },
+  {
+    name: "reverse",
+    evaluate: (arr: any[]) => arr.slice().reverse()
   },
   {
     name: "indexOf",
@@ -181,6 +185,10 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "last",
     evaluate: (arr: any[]) => arr != null && arr.length > 0 ? arr[arr.length - 1] : undefined
+  },
+  {
+    name: "asArray",
+    evaluate: (...vals: any[]) => vals
   }
 ];
 
