@@ -1,6 +1,10 @@
 import { FxExpressionDefinition } from "../../model/fx-definition";
 
-function wordSplit(str: string): string[] {
+function simpleWordSplit(str: string): string[] {
+  return str.split(" ").map(s => s.trim()).filter(s => !!s);
+}
+
+function connectedWordSplit(str: string): string[] {
   const words = [""];
   let lastChar: string;
 
@@ -60,22 +64,19 @@ export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (str: string) => str.toLowerCase()
   },
   {
-    // This doesn't work well - if there are series of digits, it puts a space between each.
-    // e.g. "1234" -> "1 2 3 4"
     name: "toTitleCase",
     evaluate: (str: string) => {
-      return wordSplit(str).map(word => word[0].toUpperCase() + word.substr(1)).join(" ");
+      return simpleWordSplit(str).map(word => word[0].toUpperCase() + word.substr(1)).join(" ");
     }
   },
   {
-    // Same issue as toTitleCase.
     name: "toSnakeCase",
-    evaluate: (str: string) => wordSplit(str).join("_")
+    evaluate: (str: string) => simpleWordSplit(str).join("_")
   },
   {
     name: "toCamelCase",
     evaluate: (str: string) => {
-      const words = wordSplit(str);
+      const words = connectedWordSplit(str);
       let result = "";
 
       for (let i = 0; i < words.length; i++) {
