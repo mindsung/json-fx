@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/dev",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "paths": {
+      "@mindsung/json-fx": [
+        "../json-fx/src"
+      ]
+    }
+  }
+}

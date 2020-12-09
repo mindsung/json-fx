@@ -1,0 +1,23 @@
+{
+  "name": "json-fx-examples",
+  "version": "0.0.1",
+  "scripts": {
+    "start-ex1": "node --require ts-node/register --require tsconfig-paths/register src/ex1.ts"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.5",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.14",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "ncp": "^2.0.0",
+    "path": "^0.12.7",
+    "rimraf": "^2.7.1",
+    "ts-node": "^8.5.4",
+    "tsconfig-paths": "^3.9.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
