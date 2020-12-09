@@ -1,7 +1,7 @@
 import { FxExpressionDefinition } from "../../model/fx-definition";
 import { isFunction, isNumber } from "../../common";
 
-export const ExprMath: ReadonlyArray<FxExpressionDefinition> = Object.getOwnPropertyNames(Math).map(key => {
+export const FnJsMath: ReadonlyArray<FxExpressionDefinition> = Object.getOwnPropertyNames(Math).map(key => {
   const prop = Math[key];
   const x = isFunction(prop) ? (...params: any[]): any => prop(...params) : isNumber(prop) ? () => prop : null;
   return {

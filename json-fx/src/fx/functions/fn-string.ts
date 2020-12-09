@@ -26,14 +26,18 @@ function connectedWordSplit(str: string): string[] {
   return words.filter(w => !!w);
 }
 
-export const ExprString: ReadonlyArray<FxExpressionDefinition> = [
+export const FnString: ReadonlyArray<FxExpressionDefinition> = [
+  {
+    name: "toString",
+    evaluate: (val: any) => val.toString()
+  },
   {
     name: "substr",
-    evaluate: (str: string, from: number, length: number) => str.substr(from, length)
+    evaluate: (str: string, startIndex: number, length: number) => str.substr(startIndex, length)
   },
   {
     name: "substring",
-    evaluate: (str: string, from: number, length: number) => str.substring(from, length)
+    evaluate: (str: string, startIndex: number, stopIndex: number) => str.substring(startIndex, stopIndex)
   },
   {
     name: "startsWith",

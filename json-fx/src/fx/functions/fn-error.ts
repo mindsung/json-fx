@@ -2,7 +2,7 @@ import { FxExpressionDefinition } from "../../model/fx-definition";
 import { FxCompileError } from "../../model/fx-error";
 import { FxExpression } from "../../runtime/fx-expression";
 
-export const ExprError: ReadonlyArray<FxExpressionDefinition> = [
+export const FnError: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "notNull",
     evaluate: (value: any) => {

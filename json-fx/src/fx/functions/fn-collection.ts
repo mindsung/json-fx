@@ -1,7 +1,7 @@
 import { isArray, isNumber, isObject } from "../../common";
 import { AnyFn, FxExpressionDefinition } from "../../model/fx-definition";
 
-export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
+export const FnCollection: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "assign",
     evaluate: (...objects: any[]) => {
@@ -79,6 +79,18 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
     }
   },
   {
+    name: "slice",
+    evaluate: (arr: any[], startIndex: number, stopIndex: number) => arr.slice(startIndex, stopIndex)
+  },
+  {
+    name: "splice",
+    evaluate: (arr: any[], startIndex: number, deleteCount: number, ...addItems: any[]) => {
+      const copy = arr.slice();
+      copy.splice(startIndex, deleteCount, ...addItems);
+      return copy;
+    }
+  },
+  {
     name: "concat",
     evaluate: (a: any, ...other: any[]) => {
       if (!isArray(a)) {
@@ -126,7 +138,7 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "findMax",
-    evaluate: (arr: any[], lambda: AnyFn) => {
+    evaluate: (arr: any[], lambda?: AnyFn) => {
       let max: any = null;
       let maxItem: any = null;
       arr.forEach(item => {
@@ -141,7 +153,7 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   },
   {
     name: "avg",
-    evaluate: (arr: any[], lambda: AnyFn) => {
+    evaluate: (arr: any[], lambda?: AnyFn) => {
       let total = 0;
       let count = 0;
       arr.forEach(item => {
@@ -161,14 +173,10 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
     evaluate: (arr: any[]) => arr.length
   },
   {
-    name: "slice",
-    evaluate: (arr: any[], start: number, end: number) => arr.slice(start, end)
-  },
-  {
     name: "range",
-    evaluate: (min: number, max: number) => {
+    evaluate: (min: number, max: number, incr: number) => {
       const result = [];
-      for (let i = min; i < max; i++) {
+      for (let i = min; i < max; i += (incr || 1)) {
         result.push(i);
       }
       return result;
@@ -185,10 +193,6 @@ export const ExprCollection: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "last",
     evaluate: (arr: any[]) => arr != null && arr.length > 0 ? arr[arr.length - 1] : undefined
-  },
-  {
-    name: "asArray",
-    evaluate: (...vals: any[]) => vals
   }
 ];
 

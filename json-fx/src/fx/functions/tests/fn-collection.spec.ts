@@ -1,12 +1,12 @@
-import { ExprCollection } from "./expr-collection";
+import { FnCollection } from "../fn-collection";
 import { describe, it } from "mocha";
 import { assert } from "chai";
-import { ExpressionTester } from "../../tests/expression-tester";
+import { ExpressionTester } from "../../../tests/expression-tester";
 
 
 describe("Expressions [array]", function (): void {
 
-  const tester = new ExpressionTester(ExprCollection);
+  const tester = new ExpressionTester(FnCollection);
 
   it("Evaluates [assign]", function (): void {
     const fn = tester.get("assign");

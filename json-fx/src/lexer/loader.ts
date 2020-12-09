@@ -12,7 +12,7 @@ export class Loader {
     this.definitions = {};
 
     Fx.Intrinsics.forEach(intr => this.defineIntrinsic(intr));
-    Fx.Expressions.forEach(expr => this.defineExpression(expr));
+    Fx.Functions.forEach(expr => this.defineExpression(expr));
 
     for (const set of expressions) {
       set.forEach(expr => this.defineExpression(expr));

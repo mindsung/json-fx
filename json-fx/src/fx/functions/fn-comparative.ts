@@ -1,15 +1,25 @@
 import { FxExpressionDefinition } from "../../model/fx-definition";
 
-export const ExprComparative: ReadonlyArray<FxExpressionDefinition> = [
+export const FnComparative: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "eq",
-    evaluate: (a, b) => a === b,
+    evaluate: (a, b) => a == b,
     operator: { symbol: "==", precedence: 2 }
   },
   {
+    name: "eqq",
+    evaluate: (a, b) => a === b,
+    operator: { symbol: "===", precedence: 2 }
+  },
+  {
     name: "neq",
-    evaluate: (a, b) => a !== b,
+    evaluate: (a, b) => a != b,
     operator: { symbol: "!=", precedence: 2 }
+  },
+  {
+    name: "neqq",
+    evaluate: (a, b) => a !== b,
+    operator: { symbol: "!==", precedence: 2 }
   },
   {
     name: "gt",

@@ -1,12 +1,12 @@
-import { ExprArithmetic } from "./expr-arithmetic";
+import { FnArithmetic } from "../fn-arithmetic";
 import { describe, it, before, after } from "mocha";
 import { assert } from "chai";
-import { ExpressionTester } from "../../tests/expression-tester";
+import { ExpressionTester } from "../../../tests/expression-tester";
 
 
 describe("Expressions [arithmetic]", function (): void {
 
-  const tester = new ExpressionTester(ExprArithmetic);
+  const tester = new ExpressionTester(FnArithmetic);
 
   it("Evaluates [add]", function (): void {
     const fn = tester.get("add");
