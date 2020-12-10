@@ -25,15 +25,9 @@ const output = compiled.evaluate({ name: "$", value: myInput });
 
 console.log(JSON.stringify(output, null, 2));
 
-const template = {
-  "@isBigNumber($n)": "$n >= 100",
-  "$numbers": [50, 75, 100, 200],
-  firstBigNumber: "$numbers:find(@isBigNumber)"
-};
+const template = "math~floor($.foo / 10) % 10";
 
 console.log(new JsonFx().compile(template).evaluate({ name: "$", value: {
-    someProp_: {
-      someMissingProp: "Hello World!"
-    }
+    foo: 1234
   }
 }));
