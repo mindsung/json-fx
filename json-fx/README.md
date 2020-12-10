@@ -5,9 +5,7 @@ It defines an intuitive, declarative syntax for expressing an output value as a 
 Use cases could include any scenario in which the query of values from JSON data, or transformation of entire JSON
 objects, is best implemented through runtime configuration rather than hard-coded into application logic.
 
-Templates are parsed and compiled at runtime into expression trees, which are very efficient and lightweight wrappers
-around the native JavaScript code they execute. The library includes a large collection of built-in functions and operators,
-and is easily extensible.
+**JSON-fx** expressions are embedded in JSON objects known as templates which are parsed and compiled at runtime into expression trees. These are efficient and lightweight wrappers around the native JavaScript code they execute. The library includes a large collection of built-in functions and operators and is easily extensible.
 
 The **JSON-fx** core library, which includes the parser/compiler and a built-in set of functions, has no external
 runtime dependencies, giving it an extremely compact footprint.
@@ -101,25 +99,48 @@ take place), or a single JSON-fx string expression, or a complex JSON-fx object 
 
 A JSON-fx string expression is, as the name suggests, a string value, which contains one or more function
 calls and/or operators, resulting in exactly one output value or object. It will be parsed by the JSON-fx
-runtime when the template is compiled, creating an efficient expression tree that can be evaluated any number
-of times against different input values.
+runtime when the template is compiled, creating an efficient expression tree that can be evaluated against different input values.
+
 
 ```ts
 const compiled = fx.compile("($.n * 6):toString:substr(0, 1)");
-const output = fx.evaluate({ name: "$", value: { n: 5 } }); // output = "3"
+const output = compiled.evaluate({ name: "$", value: { n: 5 } }); 
+// Output: "3"
 ```
 In the example above, the input property ``$.n`` is multiplied by the constant number ``6``,
 resulting in the number ``30``, which is passed into the function ``toString``, the result of which is
 passed into the function ``substr`` with arguments ``0, 1``, which returns a string starting at index ``0``
 and of length ``1``, resulting in a final expression output value of ``"3"``.
 
+# Alternate example suggestion. Original example is a little confusing because the result is numeric and the expression contains arithmetic, but the output is a string. It also perhaps introduces the invocation ":" operator prematurely which is explained much better further down.
+
+```ts
+import { JsonFx } from "@mindsung/json-fx";
+
+
+const fx = new JsonFx();
+
+const template = "floor($.foo / 10) % 10";
+const expression = fx.compile(template);
+
+const input = {
+  name: "$",
+  value: { foo: 54 }
+}
+
+const output = expression.evaluate(input); // output = 3
+```
+
+In this example, the input `$` is an object containing a single property `foo`. The template string defines a JSON-fx expression, `floor($.foo / 10)`, which effectively outputs the tens digit of `$.foo` using integer division and the modulus operator. The template is provided to `fx.compile(...)` which converts the string into an expression. Lastly, `expression.evaluate(input)` executes the expression against the provided input and returns the result.
+
+# END of alternate example
+
 #### Functions and operators
 
 [Click here for a reference of all JSON-fx built-in functions and operators](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions)
 
-Function calls are the core components of any JSON-fx string expression. All string expressions are,
-essentially, simply a combination of one or more function evaluations. Although the expression syntax is
-often made easier to read using operators, even operators are just a syntactic shortcut representing a
+Function calls are the core components of any JSON-fx string expression. All string expressions are
+essentially a combination of one or more function evaluations. Even operators are a syntactic shortcut representing a
 call to an associated function. For example, the expression ``$a + $b`` is just a shorthand representation
 of the function call ``add($a, $b)``.
 
@@ -128,25 +149,20 @@ function name, opening parentheses, comma-separated arguments, and closing paren
 
 ``"add($a, $b)"``
 
-They may also be chained together with other values, functions, or expressions, using the ``:`` (colon) symbol.
-In this case the value of the expression to the left of the colon is implicitly passed as the first
-argument into the function. Additional arguments, if any, are then passed within the parentheses following
-the function name. Examples:
+They may also be chained together with other values, functions, or expressions using the infix `:` operator.
 
-``"$a:add($b)"`` is equivalent to ``"add($a, $b)"``
+`$a:add($b)"` is equivalent to `"add($a, $b)`
 
-``"($a + 5):add($b)"`` is equivalent to ``"add($a + 5, $b)"``,
-also equivalent to ``"$a:add(5):add($b)"``,
-also equivalent to ``"add(add($a, 5), $b)"``
+The left-hand value `$a` is implicitly passed to `add($b)` as the first argument, displacing the other arguments. When chained together, the infix operator provides better clarity in many situations. Example:
 
-When chaining functions, if a function requires no arguments other than the preceding expression
-(which is implicitly the function's first argument), the empty opening/closing parentheses may be omitted.
+`toString(add($a, $b))` is better expressed as `add($a, $b):toString()`,
+or even `$a:add($b):toString()`
 
-``"($a + $b):toString"`` is equivalent to ``"toString($a + $b)"``
+If the right-hand function requires only one argument (which is implicitly provided by the left-hand operand), then the parentheses may be omitted:
 
-The full set of functions available to be called in any expression consists of a comprehensive set of
-[built-in JSON-fx functions](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions),
-and any additional extension function definitions passed as an optional array into the ``JsonFx`` class constructor.
+`$a:add($b):toString`
+
+A comprehensive set of [built-in JSON-fx functions](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions) provides the core functionality, exposing and extending the many of the useful JavaScript methods. Additionally, extension functions and operators can be injected to extend the language by passing any array of definitions to the `JsonFx` class constructor.
 
 #### Extension functions
 
@@ -327,9 +343,7 @@ const template = {
 
 #### Object value promotion
 
-In addition to variable ``"$"`` and user-defined function ``"@"`` notation, a third special property notation exists
-that is used to promote that property's value to be its parent property value. A property name of ``"()"``
-(open/close parentheses, with no other text) is used to indicate this value promotion. Value promotion is
+In addition to variable ``"$"`` and user-defined function ``"@"`` notation, a property name of `"()"` (empty parantheses) promotes that property to act as the value of its parent, thus ignoring all other properties defined on the object. Value promotion is
 useful when a single output value is required, but it is necessary or helpful to arrive at the value by
 using a more complex object expression, so that variables and/or user-defined functions may be
 used.
@@ -337,15 +351,14 @@ used.
 ```ts
 const template = {
   "$pi": 3.14159,
-  "@area($radius)": "($pi * $radius * $radius * 100):math~round / 100",
+  "@area($radius)": "$pi * $radius:pow(2)",
   "()": "@area($)"
 };
 ```
-When evaluated with an input ``$`` of value ``3`` will yield just the number ``28.27`` (not an object).
+
+When the above template is evaluated with input `$ = 3`, the result is simply `28.27431` (not an object).
 Value promotion may be used in any nested level of object expressions, not just at the top level of the
 template object.
 
 Note that when using value promotion notation, the ``"()"`` property must be the only property, aside from
-variable and user-defined function declarations, on the object. If other normal object properties exist
-on the object expression alongside the special value promotion property, an error will be thrown during
-template compilation.
+variable and user-defined function declarations, on the object. Other normal object properties present will result in a compile-time error.
