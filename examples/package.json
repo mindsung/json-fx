@@ -19,5 +19,8 @@
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "@mindsung/json-fx": "^0.1.8"
   }
 }

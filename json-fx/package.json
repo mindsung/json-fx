@@ -1,8 +1,9 @@
 {
   "name": "@mindsung/json-fx",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "MindSung JSON-Fx Library",
   "repository": "https://github.com/mindsung/json-fx",
+  "keywords": ["json", "templating", "template", "transform", "query", "expressions"],
   "main": "index.js",
   "types": "index.d.ts",
   "author": {
