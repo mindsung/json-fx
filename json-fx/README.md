@@ -162,7 +162,7 @@ If the right-hand function requires only one argument (which is implicitly provi
 
 `$a:add($b):toString`
 
-A comprehensive set of [built-in JSON-fx functions](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions) provides the core functionality, exposing and extending the many of the useful JavaScript methods. Additionally, extension functions and operators can be injected to extend the language by passing any array of definitions to the `JsonFx` class constructor.
+A comprehensive set of [built-in JSON-fx functions](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions) provides the core functionality, exposing and extending many of the useful JavaScript methods. Additionally, extension functions and operators can be injected to extend the language by passing an array of definitions to the `JsonFx` class constructor.
 
 #### Extension functions
 
