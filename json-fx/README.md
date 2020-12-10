@@ -106,7 +106,7 @@ runtime when the template is compiled, creating an efficient expression tree tha
 any number of different input values.
 
 ```ts
-const template = "math~floor($.foo / 10) % 10";
+const template = "math~floor($.someNumber / 10) % 10";
 const compiled = fx.compile(template);
 const input = {
   name: "$",
