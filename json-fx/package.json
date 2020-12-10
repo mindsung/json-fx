@@ -1,6 +1,6 @@
 {
   "name": "@mindsung/json-fx",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "MindSung JSON-Fx Library",
   "repository": "https://github.com/mindsung/json-fx",
   "main": "index.js",
