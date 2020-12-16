@@ -237,7 +237,7 @@ Returns a JavaScript Date object representing the system time at the time the fu
 ***
 #### `dateTime(initVal)`
 Returns a JavaScript Date object initialized with the string `initVal` or with an integer `initVal`
-representing a standard UNIX timestamp value
+representing a standard epoch millisecond timestamp value
 ***
 #### `toISODateTime(val)`
 Returns an [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) string representation of the input
