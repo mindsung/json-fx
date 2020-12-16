@@ -9,7 +9,6 @@
 
 # IDEs and editors
 /.idea
-!/.idea/runConfigurations/*
 
 .project
 .classpath

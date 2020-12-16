@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sandbox-cable-data" type="NodeJSConfigurationType" node-parameters="-r ts-node/register -r tsconfig-paths/register" path-to-js-file="cable-data/index.ts" working-dir="$PROJECT_DIR$/json-fx-sandbox/src">
-    <method v="2" />
-  </configuration>
-</component>
