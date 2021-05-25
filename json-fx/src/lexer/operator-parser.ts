@@ -60,10 +60,13 @@ export class OperatorParser implements FxParser {
   }
 
   private parseOperator(): void {
-    if (this.current.operator.isUnary) {
-      this.parseUnary();
-    } else {
-      this.parseBinary();
+    if (this.current.operator) {
+      if (this.current.operator.isUnary) {
+        this.parseUnary();
+      }
+      else {
+        this.parseBinary();
+      }
     }
   }
 
