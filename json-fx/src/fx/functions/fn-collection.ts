@@ -93,9 +93,13 @@ export const FnCollection: ReadonlyArray<FxExpressionDefinition> = [
   {
     name: "concat",
     evaluate: (a: any, ...other: any[]) => {
-      if (!isArray(a)) {
+      if (a == null) {
+        a = [];
+      }
+      else if (!isArray(a)) {
         a = [a];
       }
+      other = other.filter(oa => oa != null);
       for (let i = 0; i < other.length; i++) {
         if (!isArray(other[i])) {
           other[i] = [other[i]];
