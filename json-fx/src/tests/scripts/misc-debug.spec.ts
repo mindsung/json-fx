@@ -9,7 +9,7 @@ describe("Scripts [misc/debug]", function (): void {
   tester.input({ name: "$", value: {
     a: [
       { b: [{ c: [ 1, 2, 3, 4] }, { c: [1, 2, 3] }] },
-      { b: [{ c: null }, { c: [1, 2, 3, 4, 5, 6] }, { c: [1, null, 3, 4] }] }
+      { b: [{ c: null }, { c: [1, 2, 3] }, { c: [1, 2, 3, 4, 5, 6] }, { c: [1, null, 3, 4] }] }
     ]
   }});
 
@@ -35,6 +35,6 @@ describe("Scripts [misc/debug]", function (): void {
       "@totalBs($bs)": "$bs?:reduce(($total, $b) => @addTotals($total, ifElse($b != null, @totalCs($b?.c))))",
       "()": "$.a?:reduce(($total, $a) => @addTotals($total, ifElse($a != null, @totalBs($a?.b))))"
     });
-    assert.deepEqual(totals, { count: 16, sum: 45 });
+    assert.deepEqual(totals, { count: 19, sum: 51 });
   });
 });
