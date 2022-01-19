@@ -9,7 +9,7 @@ describe("Scripts [misc/debug]", function (): void {
   tester.input({ name: "$", value: {
     a: [
       { b: [{ c: [ 1, 2, 3, 4] }, { c: [1, 2, 3] }] },
-      { b: [{ c: [ 1, 2, 3] }, { c: [1, 2, 3, 4, 5, 6] }, { c: [1, null, 3, 4] }] }
+      { b: [{ c: null }, { c: [1, 2, 3, 4, 5, 6] }, { c: [1, null, 3, 4] }] }
     ]
   }});
 
@@ -31,10 +31,10 @@ describe("Scripts [misc/debug]", function (): void {
   it("This works", function (): void {
     const totals = tester.run({
       "@addTotals($t1, $t2)": "{ count: ($t1?.count || 0) + ($t2?.count || 0), sum: ($t1?.sum || 0) + ($t2?.sum || 0) }",
-      "@totalCs($cs)": "$cs:reduce(($total, $c) => @addTotals($total, ifElse($c != null, { count: 1, sum: $c })))",
-      "@totalBs($bs)": "$bs:reduce(($total, $b) => @addTotals($total, ifElse($b != null, @totalCs($b.c))))",
-      "()": "$.a?:reduce(($total, $a) => @addTotals($total, ifElse($a != null, @totalBs($a.b))))"
+      "@totalCs($cs)": "$cs?:reduce(($total, $c) => @addTotals($total, ifElse($c != null, { count: 1, sum: $c })))",
+      "@totalBs($bs)": "$bs?:reduce(($total, $b) => @addTotals($total, ifElse($b != null, @totalCs($b?.c))))",
+      "()": "$.a?:reduce(($total, $a) => @addTotals($total, ifElse($a != null, @totalBs($a?.b))))"
     });
-    assert.deepEqual(totals, { count: 19, sum: 51 });
+    assert.deepEqual(totals, { count: 16, sum: 45 });
   });
 });
