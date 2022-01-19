@@ -11,7 +11,7 @@ export class FxScopeVariable extends FxExpression {
   protected cachedValue: any;
   protected isCached = false;
 
-  constructor(name: string, inner: FxExpression, canCache = true) {
+  constructor(name: string, inner: FxExpression, canCache: boolean) {
     super();
     this.varName = name;
     this.inner = inner;

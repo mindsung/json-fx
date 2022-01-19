@@ -23,6 +23,7 @@ import { FxExpression } from "../runtime/fx-expression";
 import { InvokeDef, NullInvokeDef } from "./def/invoke-def";
 import { FxSyntaxError } from "../model/fx-error";
 import { FnTime } from "./functions/fn-time";
+import { FnMisc } from "./functions/fn-misc";
 
 export namespace Fx {
 
@@ -40,6 +41,7 @@ export namespace Fx {
     .concat(FnLogical)
     .concat(FnString)
     .concat(FnTime)
+    .concat(FnMisc)
     .concat(FnError)
     .concat(FnJsMath);
 

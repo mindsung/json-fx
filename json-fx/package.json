@@ -1,6 +1,6 @@
 {
   "name": "@mindsung/json-fx",
-  "version": "0.1.15",
+  "version": "0.1.18",
   "description": "MindSung JSON-Fx Library",
   "repository": "https://github.com/mindsung/json-fx",
   "keywords": [
@@ -29,6 +29,7 @@
     "test": "ts-node node_modules/mocha/bin/mocha \"./src/**/*.spec.ts\"",
     "test:readme": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-readme.spec.ts\"",
     "test:examples": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-examples.spec.ts\"",
+    "test:misc": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/misc-debug.spec.ts\"",
     "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
     "build:publish": "npm version patch && npm run build:full && cd dist/full && npm publish --access public",
     "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack",

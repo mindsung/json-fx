@@ -49,7 +49,7 @@ export class ObjectDef extends FxDef {
             result.addField(new FxDynamicField(key.first.compile(), new FxLambda(key.children.slice(1).map(c => c.symbol), value.compile())));
             break;
           case "variable":
-            result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile()));
+            result.scope.setVariable(new FxScopeVariable(key.symbol, value.compile(), true));
             break;
           case "template":
           case "template-call":
