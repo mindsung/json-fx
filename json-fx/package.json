@@ -1,39 +1,24 @@
 {
   "name": "@mindsung/json-fx",
-  "type": "module",
-  "version": "0.1.21",
-  "description": "MindSung JSON-Fx Library",
-  "repository": "https://github.com/mindsung/json-fx",
-  "keywords": [
-    "javascript",
-    "json",
-    "templating",
-    "template",
-    "transform",
-    "query",
-    "expressions"
-  ],
-  "main": "index.js",
-  "types": "index.d.ts",
-  "author": {
-    "name": "Aaron Eads"
-  },
-  "contributors": [
-    {
-      "name": "Robb Eads"
+  "version": "0.1.23",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
     }
-  ],
-  "license": "MIT",
+  },
   "scripts": {
-    "build": "rimraf dist/prod && tsc --build tsconfig.prod.json && ncp package.json dist/prod/package.json && ncp README.md dist/prod/README.md",
+    "build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --clean --minify",
+    "publish": "npm version patch && cd npm && npm version patch && cd .. && npm run build && ncp npm/package.json dist/package.json && ncp README.md dist/README.md && cd dist && npm publish --access public",
     "link": "npm run build && cd dist && npm link",
     "test": "ts-node node_modules/mocha/bin/mocha \"./src/**/*.spec.ts\"",
     "test:readme": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-readme.spec.ts\"",
     "test:examples": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-examples.spec.ts\"",
     "test:misc": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/misc-debug.spec.ts\"",
-    "build:full": "node_modules/.bin/rimraf dist/full && tsc --declaration true --outDir dist/full && node_modules/.bin/ncp package.json dist/full/package.json",
-    "build:publish": "npm version patch && npm run build:full && cd dist/full && npm publish --access public",
-    "build:webpack": "node_modules/.bin/rimraf dist/webpack && npm run build:full && webpack",
     "lint": "tslint src/**/*.ts",
     "lint-fix": "tslint --fix src/**/*.ts"
   },
@@ -48,8 +33,7 @@
     "rimraf": "^2.7.1",
     "ts-node": "^8.5.4",
     "tslint": "^5.20.1",
-    "typescript": "^3.7.2",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "tsup": "^5.12.6",
+    "typescript": "^4.3.5"
   }
 }
