@@ -28,3 +28,4 @@ import { polyfills } from "./polyfills";
 polyfills();
 
 export * from "./fx/json-fx";
+export * from "./model/fx-definition";
