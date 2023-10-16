@@ -1,19 +1,34 @@
 const JsonFx = require('@mindsung/json-fx').JsonFx;
+const fs = require('fs');
 
-const template = {
-  "@mapFn($item)": {
-    "upper": "$item:toUpperCase",
-    "lower": "$item:toLowerCase"
-  },
-  "()": "$?:map(@mapFn)"
-};
-const data = ["Hello", "World!"];
-const fx = new JsonFx().compile(template);
-const result = fx.evaluate({ name: "$", value: data });
-console.log(result);
+function compileMapTemplate(template) {
+  return new JsonFx().compile({
+    "@mapFn($)": template,
+    "()": "$data?:map(@mapFn)"
+  });
+}
+
+const upperLowerTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/upper-lower.json')));
+const joinStringsTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/join-strings.json')));
+
+function mapTemplate(compiledTemplate, data) {
+  return compiledTemplate.evaluate({ name: "$data", value: data });
+}
+
+console.log(mapTemplate(upperLowerTemplate, [
+  "Hello",
+  "World!"
+]));
+
+console.log(mapTemplate(joinStringsTemplate, [
+  ["a", "b", "c"],
+  ["d", "e", "f"]
+]));
+
 // Output:
 //
 // [
 //   { upper: 'HELLO', lower: 'hello' },
 //   { upper: 'WORLD!', lower: 'world!' }
 // ]
+// [ 'a,b,c', 'd,e,f' ]

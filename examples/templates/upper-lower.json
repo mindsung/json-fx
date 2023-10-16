@@ -1,0 +1,4 @@
+{
+  "upper": "$:toUpperCase",
+  "lower": "$:toLowerCase"
+}
