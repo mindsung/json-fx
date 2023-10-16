@@ -8,19 +8,20 @@ function compileMapTemplate(template) {
   });
 }
 
-const upperLowerTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/upper-lower.json')));
-const joinStringsTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/join-strings.json')));
-
-function mapTemplate(compiledTemplate, data) {
+function mapData(compiledTemplate, data) {
   return compiledTemplate.evaluate({ name: "$data", value: data });
 }
 
-console.log(mapTemplate(upperLowerTemplate, [
+const upperLowerTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/upper-lower.json')));
+
+console.log(mapData(upperLowerTemplate, [
   "Hello",
   "World!"
 ]));
 
-console.log(mapTemplate(joinStringsTemplate, [
+const joinStringsTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/join-strings.json')));
+
+console.log(mapData(joinStringsTemplate, [
   ["a", "b", "c"],
   ["d", "e", "f"]
 ]));
