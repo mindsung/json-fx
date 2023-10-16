@@ -1,1 +1,1 @@
-"$?:join(',')"
+"$.someLetters:join(',')"

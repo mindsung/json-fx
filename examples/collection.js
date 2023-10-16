@@ -1,35 +1,29 @@
 const JsonFx = require('@mindsung/json-fx').JsonFx;
 const fs = require('fs');
 
-function compileMapTemplate(template) {
-  return new JsonFx().compile({
-    "@mapFn($)": template,
-    "()": "$data?:map(@mapFn)"
-  });
-}
+const compiledTemplate = new JsonFx().compile({
+  "@mapFn($)": {
+    upperLowerChart: JSON.parse(fs.readFileSync('./templates/upper-lower.json')),
+    joinStringsChart: JSON.parse(fs.readFileSync('./templates/join-strings.json'))
+  },
+  "()": "$data?:map(@mapFn)"
+});
 
-function mapData(compiledTemplate, data) {
-  return compiledTemplate.evaluate({ name: "$data", value: data });
-}
+const data = JSON.parse(fs.readFileSync('./data/words-and-letters.json'));
 
-const upperLowerTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/upper-lower.json')));
+const chartResults = compiledTemplate.evaluate({ name: "$data", value: data });
 
-console.log(mapData(upperLowerTemplate, [
-  "Hello",
-  "World!"
-]));
-
-const joinStringsTemplate = compileMapTemplate(JSON.parse(fs.readFileSync('./templates/join-strings.json')));
-
-console.log(mapData(joinStringsTemplate, [
-  ["a", "b", "c"],
-  ["d", "e", "f"]
-]));
+console.log(chartResults);
 
 // Output:
 //
 // [
-//   { upper: 'HELLO', lower: 'hello' },
-//   { upper: 'WORLD!', lower: 'world!' }
+//   {
+//     upperLowerChart: { upper: 'HELLO', lower: 'hello' },
+//     joinStringsChart: 'a,b,c'
+//   },
+//   {
+//     upperLowerChart: { upper: 'WORLD!', lower: 'world!' },
+//     joinStringsChart: 'a,b,c'
+//   }
 // ]
-// [ 'a,b,c', 'd,e,f' ]

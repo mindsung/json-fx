@@ -1,0 +1,10 @@
+[
+  {
+    "someWord": "Hello",
+    "someLetters": ["a", "b", "c"]
+  },
+  {
+    "someWord": "World!",
+    "someLetters": ["d", "e", "f"]
+  }
+]

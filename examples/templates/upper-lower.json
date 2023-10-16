@@ -1,4 +1,4 @@
 {
-  "upper": "$:toUpperCase",
-  "lower": "$:toLowerCase"
+  "upper": "$.someWord:toUpperCase",
+  "lower": "$.someWord:toLowerCase"
 }
