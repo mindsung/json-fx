@@ -86,10 +86,10 @@ npx mocha -r ts-node/register --exclude ./src/tests/scripts/pure-fx.spec.ts "./s
 7. **Corpus additions beyond the plan's lists:** `change: "D"` (host/API hardening), per-run `v0Actual*` records, `expectCalls`, and the `$$undefined` / `$$fixture` sentinels in the case format.
 
 ## New findings (not in V1-PLAN.md §3.2)
-Each is in the corpus (`bug: "NEW"` or `B18`). Decisions marked **confirm** are proposals; the corpus currently encodes them.
+Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDateTime` and malformed-input items on 2026-10-14; the corpus encodes them.
 - **B18 — `if … else if … else` associates left in v0.** `A if C1 else B if C2 else D` parses as `(A if C1 else B) if C2 else D`, so `'minor' if $a < 18 else 'senior' if $a >= 66 else 'adult'` gives `'adult'` for 16. (There is a `TODO: if/else right-hand associativity` in `fx/index.ts`.) The plan's §5.3 already specifies right associativity, so this is just a missing Class B entry. Corpus: `users-scripts.json`.
-- **`toISOLocalDateTime` ignores its first argument** and formats `Date.now()` (`fx/functions/fn-time.ts`). Corpus expects the evident intent. **Confirm** when porting stdlib in Phase 2.
-- **v0 accepts malformed input silently:** an unterminated string literal (`'abc` → `"abc"`) and a lone operator (`+` → `NaN`). Corpus encodes `FxSyntaxError` for both. **Confirm** (Class B, trivially detectable by `check`).
+- **`toISOLocalDateTime` ignores its first argument** and formats `Date.now()` (`fx/functions/fn-time.ts`). Corpus expects the evident intent. **Confirmed (owner, 2026-10-14):** fix it when porting stdlib in Phase 2.
+- **v0 accepts malformed input silently:** an unterminated string literal (`'abc` → `"abc"`) and a lone operator (`+` → `NaN`). Corpus encodes `FxSyntaxError` for both. **Confirmed (owner, 2026-10-14):** both become syntax errors (Class B, detectable by `check`).
 - **v0 returns `[1, function]` for `$o['a','constructor']`** (multi-index reads prototype keys). Part of the §4.6 hardening; the exact v1 result for blocked keys in `{k}` picks is left undecided (the `$o{a, constructor}` case is `skip`).
 - Mutual recursion (`@even`/`@odd`) and several nested-call shapes work in v0 by luck; only direct recursion and the `misc-debug` template actually break (B2). Those cases are kept as `same` regression guards.
 - Reminder when writing templates: a JSON key starting with `$` is always a variable declaration (`${x}` is not a literal key).
@@ -99,4 +99,4 @@ Each is in the corpus (`bug: "NEW"` or `B18`). Decisions marked **confirm** are 
 - Create `json-fx/src-v1/` (errors, `api/types.ts`, `syntax/ast.ts`, scanner, parser, template reader, `stdlib/` port with `pure` metadata; fix B13 sort, remove `funny`, check `toISOLocalDateTime`). The v1 engine adapter goes in `test/harness/engines.ts` (replace the `v1Engine` stub; register it in `test/conformance.test.ts`'s `engines` list and `bench/engines.ts`). Phase 2's exit is that every corpus template parses to an AST (or the expected syntax error), so add a parse-only mode/test.
 - Stdlib unit tests: the v0 `fn-*.spec.ts` files are mocha/JS-level; port them to vitest alongside `stdlib/` (the template-level coverage is already in `stdlib.json`).
 - `bench/compare.ts`'s DIFF path is untested until a v1 engine exists; verify it in Phase 3.
-- Still open from the owner: **Q8** (real templates for `real-templates/`), and the **confirm** items above.
+- Still open from the owner: **Q8** (real templates for `real-templates/`; needed by Phase 6, see below).
