@@ -1,6 +1,7 @@
 import type {
   Binding, ChainNode, Decl, Field, FnRef, LiteralNode, LiteralValue, Node, ObjectNode, OpRef, Step
 } from "../syntax/ast";
+import { referencedBindings } from "../syntax/walk";
 
 /**
  * AST → AST optimizer (V1-PLAN.md §5.7), run between `resolve` and the backends. Three rewrites, none of which can
@@ -225,37 +226,4 @@ function reachableDecls(object: ObjectNode): Set<number> {
   if (object.output) { seen(object.output); }
   while (pending.length) { seen(pending.pop() as Node); }
   return live;
-}
-
-/** Bindings of every `ref` below `node` (not only direct ones). */
-function referencedBindings(node: Node): Binding[] {
-  const out: Binding[] = [];
-  const walk = (n: Node): void => {
-    switch (n.kind) {
-      case "literal": return;
-      case "ref": if (n.binding) { out.push(n.binding); } return;
-      case "array": n.items.forEach(walk); return;
-      case "object":
-        for (const d of n.decls) { walk(d.kind === "var" ? d.value : d.body); }
-        for (const f of n.fields) { if (f.kind === "static") { walk(f.value); } else { walk(f.source); walk(f.value); } }
-        if (n.output) { walk(n.output); }
-        return;
-      case "lambda": walk(n.body); return;
-      case "call": case "lazyCall": n.args.forEach(walk); return;
-      case "apply": walk(n.callee); n.args.forEach(walk); return;
-      case "chain":
-        walk(n.base);
-        for (const s of n.steps) {
-          if (s.kind === "index" || s.kind === "pick") { s.keys.forEach(walk); }
-          else if (s.kind === "invoke") { s.args.forEach(walk); }
-          else if (s.kind === "invokeUser") { walk(s.callee); s.args.forEach(walk); }
-        }
-        return;
-      case "unary": walk(n.operand); return;
-      case "binary": case "logical": walk(n.left); walk(n.right); return;
-      case "cond": walk(n.test); walk(n.then); walk(n.else); return;
-    }
-  };
-  walk(node);
-  return out;
 }

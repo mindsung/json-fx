@@ -24,7 +24,8 @@
     "test:v1": "vitest run",
     "typecheck:v1": "node node_modules/typescript5/bin/tsc -p tsconfig.v1.json",
     "bench": "tsx bench/run.ts",
-    "compare": "tsx bench/compare.ts"
+    "compare": "tsx bench/compare.ts",
+    "check": "tsx src-v1/cli/main.ts check"
   },
   "devDependencies": {
     "@types/chai": "^4.2.5",

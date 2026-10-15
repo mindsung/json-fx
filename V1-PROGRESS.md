@@ -47,8 +47,8 @@ Each session ends green and committed. Phase numbers refer to V1-PLAN.md §8.
 | 2 | **Phase 2** — errors, types, AST, scanner, Pratt parser, template reader, stdlib port (with `pure` metadata; fix B13, remove `funny`) | **done** (2026-10-15) |
 | 3 | **Phase 3** — resolver, closure backend, runtime helpers (security rules), public API (`run`/`evaluate`/`defineGlobal`), security tests | **done** (2026-10-15) |
 | 4 | **Phase 4** — `emit.ts` + fuzz tests, JS codegen, `backend: 'auto'`, differential test | **done** (2026-10-15) |
-| 5 | **Phase 5** (optimizer/inlining) + start of **Phase 6** (`json-fx check` CLI) | not started |
-| 6 | **Phase 6** rest — README + Security section, migration guide, crypto smoke test, `compare` release gate over real templates, release 1.0.0 | not started |
+| 5 | **Phase 5** (optimizer/inlining) + start of **Phase 6** (`json-fx check` CLI) | **done** (2026-10-15) |
+| 6 | **Phase 6** rest — README + Security section (+ function reference generated from stdlib metadata), migration guide, changelog, crypto smoke test, toolchain cut-over (delete v0, `src-v1` → `src`, `bin`), `compare` release gate over real templates, release 1.0.0 | not started |
 
 Phase 1 (v0.2 hotfix) is skipped per the plan (trusted authors).
 
@@ -93,6 +93,14 @@ Phase 1 (v0.2 hotfix) is skipped per the plan (trusted authors).
 - [x] Targeted tests (`codegen.test.ts`): error attribution per field/item/function/variable, recovered errors leaving no stale reference, evaluation order of errors, variable state reset, runtime cycles, recursion, hostile keys/literals/names end to end, 2,000-key objects, 150-deep nesting, 400-term chains.
 - [x] Benchmarks recorded in `bench/V1-CODEGEN.md`: `order` **0.29 µs** (target ≤ 0.5; hand-written 0.14, closure 5.4, v0 34), near hand-written on the flat/chain fixtures. Whole suite: 1785 passed / 18 skipped; `typecheck:v1` clean; v0 baseline untouched.
 
+### Session 5 — Phase 5 optimizer + `json-fx check` CLI (done)
+- [x] `semantics/optimize.ts`: AST → AST pass between `resolve` and the backends. Constant folding of `pure` calls/operators with literal arguments (primitive results only, ≤ 1024-char strings, a throwing fold is left for run time), leading `:fn(...)` steps of a literal base (`'ab':toUpperCase()`), literal `&&`/`||`/`A if C else B`; literal `$vars` inlined; unreferenced `$var`/`@fn` declarations removed (reachability from fields/output, so recursive and chained dead code goes too). Each pass rebuilds the tree and re-resolves it (slots/depths change), looping until a pass changes nothing. `optimize: false` on `JsonFx` / `CompileOptions` switches it off.
+- [x] Differential test now compares **unoptimized closure** (reference) against closure+optimizer, codegen, codegen+optimizer. **100,000 templates / 275,001 runs clean; the optimizer changes 92% of the generated templates.** Mutation check: replacing a branch at an error-attribution point, a DCE that misses declarations reached through other declarations (both caught within 6,000 cases), folding impure functions, and inlining by name across shadowing (both caught by `optimize.test.ts`: the generator never builds them) are all detected.
+- [x] Benchmarks in `bench/V1-OPTIMIZER.md` (+ a `v1-codegen-noopt` engine and a speedup table in `npm run bench -- --markdown`): **the optimizer is within noise (1.0–1.1×) on every fixture**, as they have almost nothing input-independent. It pays on templates with constants and shrinks the generated source; its real gate is correctness.
+- [x] `json-fx check`: `JsonFx.check(template, { inputs?, strictIdentifiers? })` → `{ ok, findings[] }` (`rule`, `level` error/change/warning/info, `path`, `line`, `column`, `message`), never throws for a bad template. CLI in `src-v1/cli` (`npm run check -- <files or dirs> [--functions m.js] [--inputs $,$a] [--globals $g] [--strict-identifiers] [--strict] [--quiet] [--json]`, exit 0/1/64).
+- [x] Rules: B2 (recursion, mutual recursion, functions/lambdas passed to user functions), B5, B6, B7, B13, B14, B15, B18, C1 (parens end a `?` chain), C2 (optional keys), N1, N2, plus compile errors (with suggestions), warnings and bare words (info). `test/check.test.ts` asserts that **every B/C difference recorded in the corpus is reported** for its template, and that the "same" corpus cases are flagged only by the rules that over-approximate on purpose (8 of 280, all B2 "may be affected", B13 or B15).
+- [x] Whole suite: 1892 passed / 18 skipped; `typecheck:v1` clean; v0 baseline untouched.
+
 ### How to run things (from `json-fx/`)
 ```sh
 npm run test:v1         # conformance corpus against v0, v1-closure and v1-codegen; unit, fuzz and differential tests
@@ -100,6 +108,7 @@ npm run typecheck:v1    # TS 5, strict
 npm run bench           # or: npm run bench -- order | npm run bench -- --markdown
 DIFF_CASES=100000 npx vitest run test/differential.test.ts   # differential gate run (default 4,000 cases)
 npm run compare -- bench/compare-sample      # v0 vs v1 side by side (default dir: real-templates/)
+npm run check -- bench/compare-sample        # json-fx check over templates (Phase 6 CLI; becomes the `json-fx` bin at cut-over)
 # v0 baseline (unchanged: 73 passing / 23 failing), command from V1-PLAN.md §0:
 NODE_OPTIONS="--no-experimental-require-module --no-experimental-detect-module" \
 TS_NODE_COMPILER_OPTIONS='{"module":"commonjs"}' TS_NODE_TRANSPILE_ONLY=true \
@@ -152,6 +161,17 @@ npx mocha -r ts-node/register --exclude ./src/tests/scripts/pure-fx.spec.ts "./s
 37. **`auto`:** `canGenerate()` (`new Function('return 1')()`); only that decides. A failure while generating or instantiating is a bug and propagates instead of silently falling back to the closure backend. The generated source is `"use strict"`, names its function `template_<sanitized name>` and ends with `//# sourceURL=jsonfx://<sanitized name>.js`.
 38. **Generator output size/perf notes:** string constants and registered functions go through the `K` table (`k4`), helpers are hoisted into `h_*` constants, static property reads are inlined with the §4.6 function-value rule (`typeof t === "function" && !own(u, "k")`), blocked static keys compile to `getBlocked`.
 
+
+### Phase 5 / `check` deviations and decisions
+39. **The optimizer rebuilds and re-resolves** instead of mutating: `optimize(tree, resolve)` returns a new tree (or the original when nothing changed). Cloned `ref`s carry no binding until the re-resolution, so dead-declaration analysis runs on the *original* node of the pass (conservative; what a pass inlines is collected by the next one).
+40. **Branch selection never replaces a node at an attribution point.** Native errors are attributed to the node at the root of a field, item, variable, function body or output (and `throw` reports its argument's, "not a function" the callee's), while errors that carry their own reference (undefined variable) keep it. A literal `ifElse`/`&&`/`||` is therefore folded only when the chosen branch is a literal (it takes the original's reference) or the node is not at such a position (`point` in `optimize.ts`). Found by the differential test on its first run (error columns differed).
+41. **Fold conditions:** `def.pure`, not `deferEvaluation`, every argument literal, result `null`/`undefined`/boolean/number/string ≤ 1024 chars. `range`, `dateTime`, `assign` etc. return objects and never fold; extensions default to impure. `now`, `math~random`, `log` are not `pure`.
+42. **Not done (plan §5.7 item 4):** hoisting input-independent pure subexpressions out of lambdas. The benchmarks show no need.
+43. **`check` reports `FindingRule`s beyond the plan's table:** `B18` (unparenthesized `A if C1 else B if C2 else D`), `N1` (`toISOLocalDateTime` fix) and `N2` (new finding below), so that every Class B difference in the corpus is detectable. **To fold into V1-PLAN.md §7.1 when docs next go to `develop`:** rows for B18, N1, N2; the refined B6 wording of deviation 44; B2 also flags any function passed to a user function.
+44. **B6 detection is probed against v0, not guessed.** v0 mis-reads a quote that directly follows any operator character (`+ - * / ! == > : . ,` and the structural ones), but **not** brackets or `(` (`$['s']`, `$a['x']`, `foo('a')` are fine). The scanner-token rule is "operator token or `,` immediately followed by a string token".
+45. **Parser notes:** `Parser`/`TemplateReader` take an optional sink for the two constructs only the parser can see (`ParseNote`: B5, B18, C1). Zero cost without a sink.
+46. **`check` runs lexical rules on the raw template** (mirroring `TemplateReader`'s key rules) so B6/B7/B14/C2 still report for templates that don't compile; AST rules (B2, B13, B15, N1, N2, bare words) need a compiled template, and only the first compile error is reported.
+
 ## New findings (not in V1-PLAN.md §3.2)
 Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDateTime` and malformed-input items on 2026-10-14; the corpus encodes them.
 - **B18 — `if … else if … else` associates left in v0.** `A if C1 else B if C2 else D` parses as `(A if C1 else B) if C2 else D`, so `'minor' if $a < 18 else 'senior' if $a >= 66 else 'adult'` gives `'adult'` for 16. (There is a `TODO: if/else right-hand associativity` in `fx/index.ts`.) The plan's §5.3 already specifies right associativity, so this is just a missing Class B entry. Corpus: `users-scripts.json`.
@@ -159,11 +179,12 @@ Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDa
 - **v0 accepts malformed input silently:** an unterminated string literal (`'abc` → `"abc"`) and a lone operator (`+` → `NaN`). Corpus encodes `FxSyntaxError` for both. **Confirmed (owner, 2026-10-14):** both become syntax errors (Class B, detectable by `check`).
 - **v0 returns `[1, function]` for `$o['a','constructor']`** (multi-index reads prototype keys). Part of the §4.6 hardening; decided 2026-10-15: a `{k}` pick omits blocked keys.
 - Mutual recursion (`@even`/`@odd`) and several nested-call shapes work in v0 by luck; only direct recursion and the `misc-debug` template actually break (B2). Those cases are kept as `same` regression guards.
+- **N2 — v0 mis-evaluates an index or pick that follows another step** (found while probing B6): `$.arr[0]` → `undefined`, `$.o['x']` → `undefined`, `$.o{x}` → `undefined`, `($.o)['x']` → the whole object (index dropped). Only a plain variable base (`$a[0]`) and `:item(0)` work. v1 evaluates them as written (Class B, corpus `bugs.json` "N2: …", `check` rule `N2`). **Worth asking the owner whether real templates index after a property**; if they do, their v0 output has been wrong and the release gate will show it.
 - Reminder when writing templates: a JSON key starting with `$` is always a variable declaration (`${x}` is not a literal key).
 
-## Notes for the next session (Phase 5 — optimizer; then start of Phase 6)
-- Read V1-PLAN.md §5.7 (optimizer) and Phase 5/6 in §8. The optimizer is an AST → AST pass between `resolve` and the backends (`JsonFx.compile`); both backends and the differential test already exist, so every optimization is verified by running `DIFF_CASES=100000 npx vitest run test/differential.test.ts` (closure vs codegen) **and** comparing optimized vs unoptimized output (add an `optimize: false` switch and extend the differential test to compare it too), plus `compiled.source` snapshots and `npm run bench`.
-- Easy wins visible in the generated source of `order`: a var bound to a literal is still a memoizing thunk (`v0()` with state), `Math.round(x) / 100` etc. fold only if all args are literals, unreferenced declarations are still emitted. The inline table (`emit`) is done (deviation 34); constant folding must use `evaluate` of `pure` built-ins, fold only when the result is a primitive (or frozen), never fold `range` with a large result, `dateTime` returns a mutable `Date`, `math~random` is not pure.
+## Notes for the next session (Phase 6, rest)
+- Phase 6 left (V1-PLAN.md §8): README rewrite (syntax reference incl. chain/`?` rules and the `:` rationale, quote string constants, **Security** section from §4.6, function reference **generated from stdlib metadata**, migration guide built from §7 incl. the additions in deviation 43, changelog); port `archive/json-fx-crypto` as an extension-compatibility smoke test; the toolchain cut-over (delete v0 `src/`, `git mv src-v1 src`, TS 5 as `typescript` and drop the `typescript5` alias, keep the `json-fx-v0` alias for `compare`, tslint → ESLint or none, collapse `npm/package.json`, fix `exports`, add the `json-fx` `bin` pointing at `cli/main`); the release gate (`npm run compare` over real templates, needs Q8); release 1.0.0.
+- `src-v1/cli/main.ts` is run through `tsx` for now (`npm run check`); for the published bin it must be built (tsup entry) with a `#!/usr/bin/env node` banner.
+- `compare` could annotate each difference with the `check` findings of that template (plan §7.3 says it should); not done yet, `JsonFx.check` is the building block.
 - Keep the rule from deviation 28: any built-in that indexes by an argument must use `runtime/helpers`.
-- Phase 6 start: `json-fx check` CLI (compile errors with suggestions + the Class B/C detection rules of §7.1 + bare-word list from `compiled.bareWords`).
-- Still open from the owner: **Q8** (real templates for `real-templates/`; needed by Phase 6, see below).
+- Still open from the owner: **Q8** (real templates for `real-templates/`; needed by the release gate). `real-templates/ss-report-defs/*.json` were found in the directory but are report definitions, not obviously json-fx templates; ask before treating them as the corpus.

@@ -3,7 +3,7 @@ import type { SourceRef } from "../api/types";
 import { FxSyntaxError } from "../errors";
 import type { Node } from "./ast";
 import { buildObject, type ObjectEntry } from "./object-builder";
-import { Parser } from "./parser";
+import { Parser, type ParseNoteSink } from "./parser";
 
 const IDENTIFIER_KEY = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
@@ -14,8 +14,9 @@ const keyPath = (path: string, key: string): string =>
 export class TemplateReader {
   private readonly parser: Parser;
 
-  constructor(registry: FunctionRegistry) {
-    this.parser = new Parser(registry);
+  /** `sink` receives the v0-compatibility notes of `json-fx check` (see `ParseNote`). */
+  constructor(registry: FunctionRegistry, sink?: ParseNoteSink) {
+    this.parser = new Parser(registry, sink);
   }
 
   public read(template: unknown): Node {

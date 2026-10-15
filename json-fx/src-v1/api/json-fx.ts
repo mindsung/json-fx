@@ -1,3 +1,4 @@
+import { checkTemplate, type CheckOptions, type CheckReport } from "../check/check";
 import { compileClosure } from "../backend/closure/compile";
 import { canGenerate, compileCodegen, type TemplateFn } from "../backend/js/codegen";
 import { FxCompileError, FxError } from "../errors";
@@ -65,6 +66,14 @@ export class JsonFx {
   public defineGlobal(name: `$${string}`, value: unknown): void {
     if (typeof name !== "string" || !/^\$[A-Za-z0-9_]*$/.test(name)) { throw new Error(`Invalid global name "${String(name)}": expected '$' followed by letters, digits or '_'`); }
     this.globals.set(name, value);
+  }
+
+  /**
+   * Static analysis for `json-fx check`: compile errors with suggestions, constructs whose meaning differs from v0
+   * (Class B/C, V1-PLAN.md §7.1), warnings and bare words. Never throws for a bad template.
+   */
+  public check(template: unknown, options: CheckOptions = {}): CheckReport {
+    return checkTemplate(template, { registry: this.registry, isGlobal: (n) => this.globals.has(n), globalNames: () => this.globals.keys() }, options);
   }
 
   public compile(template: unknown, options: CompileOptions = {}): FxCompiledTemplate {

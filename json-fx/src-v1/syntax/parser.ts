@@ -12,6 +12,15 @@ const BP_COMP = 3;
 const opBindingPower = (precedence: number): number => Math.max(BP_COMP + 1, 10 + precedence * 10);
 const RIGHT_ASSOC_EPSILON = 0.001;
 
+/** A construct whose meaning differs from v0 and that only the parser can see (V1-PLAN.md §7.1); `json-fx check` reports these. */
+export interface ParseNote {
+  readonly rule: "B5" | "B18" | "C1";
+  readonly message: string;
+  readonly src: SourceRef;
+}
+
+export type ParseNoteSink = (note: ParseNote) => void;
+
 export interface DynamicKey {
   readonly source: Node;
   readonly valueName?: string;
@@ -31,13 +40,13 @@ export interface FnDecl {
 export class Parser {
   private readonly scanner: Scanner;
 
-  constructor(private readonly registry: FunctionRegistry) {
+  constructor(private readonly registry: FunctionRegistry, private readonly sink?: ParseNoteSink) {
     this.scanner = new Scanner(registry.operatorSymbols());
   }
 
   /** A complete expression. */
   public parseExpression(text: string, path = ""): Node {
-    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path);
+    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path, this.sink);
     const node = p.parseExpr(0);
     p.expectEof();
     return node;
@@ -45,7 +54,7 @@ export class Parser {
 
   /** Key `$name`. */
   public parseVarKey(text: string, path = ""): string {
-    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path);
+    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path, this.sink);
     const t = p.expectKind("var", "a variable name like '$name'");
     p.expectEof();
     return t.text;
@@ -53,7 +62,7 @@ export class Parser {
 
   /** Key `@name` or `@name(p1, $p2, @f)`. */
   public parseFnKey(text: string, path = ""): FnDecl {
-    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path);
+    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path, this.sink);
     const decl = p.parseFnDecl();
     p.expectEof();
     return decl;
@@ -61,7 +70,7 @@ export class Parser {
 
   /** The inside of a dynamic key `{ source [as $v[, $k]] }`. */
   public parseDynamicKey(text: string, path = ""): DynamicKey {
-    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path);
+    const p = new ExprParser(this.registry, this.scanner.scan(text, path), path, this.sink);
     const key = p.parseDynamicKeyBody();
     p.expectEof();
     return key;
@@ -70,8 +79,18 @@ export class Parser {
 
 class ExprParser {
   private i = 0;
+  /** Number of postfix steps of the chain `parseChain` returned last (0 for a plain primary). */
+  private lastChainSteps = 0;
+  /** The primary `parsePrimary` returned last was a parenthesized expression containing a `?` guard. */
+  private lastPrimaryGuarded = false;
+  private parenGuarded = false;
 
-  constructor(private readonly registry: FunctionRegistry, private readonly tokens: Token[], private readonly path: string) {}
+  constructor(
+    private readonly registry: FunctionRegistry,
+    private readonly tokens: Token[],
+    private readonly path: string,
+    private readonly sink?: ParseNoteSink
+  ) {}
 
   // ---- token helpers ------------------------------------------------------------------------------------------
 
@@ -131,6 +150,18 @@ class ExprParser {
     return left;
   }
 
+  /** Whether tokens `from` … `to - 1` are one parenthesized group. */
+  private parenthesized(from: number, to: number): boolean {
+    let depth = 0;
+    for (let k = from; k < to; k++) {
+      const t = this.tokens[k] as Token;
+      if (t.kind === "punct" && t.text === "(") { depth++; }
+      else if (t.kind === "punct" && t.text === ")") { depth--; }
+      if (depth === 0) { return k === to - 1 && k > from; }
+    }
+    return false;
+  }
+
   private infixBindingPower(t: Token): number {
     if (t.kind === "kw") { return t.text === "if" ? BP_COND : t.text === "for" ? BP_COMP : -1; }
     if (t.kind === "op") {
@@ -147,7 +178,15 @@ class ExprParser {
         const test = this.parseExpr(BP_COND);
         this.expect("kw", "else");
         // Right-associative: the else branch may itself be a conditional.
+        const elseStart = this.i;
         const otherwise = this.parseExpr(BP_COND - 1);
+        if (this.sink && otherwise.kind === "cond" && !this.parenthesized(elseStart, this.i)) {
+          this.sink({
+            rule: "B18",
+            message: "'A if C1 else B if C2 else D' groups as 'A if C1 else (B if C2 else D)' in v1; v0 grouped it as '(A if C1 else B) if C2 else D'. Add parentheses to keep the v0 reading",
+            src: this.ref(t)
+          });
+        }
         return { kind: "cond", test, then: left, else: otherwise, src: this.ref(t) };
       }
       // `E for $x in A` → A:map($x => E)
@@ -178,6 +217,13 @@ class ExprParser {
         this.next();
         const operand = this.parsePrefixOperand();
         const ref: OpRef = { name: op.def.name, def: op.def, symbol: op.symbol };
+        if (this.sink && this.lastChainSteps > 0) {
+          this.sink({
+            rule: "B5",
+            message: `Prefix '${t.text}' applies to the whole chain here (v0 applied it to the base only); check the result is what the template meant`,
+            src: this.ref(t)
+          });
+        }
         return { kind: "unary", op: ref, operand, src: this.ref(t) };
       }
     }
@@ -187,7 +233,11 @@ class ExprParser {
   /** The operand of a prefix operator: another prefix operator or a chain (never a binary expression; V1-PLAN.md §4.3). */
   private parsePrefixOperand(): Node {
     const t = this.tok;
-    if (t.kind === "op" && this.registry.unaryOperator(t.text)) { return this.parsePrefix(); }
+    if (t.kind === "op" && this.registry.unaryOperator(t.text)) {
+      const nested = this.parsePrefix();
+      this.lastChainSteps = 0; // the nested operator reported on its own
+      return nested;
+    }
     return this.parseChain();
   }
 
@@ -236,9 +286,20 @@ class ExprParser {
 
   private parseChain(): Node {
     const base = this.parsePrimary();
+    const guardedParens = this.lastPrimaryGuarded;
+    let taken = 0;
     let node: Node = base;
     let steps: Step[] = [];
-    const flush = (): Node => (steps.length ? { kind: "chain", base: node, steps, src: node.src } : node);
+    const flush = (): Node => { this.lastChainSteps = taken; return steps.length ? { kind: "chain", base: node, steps, src: node.src } : node; };
+    const took = (at: Token): void => {
+      if (taken++ === 0 && guardedParens && this.sink) {
+        this.sink({
+          rule: "C1",
+          message: "Parentheses end a '?' chain: if the parenthesized part is null, v0 short-circuited the steps after it, v1 throws",
+          src: this.ref(at)
+        });
+      }
+    };
 
     for (;;) {
       const t = this.tok;
@@ -246,9 +307,11 @@ class ExprParser {
 
       if (t.kind === "op" && (t.text === "." || t.text === "?.")) {
         this.next();
+        took(t);
         steps.push({ kind: "prop", key: this.parsePropertyKey(), guard, src: this.ref(t) });
       } else if (t.kind === "op" && (t.text === ":" || t.text === "?:")) {
         this.next();
+        took(t);
         const name = this.tok;
         if (name.kind === "ident") {
           this.next();
@@ -273,11 +336,13 @@ class ExprParser {
         }
       } else if ((t.kind === "punct" && t.text === "[") || (t.kind === "op" && t.text === "?[")) {
         this.next();
+        took(t);
         const keys = this.parseList("]");
         if (!keys.length) { this.fail("An indexer needs at least one index", t); }
         steps.push({ kind: "index", keys, multi: keys.length > 1, guard, src: this.ref(t) });
       } else if ((t.kind === "punct" && t.text === "{") || (t.kind === "op" && t.text === "?{")) {
         this.next();
+        took(t);
         const keys = this.parsePickKeys();
         steps.push({ kind: "pick", keys, guard, src: this.ref(t) });
       } else {
@@ -335,6 +400,14 @@ class ExprParser {
   // ---- primaries ----------------------------------------------------------------------------------------------
 
   private parsePrimary(): Node {
+    const isParen = this.is("punct", "(");
+    this.parenGuarded = false;
+    const node = this.parsePrimaryNode();
+    this.lastPrimaryGuarded = isParen && this.parenGuarded;
+    return node;
+  }
+
+  private parsePrimaryNode(): Node {
     const t = this.tok;
     switch (t.kind) {
       case "num": this.next(); return { kind: "literal", value: t.value as number, src: this.ref(t) };
@@ -354,9 +427,11 @@ class ExprParser {
       }
       case "punct":
         if (t.text === "(") {
+          const open = this.i;
           this.next();
           const inner = this.parseExpr(0);
           this.expect("punct", ")");
+          this.parenGuarded = this.tokens.slice(open, this.i).some(k => k.kind === "op" && (k.text === "?." || k.text === "?:" || k.text === "?[" || k.text === "?{"));
           return inner;
         }
         if (t.text === "[") {

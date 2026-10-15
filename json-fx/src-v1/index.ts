@@ -6,3 +6,4 @@ export type {
 export { FxCompileError, FxError, FxRuntimeError, FxSyntaxError } from "./errors";
 export type { BareWord, FxWarning } from "./semantics/resolve";
 export { builtinFunctions } from "./stdlib";
+export type { CheckOptions, CheckReport, Finding, FindingRule } from "./check/check";

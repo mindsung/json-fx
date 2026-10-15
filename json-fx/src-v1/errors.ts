@@ -1,6 +1,7 @@
 import type { SourceRef } from "./api/types";
 
-function describe(ref: SourceRef | undefined): string {
+/** The ` (at path, line L, column C)` suffix `FxError` appends to its message. */
+export function describe(ref: SourceRef | undefined): string {
   if (!ref) { return ""; }
   const parts: string[] = [];
   if (ref.path) { parts.push(`at ${ref.path}`); }
