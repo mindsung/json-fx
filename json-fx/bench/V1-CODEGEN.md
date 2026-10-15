@@ -44,3 +44,18 @@ Node v22.22.3, darwin arm64, Apple M2 Max
 | recursion | v1-closure | 6.82 | 6.79 | 530 |  |
 | recursion | v1-codegen | 0.84 | 0.83 | 435 |  |
 | recursion | hand-written | 0.47 | 0.47 | 0 |  |
+
+## Speedup over v0 (closure and codegen together)
+
+Computed from the table above (v0 µs ÷ engine µs; higher is faster). `recursion` on v0 returns wrong values (B2), so its ratio
+overstates the like-for-like gain. `null-invoke-chains` is dominated by v0's exponential `?:` evaluation (B1).
+
+| Fixture | v0 µs | closure µs | codegen µs | hand-written µs | closure vs v0 | codegen vs v0 | codegen vs closure |
+|---|---|---|---|---|---|---|---|
+| order | 34.49 | 5.43 | 0.29 | 0.14 | 6.4× | 118.9× | 18.7× |
+| flat-projection | 1.34 | 0.65 | 0.04 | 0.03 | 2.1× | 33.5× | 16.2× |
+| string-heavy | 7.75 | 3.62 | 2.88 | 2.82 | 2.1× | 2.7× | 1.3× |
+| nested-lambdas | 57.98 | 10.51 | 0.95 | 0.42 | 5.5× | 61.0× | 11.1× |
+| deep-chains | 0.88 | 0.67 | 0.04 | 0.03 | 1.3× | 22.0× | 16.8× |
+| null-invoke-chains | 79.16 | 0.60 | 0.22 | 0.25 | 131.9× | 359.8× | 2.7× |
+| recursion | 10.95 | 6.82 | 0.84 | 0.47 | 1.6× | 13.0× | 8.1× |
