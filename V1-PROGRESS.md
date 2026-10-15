@@ -41,7 +41,7 @@ Each session ends green and committed. Phase numbers refer to V1-PLAN.md §8.
 | Session | Scope | Status |
 |---|---|---|
 | 1 | **Phase 0** — groundwork: toolchain for v1, conformance runner (runs against v0), seed corpus, bench harness + v0 baseline, v0 npm alias + `compare` stub | **done** (2026-10-14) |
-| 2 | **Phase 2** — errors, types, AST, scanner, Pratt parser, template reader, stdlib port (with `pure` metadata; fix B13, remove `funny`) | not started |
+| 2 | **Phase 2** — errors, types, AST, scanner, Pratt parser, template reader, stdlib port (with `pure` metadata; fix B13, remove `funny`) | **done** (2026-10-15) |
 | 3 | **Phase 3** — resolver, closure backend, runtime helpers (security rules), public API (`run`/`evaluate`/`defineGlobal`), security tests | not started |
 | 4 | **Phase 4** — `emit.ts` + fuzz tests, JS codegen, `backend: 'auto'`, differential test | not started |
 | 5 | **Phase 5** (optimizer/inlining) + start of **Phase 6** (`json-fx check` CLI) | not started |
@@ -64,6 +64,13 @@ Phase 1 (v0.2 hotfix) is skipped per the plan (trusted authors).
 - [x] Bench harness: `bench/` with 6 fixtures (Appendix C `order`, flat-projection, string-heavy, nested-lambdas, deep-chains, recursion), output-equality check against hand-written JS before timing, `bench/BASELINE.md` (v0 numbers: order 33.6 µs, nested-lambdas 51 µs, …)
 - [x] `compare` harness (`bench/compare.ts`, v1 side stubbed → exits 2 until v1 exists), runnable sample in `bench/compare-sample/`, private `real-templates/` (git-ignored contents)
 
+### Session 2 — Phase 2, front end (done)
+- [x] `src-v1/errors.ts` (`FxError` > `FxSyntaxError` / `FxCompileError` / `FxRuntimeError`; messages append `path`, line and column), `src-v1/api/types.ts`, `src-v1/api/registry.ts`, `src-v1/syntax/ast.ts`
+- [x] `syntax/scanner.ts`: maximal munch over the registry's operator symbols (+ structural `. ?. : ?: ?[ ?{`), word operators, `1e3`, `\'` / `\\` escapes, digits after `.` are property keys, unterminated string = syntax error
+- [x] `syntax/parser.ts` (Pratt, §5.3), `syntax/object-builder.ts` (shared by literals and the reader), `syntax/template-reader.ts` (§5.4), `syntax/print.ts` (S-expression printer for tests/debugging)
+- [x] `stdlib/` ported with `pure` metadata; B13 sort fixed, `funny` removed, `toISOLocalDateTime` fixed, `notNull`/`throw` raise `FxRuntimeError` (B16)
+- [x] Tests: scanner, parser (AST strings), template reader, stdlib (ported from the three v0 `fn-*.spec.ts` plus new B13/time/error cases), and `test/parse-corpus.test.ts`: **all 370 corpus templates parse** (or give the expected `FxSyntaxError` / reader-level `FxCompileError`). Whole suite: 820 passed / 15 skipped (the skips are the engine cases waiting for v1); v0 baseline unchanged (73 / 23).
+
 ### How to run things (from `json-fx/`)
 ```sh
 npm run test:v1         # conformance corpus against v0 (and v1 engines once they exist)
@@ -85,6 +92,20 @@ npx mocha -r ts-node/register --exclude ./src/tests/scripts/pure-fx.spec.ts "./s
 6. **ESLint not added yet.** Linting for v1 comes with the toolchain cut-over; v0 keeps tslint.
 7. **Corpus additions beyond the plan's lists:** `change: "D"` (host/API hardening), per-run `v0Actual*` records, `expectCalls`, and the `$$undefined` / `$$fixture` sentinels in the case format.
 
+### Phase 2 deviations and decisions
+8. **No `emit` metadata on built-ins yet.** The plan lists it under Phase 2, but its format belongs with the code generator; it is added in Phase 4 together with `emit.ts`.
+9. **Internal `intrinsic` marker** on `FxFunctionDef` (`'and' | 'or' | 'ifElse'`) tells the parser which built-ins to lower (`&&`/`||`/`and()`/`or()` → `logical`, `ifElse` → `cond`). Redefining the name drops the marker, so an extension can replace them.
+10. **`FunctionRegistry`** (`src-v1/api/registry.ts`) is new: the parser/scanner/resolver all read functions and operators from it. It validates names and operator symbols (no quotes, sigils, identifier characters or brackets; symbol or word operators only).
+11. **Unary minus is registered as `-`** (`neg`, `isUnary`), not v0's internal `-u`; the parser picks unary vs binary by position.
+12. **Unknown call names parse fine** (`FnRef.def` is `undefined`); the resolver (Phase 3) reports them with suggestions. A bare word is a `literal` with `bareWord: true`, or a zero-argument `call` if registered.
+13. **`:fn` with a deferred-evaluation or intrinsic function is desugared by the parser** into `lazyCall`/`cond` with the receiver as first argument (`$a.b:catch('d')`), so the IR has no lazy invoke step. `?:` on such a function is a `FxCompileError`.
+14. **Pick keys:** a bare name in `{a, b}` is always the string key, never a function call (so `$o{first}` works); anything else is an expression.
+15. **`()` next to fields is a `FxCompileError` raised by the reader** (`object-builder.ts`), per §5.4 (v0 threw at run time).
+16. **`toISOLocalDateTime`** defaults the offset to the host's offset *at the given date* (v0 used "now"'s offset); the offset argument follows `getTimezoneOffset()` (minutes west of UTC).
+17. **Whitespace-only expression strings are `null`**, as an empty one is (verified against v0).
+18. Tests for `src-v1/` live next to the code (`*.test.ts`); corpus-driven ones in `test/`.
+19. Inline object literals have no optional-key form (`name?`); write `{ 'name?': … }` only in JSON templates. Not in the plan; add later if wanted.
+
 ## New findings (not in V1-PLAN.md §3.2)
 Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDateTime` and malformed-input items on 2026-10-14; the corpus encodes them.
 - **B18 — `if … else if … else` associates left in v0.** `A if C1 else B if C2 else D` parses as `(A if C1 else B) if C2 else D`, so `'minor' if $a < 18 else 'senior' if $a >= 66 else 'adult'` gives `'adult'` for 16. (There is a `TODO: if/else right-hand associativity` in `fx/index.ts`.) The plan's §5.3 already specifies right associativity, so this is just a missing Class B entry. Corpus: `users-scripts.json`.
@@ -94,9 +115,11 @@ Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDa
 - Mutual recursion (`@even`/`@odd`) and several nested-call shapes work in v0 by luck; only direct recursion and the `misc-debug` template actually break (B2). Those cases are kept as `same` regression guards.
 - Reminder when writing templates: a JSON key starting with `$` is always a variable declaration (`${x}` is not a literal key).
 
-## Notes for the next session (Phase 2 — front end)
-- Start by reading `test/conformance/README.md`, then V1-PLAN.md §4.2–§5.5. The corpus is the contract; the 15 `skip` cases and the 77 `differs` cases show the intended v1 differences.
-- Create `json-fx/src-v1/` (errors, `api/types.ts`, `syntax/ast.ts`, scanner, parser, template reader, `stdlib/` port with `pure` metadata; fix B13 sort, remove `funny`, check `toISOLocalDateTime`). The v1 engine adapter goes in `test/harness/engines.ts` (replace the `v1Engine` stub; register it in `test/conformance.test.ts`'s `engines` list and `bench/engines.ts`). Phase 2's exit is that every corpus template parses to an AST (or the expected syntax error), so add a parse-only mode/test.
-- Stdlib unit tests: the v0 `fn-*.spec.ts` files are mocha/JS-level; port them to vitest alongside `stdlib/` (the template-level coverage is already in `stdlib.json`).
+## Notes for the next session (Phase 3 — resolver, closure backend, runtime, public API)
+- Read V1-PLAN.md §4.4, §4.6, §5.5–§5.6, §5.9–§5.10, §6 and `test/conformance/README.md`. Parsing is done: use `TemplateReader` + `createRegistry()` (`src-v1/stdlib`); `printNode` helps debugging.
+- Scope of the resolver: bindings/`ScopeInfo` (the AST has placeholder types `ScopeInfo`/`Binding` and mutable `binding?`/`scope?` slots), unknown `@name`/call names → `FxCompileError` with suggestions (parser leaves `FnRef.def` undefined), arity warnings, var cycles (B11), `strictIdentifiers` (use `LiteralNode.bareWord`), declared-input checking, duplicate declarations (not checked yet).
+- Runtime: wrap lambdas for `FxLazyArg` (`sourceRef` is on every node's `src`), normalize lambda args (`undefined` → `null`), error wrapping into `FxRuntimeError`, §4.6 key/function hardening.
+- Public API: `JsonFx` (`compile`, `define`, `defineGlobal`, `run`/`evaluate`), `CompileOptions` already typed in `api/types.ts`. Register the v1 engine in `test/harness/engines.ts`, `test/conformance.test.ts` and `bench/engines.ts`; the corpus then drives it. Expect the dynamic-key semantics (§5.4 item 5) and `$v`/`$k` on objects to need care.
+- Optimizer reminders (Phase 5): fold only when the result is a primitive (or frozen); never fold `range` with a large result; `dateTime` returns a mutable `Date`.
 - `bench/compare.ts`'s DIFF path is untested until a v1 engine exists; verify it in Phase 3.
 - Still open from the owner: **Q8** (real templates for `real-templates/`; needed by Phase 6, see below).
