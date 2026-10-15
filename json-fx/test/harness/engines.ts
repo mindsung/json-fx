@@ -54,5 +54,16 @@ export const v1ClosureEngine: Engine = {
   }
 };
 
-/** The v1 engine the compare harness diffs against v0 (the default backend). */
-export const v1Engine: Engine = { ...v1ClosureEngine, name: "v1" };
+/** v1 with the JS code generator. */
+export const v1CodegenEngine: Engine = {
+  name: "v1-codegen",
+  strictErrors: true,
+  supportsOptions: true,
+  compile(template, functions, options) {
+    const compiled = new JsonFxV1({ functions: [functions as any[]], backend: "codegen" }).compile(template, options);
+    return { run: (inputs) => compiled.run(inputs) };
+  }
+};
+
+/** The v1 engine the compare harness diffs against v0: the default backend (`auto`, i.e. codegen where `new Function` works). */
+export const v1Engine: Engine = { ...v1CodegenEngine, name: "v1" };

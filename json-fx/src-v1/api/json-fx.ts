@@ -1,7 +1,8 @@
-import { compileClosure, type RunFn } from "../backend/closure/compile";
+import { compileClosure } from "../backend/closure/compile";
+import { canGenerate, compileCodegen, type TemplateFn } from "../backend/js/codegen";
 import { FxCompileError, FxError } from "../errors";
 import { resolve, type BareWord, type FxWarning } from "../semantics/resolve";
-import { createRegistry } from "../stdlib";
+import { asExtension, createRegistry } from "../stdlib";
 import { TemplateReader } from "../syntax/template-reader";
 import { wrap } from "../runtime/helpers";
 import type { FunctionRegistry } from "./registry";
@@ -49,7 +50,7 @@ export class JsonFx {
 
   /** Adds or replaces functions. Templates compiled earlier are not affected. */
   public define(def: FxFunctionDef | ReadonlyArray<FxFunctionDef>): void {
-    for (const d of Array.isArray(def) ? def as ReadonlyArray<FxFunctionDef> : [def as FxFunctionDef]) { this.registry.define(d); }
+    for (const d of Array.isArray(def) ? def as ReadonlyArray<FxFunctionDef> : [def as FxFunctionDef]) { this.registry.define(asExtension(d)); }
   }
 
   /**
@@ -63,7 +64,9 @@ export class JsonFx {
 
   public compile(template: unknown, options: CompileOptions = {}): FxCompiledTemplate {
     const backend = options.backend ?? this.backend;
-    if (backend === "codegen") { throw new FxCompileError("The codegen backend is not available yet; use 'closure' or 'auto'"); }
+    if (backend === "codegen" && !canGenerate()) {
+      throw new FxCompileError("The codegen backend needs `new Function`, which is not available here (strict CSP?); use 'closure' or 'auto'");
+    }
 
     const ast = new TemplateReader(this.registry).read(template);
     const { warnings, bareWords } = resolve(ast, this.registry, {
@@ -72,16 +75,22 @@ export class JsonFx {
       isGlobal: (name) => this.globals.has(name),
       globalNames: () => this.globals.keys()
     });
-    return new ClosureTemplate(compileClosure(ast), this.globals, options.name, warnings, bareWords);
+    if (backend === "closure" || (backend === "auto" && !canGenerate())) {
+      const body = compileClosure(ast);
+      const globals = this.globals;
+      return new CompiledTemplate((inputs) => body({ inputs, globals }), undefined, options.name, warnings, bareWords);
+    }
+    const js = compileCodegen(ast, this.globals, options.name);
+    return new CompiledTemplate(js.run, js.source, options.name, warnings, bareWords);
   }
 }
 
-class ClosureTemplate implements FxCompiledTemplate {
+class CompiledTemplate implements FxCompiledTemplate {
   private retained: Record<string, unknown> = {};
 
   constructor(
-    private readonly body: RunFn,
-    private readonly globals: ReadonlyMap<string, unknown>,
+    private readonly exec: TemplateFn,
+    public readonly source: string | undefined,
     private readonly name: string | undefined,
     public readonly warnings: readonly FxWarning[],
     public readonly bareWords: readonly BareWord[]
@@ -89,7 +98,7 @@ class ClosureTemplate implements FxCompiledTemplate {
 
   public run(inputs: Record<string, unknown>): any {
     try {
-      return this.body({ inputs, globals: this.globals });
+      return this.exec(inputs);
     } catch (e) {
       const error = e instanceof FxError ? e : wrap(e, { path: "", line: 0, column: 0, symbol: "" });
       if (this.name !== undefined && error.templateName === undefined) { error.templateName = this.name; }
@@ -107,6 +116,6 @@ class ClosureTemplate implements FxCompiledTemplate {
   }
 
   public toString(): string {
-    return `[json-fx closure template${this.name !== undefined ? ` '${this.name}'` : ""}]`;
+    return `[json-fx ${this.source === undefined ? "closure" : "codegen"} template${this.name !== undefined ? ` '${this.name}'` : ""}]`;
   }
 }

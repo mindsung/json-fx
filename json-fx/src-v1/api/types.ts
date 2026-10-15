@@ -51,6 +51,13 @@ export interface FxFunctionDef {
    * Extensions must not set it; a redefinition of the name drops the marker along with the definition.
    */
   readonly intrinsic?: "and" | "or" | "ifElse";
+  /**
+   * INTERNAL. Inline JS for the code generator (V1-PLAN.md §5.8), only on built-ins. Receives the already generated
+   * argument expressions (each self-delimiting) and returns an expression with exactly the semantics of `evaluate`,
+   * using every argument exactly once and in order, or `undefined` to decline (e.g. a different argument count).
+   * Extensions must not set it; redefining a built-in drops it along with the definition.
+   */
+  readonly emit?: (args: readonly string[]) => string | undefined;
 }
 
 export interface FxInput {

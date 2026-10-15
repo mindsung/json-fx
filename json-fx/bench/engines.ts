@@ -28,5 +28,13 @@ export const benchV1Closure: BenchEngine = {
   }
 };
 
-/** Engines to benchmark. Phase 4 adds the codegen backend. */
-export const benchEngines: BenchEngine[] = [benchV0, benchV1Closure];
+/** v1 JS code generator, through the pure `run()` path. */
+export const benchV1Codegen: BenchEngine = {
+  name: "v1-codegen",
+  compile(template) {
+    const compiled = new JsonFxV1({ backend: "codegen" }).compile(template);
+    return (input) => compiled.run({ $: input });
+  }
+};
+
+export const benchEngines: BenchEngine[] = [benchV0, benchV1Closure, benchV1Codegen];

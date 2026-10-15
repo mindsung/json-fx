@@ -49,11 +49,36 @@ describe("JsonFx.compile / run", () => {
     expect(t.warnings).toEqual([]);
   });
 
-  it("the codegen backend isn't available yet", () => {
-    expect(() => fx.compile("1", { backend: "codegen" })).toThrow(FxCompileError);
-    expect(fx.compile("1", { backend: "closure" }).run({})).toBe(1);
-    expect(() => new JsonFx({ backend: "codegen" }).compile("1")).toThrow(FxCompileError);
-    expect(new JsonFx({ backend: "auto" }).compile("1").run({})).toBe(1);
+  it("backend selection: auto generates JS, closure doesn't, and each can be forced per template", () => {
+    expect(fx.compile("1").source).toContain("function template");
+    expect(fx.compile("1", { backend: "closure" }).source).toBeUndefined();
+    expect(new JsonFx({ backend: "closure" }).compile("1").source).toBeUndefined();
+    expect(new JsonFx({ backend: "closure" }).compile("1", { backend: "codegen" }).run({})).toBe(1);
+    expect(new JsonFx({ backend: "codegen" }).compile("[1, $]", { backend: "closure" }).run({ $: 2 })).toEqual([1, 2]);
+  });
+
+  it("without `new Function`, auto falls back to the closure backend and codegen is a compile error", () => {
+    vi.stubGlobal("Function", function () { throw new EvalError("blocked by CSP"); });
+    try {
+      expect(new JsonFx({ backend: "auto" }).compile("$ + 1").source).toBeUndefined();
+      expect(new JsonFx({ backend: "auto" }).compile("$ + 1").run({ $: 1 })).toBe(2);
+      expect(() => new JsonFx({ backend: "codegen" }).compile("1")).toThrow(FxCompileError);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("the generated source names the template and tolerates any name", () => {
+    const t = fx.compile("$", { name: "a b\n*/ // x" });
+    expect(t.source).toContain("sourceURL=jsonfx://a_b___");
+    expect(t.run({ $: 3 })).toBe(3);
+  });
+
+  it("redefining a built-in drops its inline form, and an extension can't supply `emit`", () => {
+    const custom = new JsonFx([{ name: "toUpperCase", evaluate: () => "custom", emit: () => "\"evil\"" } as any]);
+    expect(custom.compile("$:toUpperCase").run({ $: "a" })).toBe("custom");
+    expect(custom.compile("toUpperCase($)").run({ $: "a" })).toBe("custom");
+    expect(fx.compile("$:toUpperCase").run({ $: "a" })).toBe("A");
   });
 });
 

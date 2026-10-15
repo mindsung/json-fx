@@ -1,6 +1,5 @@
 import type { FxLazyArg, SourceRef } from "../../api/types";
-import { FxRuntimeError } from "../../errors";
-import { dynamicEntries, get, getBlocked, getDynamic, index, isBlockedKey, lazyArg, missing, pick, setOwn, toKey, wrap } from "../../runtime/helpers";
+import { callable, cyclicReference, dynamicEntries, get, getBlocked, getDynamic, index, isBlockedKey, lazyArg, missing, pick, setOwn, toKey, wrap } from "../../runtime/helpers";
 import type { Binding, CallNode, Decl, Field, LambdaNode, Node, ObjectNode, RefNode, ScopeInfo, Step } from "../../syntax/ast";
 
 /**
@@ -94,7 +93,7 @@ function frameAt(f: Frame, depth: number): Frame {
 function readLazy(fr: Frame, slot: number, name: string): any {
   const v = fr.s[slot];
   if (v !== UNSET) {
-    if (v === BUSY) { throw new FxRuntimeError(`Cyclic reference: '${name}' depends on itself`); }
+    if (v === BUSY) { cyclicReference(name); }
     return v;
   }
   fr.s[slot] = BUSY;
@@ -198,19 +197,14 @@ function compileLazyCall(fn: Callable, args: Node[]): Fn {
   return (f) => fn(...thunks.map((t): FxLazyArg => lazyArg(() => t.run(f), t.src)));
 }
 
-function notCallable(callee: Node): FxRuntimeError {
-  const name = callee.kind === "ref" ? callee.name : "value";
-  return new FxRuntimeError(`'${name}' is not a function`, callee.src);
-}
+const calleeName = (callee: Node): string => (callee.kind === "ref" ? callee.name : "value");
 
 function compileApply(calleeNode: Node, argNodes: Node[]): Fn {
   const callee = compile(calleeNode);
   const args = argNodes.map(compile);
   const [a, b] = args;
   const fnOf = (f: Frame): Callable => {
-    const fn = callee(f);
-    if (typeof fn !== "function") { throw notCallable(calleeNode); }
-    return fn;
+    return callable(callee(f), calleeName(calleeNode), calleeNode.src);
   };
   switch (args.length) {
     case 0: return (f) => fnOf(f)();
@@ -341,9 +335,7 @@ function compileStep(step: Step): StepFn {
       const args = step.args.map(compile);
       const guard = step.guard;
       const fnOf = (f: Frame): Callable => {
-        const fn = callee(f);
-        if (typeof fn !== "function") { throw notCallable(step.callee); }
-        return fn;
+        return callable(callee(f), calleeName(step.callee), step.callee.src);
       };
       switch (args.length) {
         case 0: return { guard, exec: (v, f) => fnOf(f)(v) };

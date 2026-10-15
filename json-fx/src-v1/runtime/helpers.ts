@@ -10,6 +10,11 @@ import { FxError, FxRuntimeError } from "../errors";
 
 const hasOwn = Object.prototype.hasOwnProperty;
 
+/** `Object.prototype.hasOwnProperty.call(o, key)`, shared with generated code for the function-value rule. */
+export function own(o: any, key: string | number | symbol): boolean {
+  return hasOwn.call(o, key);
+}
+
 export function isBlockedKey(key: unknown): boolean {
   return key === "__proto__" || key === "constructor" || key === "prototype";
 }
@@ -104,6 +109,22 @@ export function missing(name: string, src: SourceRef): FxRuntimeError {
   return new FxRuntimeError(`Undefined variable "${name}"`, src);
 }
 
+/** Throws for an undeclared, unsupplied `$name` (generated code can't `throw` inside an expression). */
+export function undefinedInput(name: string, src: SourceRef): never {
+  throw missing(name, src);
+}
+
+/** A lazy variable that was read while it was being computed: a cycle the static check couldn't see. */
+export function cyclicReference(name: string): never {
+  throw new FxRuntimeError(`Cyclic reference: '${name}' depends on itself`);
+}
+
+/** The callee of `@f(...)` / `:@f(...)`: returns it if it is a function, throws otherwise. */
+export function callable(value: unknown, name: string, src: SourceRef): (...args: any[]) => any {
+  if (typeof value !== "function") { throw new FxRuntimeError(`'${name}' is not a function`, src); }
+  return value as (...args: any[]) => any;
+}
+
 /**
  * Turns anything thrown during evaluation into an `FxRuntimeError` carrying the nearest source reference, keeping the
  * original as `cause`. The innermost reference wins: an error that already has one passes through unchanged.
@@ -111,8 +132,23 @@ export function missing(name: string, src: SourceRef): FxRuntimeError {
 export function wrap(error: unknown, src: SourceRef): FxError {
   if (error instanceof FxError && error.sourceRef) { return error; }
   if (error instanceof FxError && !(error instanceof FxRuntimeError)) { return error; }
-  const message = error instanceof Error ? error.message : String(error);
+  const message = error instanceof TypeError ? tidyMessage(error.message) : error instanceof Error ? error.message : String(error);
   return new FxRuntimeError(message, src, { cause: error });
+}
+
+/**
+ * V8 words "X.name is not a function" with the source text of the callee. Generated code would show its own temporaries
+ * and expressions there (`t12.map`, `(t2 , (…)).map`), so a callee that isn't a plain host-looking path becomes `value`.
+ */
+const NOT_A_FUNCTION = /^([\s\S]*)\.([A-Za-z_$][\w$]*) is not a function$/;
+const GENERATED_ID = /^(?:[tpvfwxokd]\d+|h_\w+|k\d+|[IKRG])$/;
+
+export function tidyMessage(message: string): string {
+  const m = NOT_A_FUNCTION.exec(message);
+  if (!m) { return message; }
+  const callee = m[1] as string;
+  const plainPath = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/.test(callee);
+  return plainPath && !GENERATED_ID.test(callee.split(".")[0] as string) ? message : `value.${m[2]} is not a function`;
 }
 
 /** The argument of a `deferEvaluation` function. */

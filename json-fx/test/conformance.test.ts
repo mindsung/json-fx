@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { v0Engine, v1ClosureEngine, type Engine } from "./harness/engines";
+import { v0Engine, v1ClosureEngine, v1CodegenEngine, type Engine } from "./harness/engines";
 import { loadCorpus } from "./harness/corpus";
 import { checkRecordedV0, checkRun, executeCase, runsOf } from "./harness/run-case";
 
 const corpus = loadCorpus();
 
-/** Engines under test. The codegen backend is added in Phase 4. */
-const engines: Engine[] = [v0Engine, v1ClosureEngine];
+/** Engines under test. */
+const engines: Engine[] = [v0Engine, v1ClosureEngine, v1CodegenEngine];
 
 for (const engine of engines) {
   describe(`conformance [${engine.name}]`, () => {

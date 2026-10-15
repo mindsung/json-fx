@@ -1,4 +1,5 @@
 import type { FxFunctionDef } from "../api/types";
+import { inline } from "../backend/js/emit";
 import { getDynamic, setOwn } from "../runtime/helpers";
 import { isArray, isNumber, isObject, type AnyFn } from "./util";
 
@@ -139,7 +140,7 @@ export const collection: readonly FxFunctionDef[] = [
       return count ? total / count : null;
     }
   },
-  { name: "length", pure: true, evaluate: (arr: any[]) => arr.length },
+  { name: "length", pure: true, emit: inline.property("length"), evaluate: (arr: any[]) => arr.length },
   {
     // Note for the optimizer: `range(0, 1e9)` is "pure" but must not be folded at compile time.
     name: "range",
