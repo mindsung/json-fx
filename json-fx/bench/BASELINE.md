@@ -6,6 +6,7 @@ warm-up and three 400 ms rounds cycling over those inputs. The `recursion` row i
 "compile µs" is informational only (parse/compile speed is not a v1 goal); the first row includes cold-start JIT cost.
 
 The Appendix C `order` fixture matches the figure measured when the plan was written (v0 ≈ 35 µs/eval, hand-written ≈ 0.2 µs).
+The `null-invoke-chains` fixture (B1) was added on 2026-10-15 and has no row here; v0 measured 48–79 µs on it (see V1-CLOSURE.md).
 Re-record this file on the same machine before comparing v1 numbers against it.
 
 Node v22.22.3, darwin arm64, Apple M2 Max
