@@ -86,6 +86,17 @@ if (markdown) {
   console.log("| Fixture | Engine | µs / evaluation (median of 3) | best | compile µs | note |");
   console.log("|---|---|---|---|---|---|");
   for (const r of rows) { console.log(`| ${r.fixture} | ${r.engine} | ${fmt(r.us)} | ${fmt(r.best)} | ${fmt(r.compileUs, 0)} | ${r.note} |`); }
+
+  const us = (fixture: string, engine: string): number | null => rows.find(r => r.fixture === fixture && r.engine === engine)?.us ?? null;
+  const times = (a: number | null, b: number | null): string => (a == null || b == null ? "n/a" : `${(a / b).toFixed(1)}×`);
+  console.log("\n## Speedup over v0\n");
+  console.log("v0 µs ÷ engine µs (higher is faster); the last two columns compare the optimizer and the code generator with each other.\n");
+  console.log("| Fixture | v0 µs | closure µs | codegen (no optimizer) µs | codegen µs | hand-written µs | closure vs v0 | codegen vs v0 | codegen vs closure | optimizer gain |");
+  console.log("|---|---|---|---|---|---|---|---|---|---|");
+  for (const f of [...new Set(rows.map(r => r.fixture))]) {
+    const [v0, cl, noopt, cg, hw] = [us(f, "v0"), us(f, "v1-closure"), us(f, "v1-codegen-noopt"), us(f, "v1-codegen"), us(f, "hand-written")];
+    console.log(`| ${f} | ${fmt(v0)} | ${fmt(cl)} | ${fmt(noopt)} | ${fmt(cg)} | ${fmt(hw)} | ${times(v0, cl)} | ${times(v0, cg)} | ${times(cl, cg)} | ${times(noopt, cg)} |`);
+  }
 } else {
   for (const fixtureName of [...new Set(rows.map(r => r.fixture))]) {
     console.log(`\n${fixtureName}`);

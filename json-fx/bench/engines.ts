@@ -37,4 +37,13 @@ export const benchV1Codegen: BenchEngine = {
   }
 };
 
-export const benchEngines: BenchEngine[] = [benchV0, benchV1Closure, benchV1Codegen];
+/** The code generator with the optimizer off, to show what the optimizer adds. */
+export const benchV1CodegenNoOpt: BenchEngine = {
+  name: "v1-codegen-noopt",
+  compile(template) {
+    const compiled = new JsonFxV1({ backend: "codegen", optimize: false }).compile(template);
+    return (input) => compiled.run({ $: input });
+  }
+};
+
+export const benchEngines: BenchEngine[] = [benchV0, benchV1Closure, benchV1CodegenNoOpt, benchV1Codegen];

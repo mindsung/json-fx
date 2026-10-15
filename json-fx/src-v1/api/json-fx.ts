@@ -1,6 +1,7 @@
 import { compileClosure } from "../backend/closure/compile";
 import { canGenerate, compileCodegen, type TemplateFn } from "../backend/js/codegen";
 import { FxCompileError, FxError } from "../errors";
+import { optimize } from "../semantics/optimize";
 import { resolve, type BareWord, type FxWarning } from "../semantics/resolve";
 import { asExtension, createRegistry } from "../stdlib";
 import { TemplateReader } from "../syntax/template-reader";
@@ -13,6 +14,8 @@ export interface JsonFxOptions {
   functions?: ReadonlyArray<ReadonlyArray<FxFunctionDef>>;
   /** `auto` uses the code generator when `new Function` works and falls back to the closure backend. */
   backend?: "auto" | "codegen" | "closure";
+  /** Constant folding, literal-variable inlining and removal of unused declarations (default `true`). */
+  optimize?: boolean;
 }
 
 export interface FxCompiledTemplate {
@@ -36,6 +39,7 @@ export class JsonFx {
   private readonly registry: FunctionRegistry;
   private readonly globals = new Map<string, unknown>();
   private readonly backend: NonNullable<JsonFxOptions["backend"]>;
+  private readonly optimizeByDefault: boolean;
 
   constructor(options?: JsonFxOptions);
   /** v0-compatible: one or more arrays of extension functions. */
@@ -46,6 +50,7 @@ export class JsonFx {
     const sets = (args.length === 1 && isOptions(first) ? options.functions ?? [] : args) as ReadonlyArray<ReadonlyArray<FxFunctionDef>>;
     this.registry = createRegistry(...sets);
     this.backend = options.backend ?? "auto";
+    this.optimizeByDefault = options.optimize ?? true;
   }
 
   /** Adds or replaces functions. Templates compiled earlier are not affected. */
@@ -68,13 +73,15 @@ export class JsonFx {
       throw new FxCompileError("The codegen backend needs `new Function`, which is not available here (strict CSP?); use 'closure' or 'auto'");
     }
 
-    const ast = new TemplateReader(this.registry).read(template);
-    const { warnings, bareWords } = resolve(ast, this.registry, {
+    const read = new TemplateReader(this.registry).read(template);
+    const resolveOptions = {
       ...(options.inputs ? { inputs: options.inputs } : {}),
       ...(options.strictIdentifiers ? { strictIdentifiers: true } : {}),
-      isGlobal: (name) => this.globals.has(name),
+      isGlobal: (name: string) => this.globals.has(name),
       globalNames: () => this.globals.keys()
-    });
+    };
+    const { warnings, bareWords } = resolve(read, this.registry, resolveOptions);
+    const ast = (options.optimize ?? this.optimizeByDefault) ? optimize(read, (tree) => { resolve(tree, this.registry, resolveOptions); }) : read;
     if (backend === "closure" || (backend === "auto" && !canGenerate())) {
       const body = compileClosure(ast);
       const globals = this.globals;

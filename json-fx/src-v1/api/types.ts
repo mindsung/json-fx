@@ -74,4 +74,6 @@ export interface CompileOptions {
   name?: string;
   /** Overrides the instance's backend for this template. */
   backend?: "codegen" | "closure";
+  /** Overrides the instance's `optimize` setting for this template. */
+  optimize?: boolean;
 }
