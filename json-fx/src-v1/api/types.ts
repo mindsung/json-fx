@@ -65,4 +65,6 @@ export interface CompileOptions {
   strictIdentifiers?: boolean;
   /** Template name carried by runtime errors. */
   name?: string;
+  /** Overrides the instance's backend for this template. */
+  backend?: "codegen" | "closure";
 }

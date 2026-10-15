@@ -1,8 +1,8 @@
 # Conformance corpus
 
 Language-agnostic JSON cases (V1-PLAN.md §9) that every engine must pass. They are run by `test/conformance.test.ts`
-(`npm run test:v1`) through the engine adapters in `test/harness/engines.ts`. Today only v0 is wired up; the v1 closure and
-codegen backends are added in Phases 3 and 4.
+(`npm run test:v1`) through the engine adapters in `test/harness/engines.ts`. v0 and the v1 closure backend are wired up
+(every case, including the `v0: "skip"` ones, must pass on v1); the codegen backend is added in Phase 4.
 
 ## File layout
 

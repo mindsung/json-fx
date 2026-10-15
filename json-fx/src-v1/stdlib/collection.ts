@@ -1,4 +1,5 @@
 import type { FxFunctionDef } from "../api/types";
+import { getDynamic, setOwn } from "../runtime/helpers";
 import { isArray, isNumber, isObject, type AnyFn } from "./util";
 
 function minOf(a: any, b: any): any {
@@ -21,7 +22,19 @@ function sortBy(arr: any[], lambda?: AnyFn): any[] {
 }
 
 export const collection: readonly FxFunctionDef[] = [
-  { name: "assign", pure: true, evaluate: (...objects: any[]) => Object.assign({}, ...objects) },
+  {
+    // Like Object.assign, but an own `__proto__` key (from JSON.parse) is copied as data instead of replacing the prototype.
+    name: "assign",
+    pure: true,
+    evaluate: (...objects: any[]) => {
+      const result: Record<string, unknown> = {};
+      for (const source of objects) {
+        if (source == null) { continue; }
+        for (const key of Object.keys(Object(source))) { setOwn(result, key, source[key]); }
+      }
+      return result;
+    }
+  },
   { name: "map", pure: true, evaluate: (arr: any[], lambda: AnyFn) => arr.map(lambda) },
   { name: "sort", pure: true, evaluate: sortBy },
   { name: "reverse", pure: true, evaluate: (arr: any[]) => arr.slice().reverse() },
@@ -36,7 +49,7 @@ export const collection: readonly FxFunctionDef[] = [
       }
       if (isObject(value)) {
         return Object.keys(value).reduce((obj: Record<string, any>, key) => {
-          if (lambda(key, value[key])) { obj[key] = value[key]; }
+          if (lambda(key, value[key])) { setOwn(obj, key, value[key]); }
           return obj;
         }, {});
       }
@@ -137,7 +150,8 @@ export const collection: readonly FxFunctionDef[] = [
       return result;
     }
   },
-  { name: "item", pure: true, evaluate: (arr: any[], index: number) => arr[index] },
+  // The index is template-controlled, so it goes through the hardened read (no `item($, 'constructor')`).
+  { name: "item", pure: true, evaluate: (arr: any[], index: number) => getDynamic(arr, index) },
   { name: "first", pure: true, evaluate: (arr: any[]) => (arr != null && arr.length > 0 ? arr[0] : undefined) },
   { name: "last", pure: true, evaluate: (arr: any[]) => (arr != null && arr.length > 0 ? arr[arr.length - 1] : undefined) }
 ];

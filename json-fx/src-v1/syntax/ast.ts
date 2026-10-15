@@ -1,12 +1,32 @@
 import type { FxFunctionDef, SourceRef } from "../api/types";
 
-/** Placeholder until the resolver (Phase 3) defines scopes. */
+/**
+ * A lexical scope that owns a run-time frame. The resolver only creates one when it declares at least one name (an
+ * object without declarations, a lambda without parameters, a dynamic key without `as` bindings have none), so
+ * `parent` is the nearest enclosing scope *with a frame*, and a reference's `depth` counts frames to walk up.
+ * `root` is the pseudo-scope of inputs and globals; it has no frame.
+ *
+ * Slot layout: an `object` scope has one slot per declaration, in declaration order (`ObjectNode.decls[slot]`); a
+ * `lambda` scope has one per parameter; a `dynamic` scope has `$v` in slot 0 and `$k` (if declared) in slot 1.
+ */
 export interface ScopeInfo {
   readonly id: number;
+  readonly kind: "root" | "object" | "lambda" | "dynamic";
+  readonly parent: ScopeInfo | undefined;
+  /** Declared names (with sigil) to their bindings. */
+  readonly bindings: Map<string, Binding>;
+  slots: number;
 }
 
 export interface Binding {
+  readonly name: string;
+  /** The declaring scope; the root scope for `input` and `global` bindings. */
   readonly scope: ScopeInfo;
+  /**
+   * `input`: looked up by name in the inputs of the run (throws if absent). `global`: read from the `JsonFx`
+   * instance's globals at run time. `var`/`fn`: lazily evaluated declaration of an object scope. `param`: lambda,
+   * function or dynamic-key parameter.
+   */
   readonly kind: "input" | "global" | "var" | "fn" | "param";
   readonly slot: number;
 }
@@ -40,7 +60,13 @@ export interface LiteralNode extends Base {
   readonly bareWord?: boolean;
 }
 /** `$x` / `@f` in value position. `name` includes the sigil. */
-export interface RefNode extends Base { readonly kind: "ref"; readonly name: string; binding?: Binding; }
+export interface RefNode extends Base {
+  readonly kind: "ref";
+  readonly name: string;
+  binding?: Binding;
+  /** Set by the resolver: number of frames between the reference and the binding's frame (0 = innermost). */
+  depth?: number;
+}
 export interface ArrayNode extends Base { readonly kind: "array"; readonly items: Node[]; }
 export interface ObjectNode extends Base {
   readonly kind: "object";
@@ -78,8 +104,8 @@ export type Step =
 
 export type Decl =
   | { readonly kind: "var"; readonly name: string; readonly value: Node; readonly src: SourceRef }
-  | { readonly kind: "fn"; readonly name: string; readonly params: Param[]; readonly body: Node; readonly src: SourceRef };
+  | { readonly kind: "fn"; readonly name: string; readonly params: Param[]; readonly body: Node; readonly src: SourceRef; scope?: ScopeInfo };
 
 export type Field =
   | { readonly kind: "static"; readonly key: string; readonly value: Node; readonly optional: boolean; readonly src: SourceRef }
-  | { readonly kind: "dynamic"; readonly source: Node; readonly valueName?: string; readonly keyName?: string; readonly value: Node; readonly src: SourceRef };
+  | { readonly kind: "dynamic"; readonly source: Node; readonly valueName?: string; readonly keyName?: string; readonly value: Node; readonly src: SourceRef; scope?: ScopeInfo };

@@ -11,6 +11,8 @@ function describe(ref: SourceRef | undefined): string {
 /** Base class of every error json-fx throws. `name` is the concrete class name. */
 export class FxError extends Error {
   public readonly sourceRef: SourceRef | undefined;
+  /** `CompileOptions.name` of the template the error came from; set when a compiled template rethrows it. */
+  public templateName: string | undefined;
 
   constructor(message: string, sourceRef?: SourceRef, options?: { cause?: unknown }) {
     super(message + describe(sourceRef), options);

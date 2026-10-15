@@ -1,4 +1,5 @@
 import { JsonFx as JsonFxV0 } from "json-fx-v0";
+import { JsonFx as JsonFxV1 } from "../src-v1";
 
 /** A compiled single-input transform: `$` is the only input. */
 export type BenchFn = (input: unknown) => unknown;
@@ -18,5 +19,14 @@ export const benchV0: BenchEngine = {
   }
 };
 
-/** Engines to benchmark. Phase 3 adds the v1 closure backend, Phase 4 the codegen backend. */
-export const benchEngines: BenchEngine[] = [benchV0];
+/** v1 closure backend, through the pure `run()` path. */
+export const benchV1Closure: BenchEngine = {
+  name: "v1-closure",
+  compile(template) {
+    const compiled = new JsonFxV1({ backend: "closure" }).compile(template);
+    return (input) => compiled.run({ $: input });
+  }
+};
+
+/** Engines to benchmark. Phase 4 adds the codegen backend. */
+export const benchEngines: BenchEngine[] = [benchV0, benchV1Closure];

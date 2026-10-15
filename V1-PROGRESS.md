@@ -27,6 +27,9 @@ Living handoff doc for the v1 implementation. The design lives in [`V1-PLAN.md`]
 | 10 | String escapes: only `\'` and `\\`; other backslashes literal. |
 | 8 | **Still open (non-blocking until Phase 6):** owner to supply sanitized real templates + sample inputs for the conformance corpus / release gate. |
 
+### Decided during Phase 3 (owner, 2026-10-15)
+- A key pick `$o{a, constructor}` **omits** blocked keys (`__proto__`, `constructor`, `prototype`) instead of emitting them as `undefined`; a multi-index `$o['a', 'constructor']` still returns `[1, undefined]` (positional).
+
 ### Implementation decisions (2026-10-14)
 - **Layout:** v0 stays in `json-fx/src/` untouched until Phase 6. v1 is built in a new directory alongside it (`json-fx/src-v1/`, with `test/` and `bench/` for v1); at the end v0 is deleted and v1 is `git mv`'d into `src/`.
 - **Toolchain:** add TS 5 + vitest for v1 code; **do not** touch v0's mocha/ts-node/tslint setup, so the v0 baseline (73 passing / 23 failing, see plan §0) stays reproducible while the corpus is ported. Full toolchain cut-over (drop tslint/polyfills/`lib: dom`, collapse `npm/package.json`, fix `exports`) happens when v0 is removed.
@@ -42,7 +45,7 @@ Each session ends green and committed. Phase numbers refer to V1-PLAN.md §8.
 |---|---|---|
 | 1 | **Phase 0** — groundwork: toolchain for v1, conformance runner (runs against v0), seed corpus, bench harness + v0 baseline, v0 npm alias + `compare` stub | **done** (2026-10-14) |
 | 2 | **Phase 2** — errors, types, AST, scanner, Pratt parser, template reader, stdlib port (with `pure` metadata; fix B13, remove `funny`) | **done** (2026-10-15) |
-| 3 | **Phase 3** — resolver, closure backend, runtime helpers (security rules), public API (`run`/`evaluate`/`defineGlobal`), security tests | not started |
+| 3 | **Phase 3** — resolver, closure backend, runtime helpers (security rules), public API (`run`/`evaluate`/`defineGlobal`), security tests | **done** (2026-10-15) |
 | 4 | **Phase 4** — `emit.ts` + fuzz tests, JS codegen, `backend: 'auto'`, differential test | not started |
 | 5 | **Phase 5** (optimizer/inlining) + start of **Phase 6** (`json-fx check` CLI) | not started |
 | 6 | **Phase 6** rest — README + Security section, migration guide, crypto smoke test, `compare` release gate over real templates, release 1.0.0 | not started |
@@ -70,6 +73,15 @@ Phase 1 (v0.2 hotfix) is skipped per the plan (trusted authors).
 - [x] `syntax/parser.ts` (Pratt, §5.3), `syntax/object-builder.ts` (shared by literals and the reader), `syntax/template-reader.ts` (§5.4), `syntax/print.ts` (S-expression printer for tests/debugging)
 - [x] `stdlib/` ported with `pure` metadata; B13 sort fixed, `funny` removed, `toISOLocalDateTime` fixed, `notNull`/`throw` raise `FxRuntimeError` (B16)
 - [x] Tests: scanner, parser (AST strings), template reader, stdlib (ported from the three v0 `fn-*.spec.ts` plus new B13/time/error cases), and `test/parse-corpus.test.ts`: **all 370 corpus templates parse** (or give the expected `FxSyntaxError` / reader-level `FxCompileError`). Whole suite: 820 passed / 15 skipped (the skips are the engine cases waiting for v1); v0 baseline unchanged (73 / 23).
+
+### Session 3 — Phase 3, resolver + closure backend + public API (done)
+- [x] `semantics/resolve.ts` (+ `suggest.ts`): scope tree and bindings, unknown functions / `@names` with "did you mean", declared-input checking, `strictIdentifiers`, bare-word list, duplicate declarations, var cycles (B11, with the cycle path), `ifElse`/`and`/`or` arity errors, arity warnings
+- [x] `runtime/helpers.ts`: hardened `get`/`getDynamic`/`getBlocked`/`index`/`pick`, `setOwn`, `dynamicEntries`, `missing`, `wrap`, `lazyArg`
+- [x] `backend/closure/compile.ts`: frames with (depth, slot) refs, lazy memoized vars, re-entrant functions/lambdas, chains, objects, dynamic and optional keys, lazy calls
+- [x] `api/json-fx.ts` + `src-v1/index.ts`: `JsonFx` (`define`, `defineGlobal`, `compile`), compiled template with `run` / `evaluate` / `clearInputs` / `warnings` / `bareWords`
+- [x] v1 closure engine registered in the conformance harness, compare harness and bench. **All 370 corpus cases pass on the closure backend** (the 15 `v0: skip` cases run on v1). `npm run compare -- bench/compare-sample` shows the expected B3 difference only.
+- [x] Tests: resolver, helpers, API, closure semantics, `test/security.test.ts`. Whole suite: 1306 passed / 18 skipped (the skips are the v0-side `skip` cases, 15 + 3 new); v0 baseline untouched.
+- [x] Benchmarks recorded in `bench/V1-CLOSURE.md` (closure ≈ 7× faster than v0 on `order`, 5× on `nested-lambdas`)
 
 ### How to run things (from `json-fx/`)
 ```sh
@@ -106,20 +118,32 @@ npx mocha -r ts-node/register --exclude ./src/tests/scripts/pure-fx.spec.ts "./s
 18. Tests for `src-v1/` live next to the code (`*.test.ts`); corpus-driven ones in `test/`.
 19. Inline object literals have no optional-key form (`name?`); write `{ 'name?': … }` only in JSON templates. Not in the plan; add later if wanted.
 
+### Phase 3 deviations and decisions
+20. **Frames only for scopes that declare names.** `ScopeInfo` is created only when an object has declarations, a lambda/function has parameters, or a dynamic key has `as` bindings; `ScopeInfo.parent` skips the others and `RefNode.depth` (new, set by the resolver) counts frames. The plan's "mark captured bindings" is not needed by the closure backend (frames are heap objects); revisit only if the codegen backend wants it.
+21. **AST additions:** `RefNode.depth`, `scope?` on `fn` decls and dynamic fields, `Binding.name`, a `root` scope kind (pseudo-scope of inputs/globals), `FxError.templateName`.
+22. **Lookup order for `$name`:** local scopes → declared input (`CompileOptions.inputs`) → global (bound at compile time, value read at run time) → (undeclared inputs only) run-time input lookup that throws if absent.
+23. **Cycle detection is two-layered.** The resolver finds direct var → var cycles (skipping lambda/function bodies and vars declared in nested objects); anything it misses (e.g. through a function call) trips an in-progress sentinel at run time and raises `FxRuntimeError: Cyclic reference`.
+24. **Errors:** every field, array item, variable and function body wraps what it catches in `FxRuntimeError` with the *innermost* source path (an error inside `@f` reports `@f`'s own path, not the caller's); `run()` adds `templateName`. Native errors keep their TypeError as `cause`.
+25. **Arity:** `ifElse`/`and`/`or` with the wrong argument count are compile errors; for other functions only `params`-declared extra arguments produce a *warning* (`compiled.warnings`). `evaluate.length` is not used (it can't see optional parameters, and the stdlib has no `params`).
+26. **Dynamic key over a scalar** (`{ 5 as $v, $k }`): single key `String(value)`, `$k` = `0`. Not specified in the plan.
+27. **`backend` option:** `'codegen'` throws `FxCompileError` until Phase 4; `'auto'` currently means closure.
+28. **Stdlib hardening found while writing the security tests:** `item(arr, key)` read `arr[key]` with a template-controlled key (`item($, 'constructor')` reached the Object constructor and, chained, `Function`: the §3.3 gadget survives through the stdlib); it now uses the hardened read. `assign` and `filter` copied an own `__proto__` key with `Object.assign`/assignment, which replaces the result's prototype (a JSON input could make the result inherit `isAdmin`); both now copy it as data (`setOwn`). New corpus cases in `security.json`. **Rule for Phase 4/5 and extensions:** any built-in that indexes by an argument must use `runtime/helpers`.
+29. **Pick keys that are missing** stay present as `undefined` (as in v0): `$o{a, zz}` → `{a: 1, zz: undefined}`.
+30. **Optimization done in Phase 3:** `apply`/`invokeUser` specialized for 0–2 arguments (recursion fixture 10.4 → 3.8 µs). More is left to the code generator.
+
 ## New findings (not in V1-PLAN.md §3.2)
 Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDateTime` and malformed-input items on 2026-10-14; the corpus encodes them.
 - **B18 — `if … else if … else` associates left in v0.** `A if C1 else B if C2 else D` parses as `(A if C1 else B) if C2 else D`, so `'minor' if $a < 18 else 'senior' if $a >= 66 else 'adult'` gives `'adult'` for 16. (There is a `TODO: if/else right-hand associativity` in `fx/index.ts`.) The plan's §5.3 already specifies right associativity, so this is just a missing Class B entry. Corpus: `users-scripts.json`.
 - **`toISOLocalDateTime` ignores its first argument** and formats `Date.now()` (`fx/functions/fn-time.ts`). Corpus expects the evident intent. **Confirmed (owner, 2026-10-14):** fix it when porting stdlib in Phase 2.
 - **v0 accepts malformed input silently:** an unterminated string literal (`'abc` → `"abc"`) and a lone operator (`+` → `NaN`). Corpus encodes `FxSyntaxError` for both. **Confirmed (owner, 2026-10-14):** both become syntax errors (Class B, detectable by `check`).
-- **v0 returns `[1, function]` for `$o['a','constructor']`** (multi-index reads prototype keys). Part of the §4.6 hardening; the exact v1 result for blocked keys in `{k}` picks is left undecided (the `$o{a, constructor}` case is `skip`).
+- **v0 returns `[1, function]` for `$o['a','constructor']`** (multi-index reads prototype keys). Part of the §4.6 hardening; decided 2026-10-15: a `{k}` pick omits blocked keys.
 - Mutual recursion (`@even`/`@odd`) and several nested-call shapes work in v0 by luck; only direct recursion and the `misc-debug` template actually break (B2). Those cases are kept as `same` regression guards.
 - Reminder when writing templates: a JSON key starting with `$` is always a variable declaration (`${x}` is not a literal key).
 
-## Notes for the next session (Phase 3 — resolver, closure backend, runtime, public API)
-- Read V1-PLAN.md §4.4, §4.6, §5.5–§5.6, §5.9–§5.10, §6 and `test/conformance/README.md`. Parsing is done: use `TemplateReader` + `createRegistry()` (`src-v1/stdlib`); `printNode` helps debugging.
-- Scope of the resolver: bindings/`ScopeInfo` (the AST has placeholder types `ScopeInfo`/`Binding` and mutable `binding?`/`scope?` slots), unknown `@name`/call names → `FxCompileError` with suggestions (parser leaves `FnRef.def` undefined), arity warnings, var cycles (B11), `strictIdentifiers` (use `LiteralNode.bareWord`), declared-input checking, duplicate declarations (not checked yet).
-- Runtime: wrap lambdas for `FxLazyArg` (`sourceRef` is on every node's `src`), normalize lambda args (`undefined` → `null`), error wrapping into `FxRuntimeError`, §4.6 key/function hardening.
-- Public API: `JsonFx` (`compile`, `define`, `defineGlobal`, `run`/`evaluate`), `CompileOptions` already typed in `api/types.ts`. Register the v1 engine in `test/harness/engines.ts`, `test/conformance.test.ts` and `bench/engines.ts`; the corpus then drives it. Expect the dynamic-key semantics (§5.4 item 5) and `$v`/`$k` on objects to need care.
+## Notes for the next session (Phase 4 — JS codegen backend)
+- Read V1-PLAN.md §5.8 (emission rules), Appendix B (prototype; throwaway), §4.6 item 3 (generator hygiene) and Phase 4 in §8. The resolved AST is the input: `ref.binding`/`ref.depth`, `ObjectNode.scope`, etc. (see deviations 20–23). `backend/closure/compile.ts` is the semantic reference; `runtime/helpers.ts` is shared, generated code should call it for hardened reads (`get`, `getDynamic`, `getBlocked`, `index`, `pick`, `setOwn`, `dynamicEntries`, `missing`, `wrap`, `lazyArg`).
+- Behaviours the generator must match (all in the corpus or the unit tests): lazy memoized vars with a per-entry cycle sentinel, fresh variables per object entry/function call, lambda arg normalization, innermost-source error wrapping (deviation 24), `?` guard returning `null` for the whole chain, optional keys, `__proto__` output keys via `setOwn`/computed key, dynamic-key frames.
+- Add the codegen engine next to `v1ClosureEngine` in `test/harness/engines.ts` and `test/conformance.test.ts`, and `benchEngines`; then the differential test (closure vs codegen) per Phase 4. `JsonFx.compile` already routes `backend`; `FxCompiledTemplate.source` is reserved for the generated JS.
+- Built-in `emit` metadata (inline table) still doesn't exist (deviation 8); add with `emit.ts`.
 - Optimizer reminders (Phase 5): fold only when the result is a primitive (or frozen); never fold `range` with a large result; `dateTime` returns a mutable `Date`.
-- `bench/compare.ts`'s DIFF path is untested until a v1 engine exists; verify it in Phase 3.
 - Still open from the owner: **Q8** (real templates for `real-templates/`; needed by Phase 6, see below).

@@ -1,4 +1,5 @@
 import { JsonFx as JsonFxV0 } from "json-fx-v0";
+import { JsonFx as JsonFxV1 } from "../../src-v1";
 import type { TestFunctionDef } from "./fixtures";
 
 /** Compile-time options a conformance case can pass (v1 only). */
@@ -42,12 +43,16 @@ export const v0Engine: Engine = {
 /** Thrown by an engine adapter whose implementation doesn't exist yet. */
 export class EngineUnavailableError extends Error {}
 
-/** Placeholder until the v1 engine exists (Phase 3); keeps the compare harness wired end to end. */
-export const v1Engine: Engine = {
-  name: "v1",
+/** v1 with the closure backend. */
+export const v1ClosureEngine: Engine = {
+  name: "v1-closure",
   strictErrors: true,
   supportsOptions: true,
-  compile() {
-    throw new EngineUnavailableError("v1 engine not implemented yet");
+  compile(template, functions, options) {
+    const compiled = new JsonFxV1({ functions: [functions as any[]], backend: "closure" }).compile(template, options);
+    return { run: (inputs) => compiled.run(inputs) };
   }
 };
+
+/** The v1 engine the compare harness diffs against v0 (the default backend). */
+export const v1Engine: Engine = { ...v1ClosureEngine, name: "v1" };
