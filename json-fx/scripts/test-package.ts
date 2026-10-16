@@ -15,7 +15,10 @@ const tsc = join(root, "node_modules", "typescript", "bin", "tsc");
 const work = mkdtempSync(join(tmpdir(), "json-fx-package-"));
 let failures = 0;
 
-const sh = (cmd: string, args: string[], cwd: string) => execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+// Under `npm publish` (prepublishOnly, possibly with --dry-run) npm passes its own settings down as environment variables;
+// `npm_config_dry_run` would turn every `npm install` below into a no-op, so the children get a clean environment.
+const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !/^npm_(config_dry_?run|command|lifecycle_|package_)/i.test(k)));
+const sh = (cmd: string, args: string[], cwd: string) => execFileSync(cmd, args, { cwd, env, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
 function step(name: string, fn: () => void): void {
   try { fn(); console.log(`ok    ${name}`); } catch (e: any) { failures++; console.log(`FAIL  ${name}\n${String(e.stdout ?? "")}${String(e.stderr ?? "")}${e.stderr || e.stdout ? "" : e.message}`); }
 }
