@@ -31,7 +31,7 @@ Living handoff doc for the v1 implementation. The design lives in [`V1-PLAN.md`]
 - A key pick `$o{a, constructor}` **omits** blocked keys (`__proto__`, `constructor`, `prototype`) instead of emitting them as `undefined`; a multi-index `$o['a', 'constructor']` still returns `[1, undefined]` (positional).
 
 ### Implementation decisions (2026-10-14)
-- **Layout:** v0 stays in `json-fx/src/` untouched until Phase 6. v1 is built in a new directory alongside it (`json-fx/src-v1/`, with `test/` and `bench/` for v1); at the end v0 is deleted and v1 is `git mv`'d into `src/`.
+- **Layout:** v0 stays in `json-fx/src/` untouched until Phase 6. v1 is built in a new directory alongside it (`json-fx/src-v1/`, with `test/` and `bench/` for v1; renamed to `src/` at the cut-over); at the end v0 is deleted and v1 is `git mv`'d into `src/`.
 - **Toolchain:** add TS 5 + vitest for v1 code; **do not** touch v0's mocha/ts-node/tslint setup, so the v0 baseline (73 passing / 23 failing, see plan §0) stays reproducible while the corpus is ported. Full toolchain cut-over (drop tslint/polyfills/`lib: dom`, collapse `npm/package.json`, fix `exports`) happens when v0 is removed.
 - **Tag:** `v0-final` created and pushed.
 
@@ -48,7 +48,7 @@ Each session ends green and committed. Phase numbers refer to V1-PLAN.md §8.
 | 3 | **Phase 3** — resolver, closure backend, runtime helpers (security rules), public API (`run`/`evaluate`/`defineGlobal`), security tests | **done** (2026-10-15) |
 | 4 | **Phase 4** — `emit.ts` + fuzz tests, JS codegen, `backend: 'auto'`, differential test | **done** (2026-10-15) |
 | 5 | **Phase 5** (optimizer/inlining) + start of **Phase 6** (`json-fx check` CLI) | **done** (2026-10-15) |
-| 6 | **Phase 6** rest — README + Security section (+ function reference generated from stdlib metadata), migration guide, changelog, crypto smoke test, toolchain cut-over (delete v0, `src-v1` → `src`, `bin`), `compare` release gate over real templates, release 1.0.0 | not started |
+| 6 | **Phase 6** rest — README + Security section (+ function reference generated from stdlib metadata), migration guide, changelog, crypto smoke test, toolchain cut-over (delete v0, `src-v1` → `src`, `bin`), `compare` release gate over real templates, release 1.0.0 | **done except publishing** (2026-10-16): release gate clean, docs, smoke test, cut-over, package verified; `npm publish` of 1.0.0 awaits the owner |
 
 Phase 1 (v0.2 hotfix) is skipped per the plan (trusted authors).
 
@@ -101,19 +101,30 @@ Phase 1 (v0.2 hotfix) is skipped per the plan (trusted authors).
 - [x] Rules: B2 (recursion, mutual recursion, functions/lambdas passed to user functions), B5, B6, B7, B13, B14, B15, B18, C1 (parens end a `?` chain), C2 (optional keys), N1, N2, plus compile errors (with suggestions), warnings and bare words (info). `test/check.test.ts` asserts that **every B/C difference recorded in the corpus is reported** for its template, and that the "same" corpus cases are flagged only by the rules that over-approximate on purpose (8 of 280, all B2 "may be affected", B13 or B15).
 - [x] Whole suite: 1892 passed / 18 skipped; `typecheck:v1` clean; v0 baseline untouched.
 
+### Session 6 — Phase 6 rest (done; not yet published)
+- [x] **Release gate (plan §7.3):** `npm run compare` over `real-templates/` (fiber-1, rf-1, rf-2; 4 samples; extensions from `ss-extensions.cjs`): **0 differences**. `check`: 0 errors, no N2, 4 B15 left (fiber-1's impure `isDst()` / `unique`) once the pure StrataSync extensions are marked `pure: true` in `ss-extensions.cjs` (209 B15 before). Real-template speed-up of the default backend over v0: 2.3x-9.6x per evaluation; compiling the 955 KB template 280 ms vs 5.9 s (`real-templates/BENCH.md`).
+- [x] `compare` handles the per-directory layout (`NAME/NAME.template.json`, `NAME/inputs/*.json`), compiles once per template and reports the first differing path.
+- [x] **Crypto smoke test** (`test/extensions.test.ts`, `test/extensions/crypto.ts`): the `archive/json-fx-crypto` definitions (v0 extension API, `~` names) run unchanged on both v1 backends and give v0's output (crypto-js added as a devDependency). CryptoJS `SHA3` is Keccak, not NIST SHA3.
+- [x] **Docs:** README rewritten (syntax reference with the chain/`?` rules and the `:` rationale, quoting advice, Security section, extension API, `check`, API/errors/backends); `docs/MIGRATION.md` (Class A-D, rules B2-B18/C1/C2/N1/N2, API table, order of work); `CHANGELOG.md`; `docs/FUNCTIONS.md` **generated** by `npm run docs` from the stdlib definitions plus `src/stdlib/docs.ts` (a test fails when a built-in has no description or the file is stale; examples of the form `a -> b` are executed by a test). `test/readme.test.ts` runs the README examples.
+- [x] **Cut-over:** v0 `src/`, tslint, webpack config, root `tsconfig.json`/`tslint.json` and `npm/package.json` deleted; `src-v1` -> `src`; TypeScript 5 as `typescript` (alias dropped); `json-fx-v0` alias kept for `compare`/conformance. No ESLint (the strict `tsc` typecheck is the lint; add ESLint later if wanted). One `package.json`: version 1.0.0, `type: commonjs`, `exports` with per-condition `types` (`import` -> `.mjs`/`.d.mts`, `require` -> `.js`/`.d.ts`), `bin` `json-fx` -> `dist/cli.js` (CJS, shebang), `files`, `engines.node >= 18`, `prepublishOnly` = typecheck + test + build + `test:package`.
+- [x] **Package verified** (`npm run build && npm run test:package`): the packed tarball is installed into throw-away projects and used from CommonJS (`require`), ESM (`import`), `.mjs` inside a CJS package, TypeScript under node10 / node16 (CJS and ESM) / bundler resolution, and as the `json-fx` command; plus package contents. `publint` clean and `attw` "no problems found" for all four resolution modes. Built `dist/index.js` also run on Node 18.20 (both backends, CLI) and the suite on Node 20 (only v0-recorded conformance cases differ there, see below); fresh `git archive` + `npm ci` + typecheck + tests + build + package test green.
+- Whole suite: 1916 passed / 18 skipped; `npm run typecheck` clean.
+
 ### How to run things (from `json-fx/`)
 ```sh
-npm run test:v1         # conformance corpus against v0, v1-closure and v1-codegen; unit, fuzz and differential tests
-npm run typecheck:v1    # TS 5, strict
-npm run bench           # or: npm run bench -- order | npm run bench -- --markdown
+npm test                 # conformance corpus against v0, v1-closure and v1-codegen; unit, fuzz, differential, README and extension tests
+npm run typecheck        # TS 5, strict
+npm run build            # tsup -> dist/ (index.js, index.mjs, .d.ts/.d.mts, cli.js)
+npm run test:package     # pack, install into CJS / ESM / TS / bin consumer projects (run build first)
+npm run docs             # regenerate docs/FUNCTIONS.md
+npm run bench            # or: npm run bench -- order | npm run bench -- --markdown
 DIFF_CASES=100000 npx vitest run test/differential.test.ts   # differential gate run (default 4,000 cases)
-npm run compare -- bench/compare-sample      # v0 vs v1 side by side (default dir: real-templates/)
-npm run check -- bench/compare-sample        # json-fx check over templates (Phase 6 CLI; becomes the `json-fx` bin at cut-over)
-# v0 baseline (unchanged: 73 passing / 23 failing), command from V1-PLAN.md §0:
-NODE_OPTIONS="--no-experimental-require-module --no-experimental-detect-module" \
-TS_NODE_COMPILER_OPTIONS='{"module":"commonjs"}' TS_NODE_TRANSPILE_ONLY=true \
-npx mocha -r ts-node/register --exclude ./src/tests/scripts/pure-fx.spec.ts "./src/**/*.spec.ts"
+npm run compare -- real-templates --functions ./real-templates/ss-extensions.cjs
+npm run check -- real-templates --functions ./real-templates/ss-extensions.cjs   # the `json-fx` bin once installed
 ```
+The v0 mocha suite is gone with `src/`; its corpus lives on in `test/conformance/` (tag `v0-final` has the old code).
+Note: three `security` conformance cases that record **v0's** behaviour fail when the suite runs on Node 20 (v0 itself, not v1, is
+what differs); they pass on Node 22.
 
 ## Deviations from the plan
 1. **TypeScript:** root `typescript` is pinned to `~4.9.5`, not 5.x. TS 5.5 removed `suppressImplicitAnyIndexErrors`, which v0's root `tsconfig.json` uses, so TS 5 as `typescript` breaks the v0 mocha baseline. v1 uses TS 5.9 through the alias `typescript5` (`npm run typecheck:v1` calls its `tsc`). At cut-over (Phase 6) delete v0, set `typescript` to 5.x and drop the alias.
@@ -182,9 +193,9 @@ Each is in the corpus (`bug: "NEW"` or `B18`). Owner confirmed the `toISOLocalDa
 - **N2 — v0 mis-evaluates an index or pick that follows another step** (found while probing B6): `$.arr[0]` → `undefined`, `$.o['x']` → `undefined`, `$.o{x}` → `undefined`, `($.o)['x']` → the whole object (index dropped). Only a plain variable base (`$a[0]`) and `:item(0)` work. v1 evaluates them as written (Class B, corpus `bugs.json` "N2: …", `check` rule `N2`). **Worth asking the owner whether real templates index after a property**; if they do, their v0 output has been wrong and the release gate will show it.
 - Reminder when writing templates: a JSON key starting with `$` is always a variable declaration (`${x}` is not a literal key).
 
-## Notes for the next session (Phase 6, rest)
-- Phase 6 left (V1-PLAN.md §8): README rewrite (syntax reference incl. chain/`?` rules and the `:` rationale, quote string constants, **Security** section from §4.6, function reference **generated from stdlib metadata**, migration guide built from §7 incl. the additions in deviation 43, changelog); port `archive/json-fx-crypto` as an extension-compatibility smoke test; the toolchain cut-over (delete v0 `src/`, `git mv src-v1 src`, TS 5 as `typescript` and drop the `typescript5` alias, keep the `json-fx-v0` alias for `compare`, tslint → ESLint or none, collapse `npm/package.json`, fix `exports`, add the `json-fx` `bin` pointing at `cli/main`); the release gate (`npm run compare` over real templates, needs Q8); release 1.0.0.
-- `src-v1/cli/main.ts` is run through `tsx` for now (`npm run check`); for the published bin it must be built (tsup entry) with a `#!/usr/bin/env node` banner.
-- `compare` could annotate each difference with the `check` findings of that template (plan §7.3 says it should); not done yet, `JsonFx.check` is the building block.
+## Notes for the next session (publishing)
+- Everything in Phase 6 is done except `npm publish` and the merge: feature branch -> `develop`, tag `v1.0.0`, `cd json-fx && npm publish` (runs `prepublishOnly`; `publishConfig.access` is public; needs `npm login`).
+- Before publishing, decide whether to move the docs links in the README from `.../tree/develop/...` to a tag once `develop` has v1.
+- Deviation 43's plan-doc updates (rows B18, N1, N2; B6 wording; B2 wording) are folded into V1-PLAN.md §7.1.
+- Later (Phase 7 and nice-to-haves): `compare` could annotate each difference with the template's `check` findings; AOT `toModule()`; ESLint; resource limits.
 - Keep the rule from deviation 28: any built-in that indexes by an argument must use `runtime/helpers`.
-- Q8 (real templates for `real-templates/`): the owner is preparing them in a separate session and will have templates and inputs in place before Phase 6 starts. First step of that session: `npm run compare` and `npm run check` over `real-templates/`, and review every difference against the `check` findings (release gate, plan §7.3). Ask whether real templates index after a property (finding N2).
