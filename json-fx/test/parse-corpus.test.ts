@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createRegistry } from "../src-v1/stdlib";
-import { TemplateReader } from "../src-v1/syntax/template-reader";
-import { FxCompileError, FxSyntaxError } from "../src-v1/errors";
+import { createRegistry } from "../src/stdlib";
+import { TemplateReader } from "../src/syntax/template-reader";
+import { FxCompileError, FxSyntaxError } from "../src/errors";
 import { loadCorpus } from "./harness/corpus";
 import { makeTestFunctions } from "./harness/fixtures";
 

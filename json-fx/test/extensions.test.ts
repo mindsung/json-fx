@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { JsonFx } from "../src-v1";
+import { JsonFx } from "../src";
 import { v0Engine } from "./harness/engines";
 import { cryptoExpressions } from "./extensions/crypto";
 

@@ -20,7 +20,7 @@ A rewrite of the engine. See the [migration guide](docs/MIGRATION.md) for every 
 
 ### Changed
 - 2.3×–9.6× faster per evaluation on real production templates (up to 360× on synthetic ones), and compiles large
-  templates 15–20× faster.
+  templates much faster (a 955 KB template: 280 ms instead of 5.9 s).
 - Bug fixes that change output (prefix operators, string literals after operators, exponents, recursion, memoization of
   variables, `sort`, `if … else if`, `toISOLocalDateTime`, indexing after a property): see the migration guide.
 - Parentheses end a null-conditional chain; keys ending in `?` are optional outputs.

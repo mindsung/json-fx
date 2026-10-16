@@ -13,7 +13,7 @@ export interface CliIo {
 const USAGE = `Usage: json-fx check [options] <file-or-directory>...
 
 Compiles each template and reports compile errors (with suggestions), every construct whose meaning differs from v0
-(change classes B and C of V1-PLAN.md §7.1), warnings, and bare words that became string constants.
+(see docs/MIGRATION.md), warnings, and bare words that became string constants.
 
 A directory is searched (recursively) for *.template.json files; if it has none, for *.json files other than *.inputs.json.
 A file holds one template: any JSON value, where a string is a single expression.

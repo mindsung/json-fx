@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JsonFx, type Finding } from "../src-v1";
+import { JsonFx, type Finding } from "../src";
 import { loadCorpus } from "./harness/corpus";
 import { makeTestFunctions } from "./harness/fixtures";
 

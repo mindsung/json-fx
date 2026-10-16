@@ -93,8 +93,7 @@ is `4`, `&&`/`||` return operands, operator precedence, `if … else`, `for … 
 | `deferEvaluation` arguments (`FxExpression`) | Now `{ evaluate(), sourceRef }` and nothing else; code that looked inside the 0.x expression objects must change |
 | Errors from `evaluate` were `FxCompileError` | `FxRuntimeError` (`FxSyntaxError`/`FxCompileError` are thrown by `compile`). All extend `FxError` |
 | `compiled.toString()` | Debug text; the format changed |
-| Bundled for Node/ES5 | ES2020, Node 18+. No polyfills; no `lib: dom` types |
-| Dynamic key parameters | `$v` is the value and `$k` the key (or index) |
+| Dynamic keys | `$v` is the value and `$k` the key (or index) |
 
 New in 1.0: `compile` options (`name`, `inputs`, `strictIdentifiers`, `backend`, `optimize`), `compiled.warnings`,
 `compiled.bareWords`, `compiled.source`, `fx.check()`, the `json-fx` command, and `A if C else B`, `for … in`, lambdas

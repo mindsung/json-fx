@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JsonFx } from "../src-v1";
+import { JsonFx } from "../src";
 import { randomCase } from "./harness/random-template";
 
 /**

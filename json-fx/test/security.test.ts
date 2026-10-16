@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { JsonFx } from "../src-v1";
+import { JsonFx } from "../src";
 
 /** V1-PLAN.md §3.3 / §4.6: what the default hardening must hold, independent of the corpus. */
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JsonFx } from "../src-v1";
+import { JsonFx } from "../src";
 
 /** The examples of README.md, run for real (so the documentation can't drift from the behaviour). */
 

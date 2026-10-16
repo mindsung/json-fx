@@ -1,5 +1,5 @@
 import { JsonFx as JsonFxV0 } from "json-fx-v0";
-import { JsonFx as JsonFxV1 } from "../../src-v1";
+import { JsonFx as JsonFxV1 } from "../../src";
 import type { TestFunctionDef } from "./fixtures";
 
 /** Compile-time options a conformance case can pass (v1 only). */

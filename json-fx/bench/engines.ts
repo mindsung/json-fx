@@ -1,5 +1,5 @@
 import { JsonFx as JsonFxV0 } from "json-fx-v0";
-import { JsonFx as JsonFxV1 } from "../src-v1";
+import { JsonFx as JsonFxV1 } from "../src";
 
 /** A compiled single-input transform: `$` is the only input. */
 export type BenchFn = (input: unknown) => unknown;
