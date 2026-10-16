@@ -90,6 +90,7 @@ is `4`, `&&`/`||` return operands, operator precedence, `if … else`, `for … 
 | `compiled.evaluate(...inputs)` | Still works (inputs persist between calls, as before). Prefer `compiled.run({ $: data })`: pure, and faster |
 | `fx.scope` | Removed. `fx.defineGlobal('$name', value)` instead |
 | Extension definitions (`name`, `evaluate`, `operator`, `deferEvaluation`, `params`) | Unchanged. New optional `pure: true` lets the optimizer fold calls and keeps `json-fx check` from reporting B15 |
+| TypeScript names `FxExpressionDefinition`, `FxEvaluatorDefinition`, `FxOperatorDefinition`, `FxParamDefinition`, `AnyFn`, `FxInput`, `FxCompiledTemplate` | All still exported (the first four as deprecated aliases of `FxFunctionDef`, `FxOperatorDef`, `FxParamDef`). `FxDefinition`/`FxIntrinsicDefinition` and the `optimizer`/`validator`/`compiler` hooks exposed 0.x's parser internals and are gone |
 | `deferEvaluation` arguments (`FxExpression`) | Now `{ evaluate(), sourceRef }` and nothing else; code that looked inside the 0.x expression objects must change |
 | Errors from `evaluate` were `FxCompileError` | `FxRuntimeError` (`FxSyntaxError`/`FxCompileError` are thrown by `compile`). All extend `FxError` |
 | `compiled.toString()` | Debug text; the format changed |
