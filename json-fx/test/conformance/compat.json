@@ -1,0 +1,28 @@
+{
+  "defaults": {"source": "V1-PLAN.md §7.2 / §9 must-have compatibility cases"},
+  "cases": [
+    {"name": "bare word is a string constant (object value)", "template": {"kind": "order"}, "expect": {"kind": "order"}, "v0": "same", "tags": ["compat", "bare-word"], "note": "V1-PLAN.md §4.4/§7.2"},
+    {"name": "bare words as ifElse branches (true)", "template": "ifElse($.x, yes, no)", "inputs": {"$": {"x": true}}, "expect": "yes", "v0": "same", "tags": ["compat", "bare-word"]},
+    {"name": "bare words as ifElse branches (false)", "template": "ifElse($.x, yes, no)", "inputs": {"$": {"x": false}}, "expect": "no", "v0": "same", "tags": ["compat", "bare-word"]},
+    {"name": "bare word concatenates as a string", "template": "foo + 1", "expect": "foo1", "v0": "same", "tags": ["compat", "bare-word"]},
+    {"name": "bare word that names a registered function is a call", "template": "math~floor(math~PI * 100) / 100", "expect": 3.14, "v0": "same", "tags": ["compat", "bare-word"]},
+    {"name": "strictIdentifiers rejects bare word value", "template": {"kind": "order"}, "options": {"strictIdentifiers": true}, "expectError": {"type": "FxCompileError", "phase": "compile"}, "v0": "skip", "tags": ["compat", "bare-word"]},
+    {"name": "strictIdentifiers rejects bare words in ifElse", "template": "ifElse($.x, yes, no)", "options": {"strictIdentifiers": true}, "inputs": {"$": {"x": true}}, "expectError": {"type": "FxCompileError", "phase": "compile"}, "v0": "skip", "tags": ["compat", "bare-word"]},
+    {"name": "strictIdentifiers rejects bare word concatenation", "template": "foo + 1", "options": {"strictIdentifiers": true}, "expectError": {"type": "FxCompileError", "phase": "compile"}, "v0": "skip", "tags": ["compat", "bare-word"]},
+    {"name": "strictIdentifiers still allows registered zero-argument functions", "template": "math~floor(math~PI)", "options": {"strictIdentifiers": true}, "expect": 3, "v0": "skip", "tags": ["compat", "bare-word"]},
+    {"name": "strictIdentifiers allows quoted strings", "template": {"kind": "'order'"}, "options": {"strictIdentifiers": true}, "expect": {"kind": "order"}, "v0": "skip", "tags": ["compat", "bare-word"]},
+    {"name": "missing input throws when evaluated", "template": "$typo + 1", "inputs": {"$": 1}, "expectError": {"type": "FxRuntimeError", "match": "Undefined variable", "phase": "run"}, "v0": "same", "tags": ["compat", "missing-input"]},
+    {"name": "missing input in an untaken branch does not throw", "template": "ifElse(true, 1, $typo)", "inputs": {"$": 1}, "expect": 1, "v0": "same", "tags": ["compat", "missing-input"]},
+    {"name": "missing input in an unevaluated variable does not throw", "template": {"$v": "$typo", "()": 1}, "expect": 1, "v0": "same", "tags": ["compat", "missing-input"]},
+    {"name": "input supplied as undefined counts as present", "template": "$x", "inputs": {"$x": {"$$undefined": true}}, "expect": {"$$undefined": true}, "v0": "same", "tags": ["compat", "missing-input"]},
+    {"name": "declared inputs make unknown names compile errors", "template": "$typo + 1", "options": {"inputs": ["$"]}, "inputs": {"$": 1}, "expectError": {"type": "FxCompileError", "match": "$typo", "phase": "compile"}, "v0": "skip", "tags": ["compat", "missing-input"]},
+    {"name": "declared inputs allow declared names", "template": "$ + $b", "options": {"inputs": ["$", "$b"]}, "inputs": {"$": 1, "$b": 2}, "expect": 3, "v0": "skip", "tags": ["compat", "missing-input"]},
+    {"name": "declared inputs do not flag local variables and lambda parameters", "template": {"$v": "$ + 1", "()": "[$v]:map($x => $x + $)"}, "options": {"inputs": ["$"]}, "inputs": {"$": 1}, "expect": [3], "v0": "skip", "tags": ["compat", "missing-input"]},
+    {"name": "declared inputs still lazy for declared-but-unused names", "template": "1", "options": {"inputs": ["$", "$unused"]}, "expect": 1, "v0": "skip", "tags": ["compat", "missing-input"]},
+    {"name": "explicit undefined output keys are kept", "template": {"a": "$.nope", "b": 1}, "inputs": {"$": {}}, "expect": {"a": {"$$undefined": true}, "b": 1}, "v0": "same", "tags": ["compat"]},
+    {"name": "integer-like output keys follow JS ordering", "template": {"b": 1, "2": 2, "1": 3}, "expect": {"1": 3, "2": 2, "b": 1}, "v0": "same", "tags": ["compat"]},
+    {"name": "multi-input templates", "template": "$a + $b * $", "inputs": {"$": 2, "$a": 1, "$b": 3}, "expect": 7, "v0": "same", "tags": ["compat"]},
+    {"name": "$ alone is a valid variable name", "template": "$", "inputs": {"$": [1, 2]}, "expect": [1, 2], "v0": "same", "tags": ["compat"]},
+    {"name": "namespace separator in function names", "template": "[math~min(1, 2), math~max(1, 2)]", "expect": [1, 2], "v0": "same", "tags": ["compat"]}
+  ]
+}

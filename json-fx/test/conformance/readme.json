@@ -1,0 +1,23 @@
+{
+  "defaults": { "v0": "same", "source": "json-fx/README.md", "tags": ["readme"] },
+  "cases": [
+    {"name": "readme: usage example", "template": {"@myRuntimeFunction($a, $b)": "'The answer is: ' + ($a + $b)", "$myVar": "'The var is: ' + @myRuntimeFunction($.someInputProp:addFive, 100)", "someOutputProp": "'The prop is: ' + $myVar", "anotherOutputProp": "'The other prop is: ' + @myRuntimeFunction($.anotherInputProp, 100)"}, "functions": ["addFive"], "inputs": {"$": {"someInputProp": 10, "anotherInputProp": "hello"}}, "expect": {"someOutputProp": "The prop is: The var is: The answer is: 115", "anotherOutputProp": "The other prop is: The answer is: hello100"}},
+    {"name": "readme: multiple named inputs", "template": {"anOutputProp": "$myInput / 2", "anotherOutputProp": "$myOtherInput.someProp.anEvenDeeperProp + ' was input'"}, "inputs": {"$myInput": 1000, "$myOtherInput": {"someProp": {"anEvenDeeperProp": "some value"}}}, "expect": {"anOutputProp": 500, "anotherOutputProp": "some value was input"}},
+    {"name": "readme: tens digit (first input)", "template": "math~floor($.someNumber / 10) % 10", "inputs": {"$": {"someNumber": 1234}}, "expect": 3},
+    {"name": "readme: tens digit (second input)", "template": "math~floor($.someNumber / 10) % 10", "inputs": {"$": {"someNumber": 2468}}, "expect": 6},
+    {"name": "readme: value literals", "template": "(1.5 + 3):toString + ['hello', 2, true, null]:first", "expect": "4.5hello"},
+    {"name": "readme: nested property dot notation", "template": "$.someProp.someDeeperProp", "inputs": {"$": {"someProp": {"someDeeperProp": "hello"}}}, "expect": "hello"},
+    {"name": "readme: null-conditional on missing property", "template": "$.someProp?.someMissingProp?:substr(0, 3)?:toUpperCase", "inputs": {"$": {}}, "expect": null},
+    {"name": "readme: null-conditional on present property", "template": "$.someProp?.someMissingProp?:substr(0, 3)?:toUpperCase", "inputs": {"$": {"someProp": {"someMissingProp": "abcdef"}}}, "expect": "ABC"},
+    {"name": "readme: lambda", "template": "[2, 4, 6, 8]:find(($n) => $n > 5)", "expect": 6},
+    {"name": "readme: object expression", "template": {"someProp": "$ + 1", "anotherProp": {"deeperProp": "$ * 2"}}, "inputs": {"$": 5}, "expect": {"someProp": 6, "anotherProp": {"deeperProp": 10}}},
+    {"name": "readme: variables (circle area)", "template": {"$pi": 3.14159, "$radiusSquared": "$radius * $radius", "radius": "$radius", "area": "($pi * $radiusSquared * 100):math~round / 100"}, "inputs": {"$radius": 3}, "expect": {"radius": 3, "area": 28.27}},
+    {"name": "readme: user-defined function", "template": {"@rectArea($length, $width)": "$length * $width", "area": "@rectArea($.length, $.width)"}, "inputs": {"$": {"length": 3, "width": 4}}, "expect": {"area": 12}},
+    {"name": "readme: user-defined function as argument", "template": {"@isBigNumber($n)": "$n >= 100", "$numbers": [50, 75, 100, 200], "firstBigNumber": "$numbers:find(@isBigNumber)"}, "expect": {"firstBigNumber": 100}},
+    {"name": "readme: scope, declaration order", "template": {"rectInfo": {"area": "@rectArea($.length, $.width)"}, "@rectArea($length, $width)": "$length * $width"}, "inputs": {"$": {"length": 3, "width": 4}}, "expect": {"rectInfo": {"area": 12}}},
+    {"name": "readme: value promotion", "template": {"$pi": 3.14159, "@area($radius)": "$pi * $radius:pow(2)", "()": "@area($)"}, "inputs": {"$": 3}, "expect": 28.27431},
+    {"name": "readme example 1: sum of properties", "template": "$.a + $.b", "inputs": {"$": {"a": 2, "b": 4}}, "expect": 6, "source": "test-readme.spec.ts"},
+    {"name": "readme example 2: filter and count", "template": {"retirementAgeEmployees": "$.people:filter($p => $p.age >= 65):length()"}, "inputs": {"$": {"organization": {"name": "ACME Coding", "country": "New Zealand"}, "people": [{"firstName": "John", "lastName": "Smith", "age": 66}, {"firstName": "Sue", "lastName": "Smith", "age": 34}]}}, "expect": {"retirementAgeEmployees": 1}, "source": "test-readme.spec.ts"},
+    {"name": "readme example 2: mapped person", "template": {"@mappedPerson($p)": {"name": "$p.firstName + ' ' + $p.lastName", "countryOfEmployment": "$.organization.country", "canRetire": "$p.age >= 65"}, "peopleAnotherWay": "$.people:map(@mappedPerson)"}, "inputs": {"$": {"organization": {"name": "ACME Coding", "country": "New Zealand"}, "people": [{"firstName": "John", "lastName": "Smith", "age": 66}, {"firstName": "Sue", "lastName": "Smith", "age": 34}]}}, "expect": {"peopleAnotherWay": [{"name": "John Smith", "countryOfEmployment": "New Zealand", "canRetire": true}, {"name": "Sue Smith", "countryOfEmployment": "New Zealand", "canRetire": false}]}, "source": "test-readme.spec.ts"}
+  ]
+}

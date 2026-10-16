@@ -1,0 +1,21 @@
+{
+  "defaults": {
+    "v0": "same",
+    "source": "users.spec.ts",
+    "inputs": { "$": [
+      { "id": 0, "name": "Alysa Drucker", "age": 19, "gender": "F" },
+      { "id": 1, "name": "Lenny Veillon", "age": 32, "gender": "male" },
+      { "id": 2, "name": "Alline Roache", "age": 41, "gender": "female" },
+      { "id": 3, "name": "Jess Esper", "age": 16, "gender": "f" },
+      { "id": 4, "name": "Colton Melillo", "age": 66, "gender": "m" }
+    ] },
+    "tags": ["script", "users"]
+  },
+  "cases": [
+    {"name": "users: emails", "template": {"@email($first, $last, $domain)": "toLowerCase($first[0] + $last) + '@' + $domain", "@user($u)": {"$names": "$u.name:split(' ')", "firstName": "$names[0]", "lastName": "$names[1]"}, "()": "$:map(@user):map($ => @email($.firstName, $.lastName, 'gmail.com'))"}, "expect": ["adrucker@gmail.com", "lveillon@gmail.com", "aroache@gmail.com", "jesper@gmail.com", "cmelillo@gmail.com"], "note": "original spec used the removed name `lowercase` (see B8 cases)"},
+    {"name": "users: class", "template": {"@class($age)": {"$minor": "'Minor' if $age < 18 else false", "$under21": "'Under 21' if $age < 21 else false", "()": "$minor || $under21 || 'Adult'"}, "()": "$:map($ => ${id}:assign({ class: @class($.age) }))"}, "expect": [{"id": 0, "class": "Under 21"}, {"id": 1, "class": "Adult"}, {"id": 2, "class": "Adult"}, {"id": 3, "class": "Minor"}, {"id": 4, "class": "Adult"}]},
+    {"name": "users: sanitizer", "template": {"@sanitizeGender($g)": {"$code": "toLowerCase($g[0])", "$m": "'male' if $code == 'm' else null", "$f": "'female' if $code == 'f' else null", "()": "$m || $f || 'other'"}, "@user($u)": {"{ $u as $ }": "$", "gender": "@sanitizeGender($u.gender)"}, "()": "map($, @user)"}, "expect": [{"id": 0, "name": "Alysa Drucker", "age": 19, "gender": "female"}, {"id": 1, "name": "Lenny Veillon", "age": 32, "gender": "male"}, {"id": 2, "name": "Alline Roache", "age": 41, "gender": "female"}, {"id": 3, "name": "Jess Esper", "age": 16, "gender": "female"}, {"id": 4, "name": "Colton Melillo", "age": 66, "gender": "male"}], "v0": "differs", "change": "A", "bug": "B9", "note": "uses an object-source dynamic key `{ $u as $ }`; original spec also used removed names `lowercase`", "v0ActualError": "\"as\" is only valid within a dynamic key declaration"},
+    {"name": "users: if/else chain with right-associative else", "template": "$:map($u => 'minor' if $u.age < 18 else 'senior' if $u.age >= 66 else 'adult')", "expect": ["adult", "adult", "adult", "minor", "senior"], "v0": "differs", "change": "B", "bug": "B18", "note": "NEW finding (not in V1-PLAN.md §3.2): v0 parses `A if C1 else B if C2 else D` left-associatively as `(A if C1 else B) if C2 else D`, so ages 16 -> 'adult'. Plan §5.3 specifies right associativity.", "v0Actual": ["adult", "adult", "adult", "adult", "senior"]},
+    {"name": "users: retirement age filter count", "template": "$:filter($p => $p.age >= 65):length()", "expect": 1, "source": "README example 2 shape"}
+  ]
+}

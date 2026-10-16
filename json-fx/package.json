@@ -1,39 +1,84 @@
 {
   "name": "@mindsung/json-fx",
-  "version": "0.1.24",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "JSON-fx: a query and transform engine for JavaScript. Templates are JSON; strings are expressions; compiled to fast JavaScript.",
+  "keywords": [
+    "javascript",
+    "json",
+    "templating",
+    "template",
+    "transform",
+    "query",
+    "expressions"
+  ],
+  "homepage": "https://github.com/mindsung/json-fx/tree/develop/json-fx#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mindsung/json-fx.git",
+    "directory": "json-fx"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Aaron Eads"
+  },
+  "contributors": [
+    {
+      "name": "Robb Eads"
+    }
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "json-fx": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
-    "build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --clean --minify",
-    "publish": "npm version patch && cd npm && npm version patch && cd .. && npm run build && ncp npm/package.json dist/package.json && ncp README.md dist/README.md && cd dist && npm publish --access public",
-    "link": "npm run build && cd dist && npm link",
-    "test": "ts-node node_modules/mocha/bin/mocha \"./src/**/*.spec.ts\"",
-    "test:readme": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-readme.spec.ts\"",
-    "test:examples": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/test-examples.spec.ts\"",
-    "test:misc": "ts-node node_modules/mocha/bin/mocha \"./src/tests/scripts/misc-debug.spec.ts\"",
-    "lint": "tslint src/**/*.ts",
-    "lint-fix": "tslint --fix src/**/*.ts"
+    "build": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\" && tsup",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:package": "tsx scripts/test-package.ts",
+    "docs": "tsx scripts/gen-docs.ts",
+    "bench": "tsx bench/run.ts",
+    "compare": "tsx bench/compare.ts",
+    "check": "tsx src/cli/main.ts check",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run test:package"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.5",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.14",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.2",
-    "ncp": "^2.0.0",
-    "path": "^0.12.7",
-    "rimraf": "^2.7.1",
-    "ts-node": "^8.5.4",
-    "tslint": "^5.20.1",
-    "tsup": "^5.12.6",
-    "typescript": "^4.3.5"
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^22.20.5",
+    "crypto-js": "^4.2.0",
+    "json-fx-v0": "npm:@mindsung/json-fx@0.1.25",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.7"
   }
 }

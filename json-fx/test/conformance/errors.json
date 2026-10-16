@@ -1,0 +1,31 @@
+{
+  "defaults": {"source": "error behaviour (users.spec.ts, V1-PLAN.md §3.2/§4.4)"},
+  "cases": [
+    {"name": "syntax error: unary minus right of operand", "template": "10-", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},
+    {"name": "syntax error: unary minus right of group", "template": "(10 + 5)-", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},
+    {"name": "syntax error: unclosed bracket", "template": "(10", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},
+    {"name": "syntax error: mismatched brackets", "template": "(10]", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},
+    {"name": "syntax error: missing operand", "template": "3 *", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},
+    {"name": "syntax error: unterminated string", "template": "'abc", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "differs", "tags": ["error", "syntax"], "change": "B", "bug": "NEW", "note": "NEW finding (not in V1-PLAN.md §3.2): v0 silently accepts this (returns \"abc\"). Proposed for v1: syntax error. Owner to confirm (see V1-PROGRESS.md).", "v0Actual": "abc"},
+    {"name": "syntax error: unclosed array literal", "template": "[1, 2", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"]},
+    {"name": "syntax error: unclosed call", "template": "add(1, 2", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"]},
+    {"name": "syntax error: trailing dot", "template": "$.", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"]},
+    {"name": "syntax error: double operator", "template": "1 + * 2", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"]},
+    {"name": "syntax error: lone operator", "template": "+", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "differs", "tags": ["error", "syntax"], "change": "B", "bug": "NEW", "note": "NEW finding (not in V1-PLAN.md §3.2): v0 silently accepts this (returns NaN). Proposed for v1: syntax error. Owner to confirm (see V1-PROGRESS.md)."},
+    {"name": "syntax error: lone ampersand pair", "template": "1 && ", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"]},
+    {"name": "syntax error: stray closing bracket", "template": "1 + 2)", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"]},
+    {"name": "syntax error: as outside a dynamic key", "template": "1 as $x", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "note": "v0 message: \"as\" is only valid within a dynamic key declaration"},
+    {"name": "syntax error: parenthesized list is not an array", "template": "(1, 2)", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "differs", "change": "A", "tags": ["error", "syntax"], "note": "V1-PLAN.md §5.3: `(a, b)` outside parameter/argument position is a syntax error; v0 silently built an array", "v0Actual": 1},
+    {"name": "undefined variable at run time", "template": "$a", "inputs": {"$": [1]}, "expectError": {"type": "FxRuntimeError", "match": "Undefined variable", "phase": "run"}, "v0": "same", "tags": ["error", "variable"], "source": "users.spec.ts 'undefined variable'"},
+    {"name": "unresolved @name in call position", "template": "@nope(1)", "expectError": {"type": "FxCompileError", "phase": "compile"}, "v0": "same", "tags": ["error", "function"]},
+    {"name": "throw produces a runtime error", "template": "throw('boom')", "expectError": {"type": "FxRuntimeError", "match": "boom", "phase": "run"}, "v0": "same", "tags": ["error", "runtime"], "bug": "B16", "note": "v0 throws FxCompileError; type only checked by strict engines"},
+    {"name": "notNull produces a runtime error", "template": "notNull($.a)", "inputs": {"$": {"a": null}}, "expectError": {"type": "FxRuntimeError", "phase": "run"}, "v0": "same", "tags": ["error", "runtime"], "bug": "B16"},
+    {"name": "runtime TypeError is wrapped", "template": "$.a.b", "inputs": {"$": {}}, "expectError": {"type": "FxRuntimeError", "phase": "run"}, "v0": "same", "tags": ["error", "runtime"]},
+    {"name": "calling a non-function lambda argument is a runtime error", "template": "[1]:map(5)", "expectError": {"type": "FxRuntimeError", "phase": "run"}, "v0": "same", "tags": ["error", "runtime"]},
+    {"name": "wrong value type for a collection function is a runtime error", "template": "$:map($x => $x)", "inputs": {"$": 5}, "expectError": {"type": "FxRuntimeError", "phase": "run"}, "v0": "same", "tags": ["error", "runtime"]},
+    {"name": "error inside a lambda carries through", "template": "[1, 2]:map($x => throw('inner ' + $x))", "expectError": {"type": "FxRuntimeError", "match": "inner 1", "phase": "run"}, "v0": "same", "tags": ["error", "runtime"]},
+    {"name": "catch recovers from a runtime TypeError", "template": "catch($.a.b, 'safe')", "inputs": {"$": {}}, "expect": "safe", "v0": "same", "tags": ["error", "runtime"]},
+    {"name": "value promotion mixed with output keys", "template": {"()": 1, "a": 2}, "expectError": {"type": "FxCompileError", "phase": "compile"}, "v0": "same", "tags": ["error", "promotion"], "change": "A", "note": "v0 threw at run time (phase not checked on v0); duplicate of objects.json kept here for the errors index"},
+    {"name": "variable declaration with non-string key shape", "template": {"$": 1, "()": "$"}, "expect": 1, "v0": "same", "tags": ["error", "variable"], "note": "a bare `$` key declares the variable `$`"}
+  ]
+}

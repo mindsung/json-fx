@@ -1,0 +1,42 @@
+{
+  "defaults": { "v0": "same", "source": "chain semantics (V1-PLAN.md §3.2/§4.3, README null-conditional)" },
+  "cases": [
+    {"name": "property access", "template": "$.a.b", "inputs": {"$": {"a": {"b": 5}}}, "expect": 5, "tags": ["chain", "property"]},
+    {"name": "property of missing property throws", "template": "$.a.b", "inputs": {"$": {}}, "expectError": {"phase": "run"}, "tags": ["chain", "property"], "note": "JS-like TypeError wrapped in FxRuntimeError"},
+    {"name": "missing leaf property is undefined", "template": "$.a", "inputs": {"$": {}}, "expect": {"$$undefined": true}, "tags": ["chain", "property"]},
+    {"name": "quoted property key", "template": "$.'my key'", "inputs": {"$": {"my key": 7}}, "expect": 7, "tags": ["chain", "property"], "v0": "skip", "source": "V1-PLAN.md §5.3 (.'any key')", "note": "v0 has no quoted property key syntax: `$.'my key'` evaluates to the receiver"},
+    {"name": "numeric property key", "template": "$.1", "inputs": {"$": {"1": "one"}}, "expect": "one", "tags": ["chain", "property"], "source": "V1-PLAN.md §5.3 (.123)"},
+    {"name": "dollar-name after dot is the literal key", "template": "$.$b", "inputs": {"$": {"$b": 3}}, "expect": 3, "tags": ["chain", "property"], "note": "V1-PLAN.md §7.2: .$b is the literal key \"$b\""},
+    {"name": "index with expression", "template": "$a[1 + 1]", "inputs": {"$a": [10, 20, 30]}, "expect": 30, "tags": ["chain", "index"]},
+    {"name": "index by variable key", "template": "$o[$k]", "inputs": {"$o": {"x": 1}, "$k": "x"}, "expect": 1, "tags": ["chain", "index"]},
+    {"name": "multi index returns array", "template": "$a[0, 2]", "inputs": {"$a": [10, 20, 30]}, "expect": [10, 30], "tags": ["chain", "index"], "note": "V1-PLAN.md §5.3 [i, j]"},
+    {"name": "key pick", "template": "$o{a, c}", "inputs": {"$o": {"a": 1, "b": 2, "c": 3}}, "expect": {"a": 1, "c": 3}, "tags": ["chain", "pick"], "source": "users.spec.ts [class] ${id}"},
+    {"name": "key pick with single key", "template": "${id}", "inputs": {"$": {"id": 4, "name": "n"}}, "expect": {"id": 4}, "tags": ["chain", "pick"], "source": "users.spec.ts [class]"},
+    {"name": "invoke on property", "template": "$.name:toUpperCase", "inputs": {"$": {"name": "abc"}}, "expect": "ABC", "tags": ["chain", "invoke"]},
+    {"name": "invoke then property", "template": "$:split(',').length", "inputs": {"$": "a,b,c"}, "expect": 3, "tags": ["chain", "invoke", "property"]},
+    {"name": "property then invoke then property", "template": "$.a:toString.length", "inputs": {"$": {"a": 12345}}, "expect": 5, "tags": ["chain", "invoke", "property"]},
+
+    {"name": "?. on null returns null", "template": "$a?.b", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"]},
+    {"name": "?. on undefined input property returns null", "template": "$.a?.b", "inputs": {"$": {}}, "expect": null, "tags": ["chain", "null-conditional"], "source": "README null-conditional"},
+    {"name": "?. on present value", "template": "$a?.b", "inputs": {"$a": {"b": 1}}, "expect": 1, "tags": ["chain", "null-conditional"]},
+    {"name": "pure ?. chain short-circuits the rest", "template": "$a?.b.c", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"], "source": "V1-PLAN.md §3.2 B3 (works in v0)"},
+    {"name": "?: on null returns null", "template": "$a?:toUpperCase", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"]},
+    {"name": "?: on present value", "template": "$a?:toUpperCase", "inputs": {"$a": "x"}, "expect": "X", "tags": ["chain", "null-conditional"]},
+    {"name": "?: with arguments", "template": "$.someProp?.someMissingProp?:substr(0, 3)?:toUpperCase", "inputs": {"$": {"someProp": {}}}, "expect": null, "tags": ["chain", "null-conditional"], "source": "README null-conditional"},
+    {"name": "?: chain on present value", "template": "$a?:substr(0, 3)?:toUpperCase", "inputs": {"$a": "hello"}, "expect": "HEL", "tags": ["chain", "null-conditional"]},
+    {"name": "?[ guards an index", "template": "$a?[0]", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"], "v0": "skip", "note": "V1-PLAN.md §4.3: ?[ and ?{ are new in v1"},
+    {"name": "?[ index on present value", "template": "$a?[1]", "inputs": {"$a": [5, 6]}, "expect": 6, "tags": ["chain", "null-conditional"], "v0": "skip", "note": "V1-PLAN.md §4.3"},
+    {"name": "?{ guards a pick", "template": "$o?{a}", "inputs": {"$o": null}, "expect": null, "tags": ["chain", "null-conditional"], "v0": "skip", "note": "V1-PLAN.md §4.3"},
+
+    {"name": "? guards the whole chain through :", "template": "$a?.b:toUpperCase", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"], "v0": "differs", "change": "A", "bug": "B3", "v0ActualError": "Cannot read properties of null"},
+    {"name": "?: guards a following property", "template": "$a?:toString.length", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"], "v0": "differs", "change": "A", "bug": "B3", "v0ActualError": "Cannot read properties of null"},
+    {"name": "mixed ?. and ?: chain", "template": "$a?.b?:toUpperCase:length", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"], "v0": "differs", "change": "A", "bug": "B3", "v0ActualError": "Cannot read properties of null"},
+    {"name": "? guards through a following item call", "template": "$a?.b:item(0).c", "inputs": {"$a": null}, "expect": null, "tags": ["chain", "null-conditional"], "v0": "differs", "change": "A", "bug": "B3", "v0ActualError": "Cannot read properties of null"},
+    {"name": "parentheses end a ? chain", "template": "($a?.b).c", "inputs": {"$a": null}, "expectError": {"phase": "run"}, "tags": ["chain", "null-conditional"], "v0": "differs", "change": "C", "note": "V1-PLAN.md §4.3 / §7.1 class C (owner decision): v0 unwraps single-element groups and returns null", "v0Actual": null},
+
+    {"name": "prefix minus applies to the whole chain", "template": "-$.x", "inputs": {"$": {"x": 5}}, "expect": -5, "tags": ["chain", "unary"], "v0": "differs", "change": "B", "bug": "B5", "v0Actual": {"$$undefined": true}},
+    {"name": "prefix not applies to the whole chain", "template": "!$.f", "inputs": {"$": {"f": false}}, "expect": true, "tags": ["chain", "unary"], "v0": "differs", "change": "B", "bug": "B5", "v0Actual": {"$$undefined": true}},
+    {"name": "prefix not on chain in ifElse", "template": "ifElse(!$.active, 'off', 'on')", "inputs": {"$": {"active": false}}, "expect": "off", "tags": ["chain", "unary"], "v0": "differs", "change": "B", "bug": "B5", "v0Actual": "on"},
+    {"name": "prefix minus applies to an invoke chain", "template": "-$a:length", "inputs": {"$a": [1, 2, 3]}, "expect": -3, "tags": ["chain", "unary"], "v0": "differs", "change": "B", "bug": "B5", "v0Actual": {"$$undefined": true}}
+  ]
+}

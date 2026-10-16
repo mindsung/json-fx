@@ -1,31 +1,22 @@
-/*!
-JSON-Fx
+export { JsonFx } from "./api/json-fx";
+export type { FxCompiledTemplate, JsonFxOptions } from "./api/json-fx";
+export type {
+  CompileOptions, FxFunctionDef, FxInput, FxLazyArg, FxOperatorDef, FxParamDef, SourceRef
+} from "./api/types";
+export { FxCompileError, FxError, FxRuntimeError, FxSyntaxError } from "./errors";
+export type { BareWord, FxWarning } from "./semantics/resolve";
+export { builtinFunctions } from "./stdlib";
+export type { CheckOptions, CheckReport, Finding, FindingRule } from "./check/check";
 
-MIT License
-
-Copyright (c) 2019 Aaron Eads
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-import { polyfills } from "./polyfills";
-
-polyfills();
-
-export * from "./fx/json-fx";
-export * from "./model/fx-definition";
+// Names the 0.x typings exported, kept as aliases so TypeScript code written against 0.x still compiles.
+// (0.x's `FxDefinition`/`FxIntrinsicDefinition` exposed parser internals and have no equivalent.)
+import type { FxFunctionDef, FxOperatorDef, FxParamDef } from "./api/types";
+/** @deprecated Use `FxFunctionDef`. */
+export type FxExpressionDefinition = FxFunctionDef;
+/** @deprecated Use `FxFunctionDef`. */
+export type FxEvaluatorDefinition = FxFunctionDef;
+/** @deprecated Use `FxOperatorDef`. */
+export type FxOperatorDefinition = FxOperatorDef;
+/** @deprecated Use `FxParamDef`. */
+export type FxParamDefinition = FxParamDef;
+export type AnyFn = (...args: any[]) => any;

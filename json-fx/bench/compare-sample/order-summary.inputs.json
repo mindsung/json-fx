@@ -1,0 +1,5 @@
+[
+  { "$": { "customer": { "name": "ada" }, "items": [{ "qty": 2, "price": 10 }, { "qty": 1, "price": 5.5 }] } },
+  { "$": { "customer": { "name": "bob" }, "items": [] } },
+  { "$": { "customer": null, "items": [] } }
+]

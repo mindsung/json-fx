@@ -1,0 +1,7 @@
+{
+  "$taxRate": 0.08,
+  "@lineTotal($i)": "$i.qty * $i.price",
+  "customer": "$.customer.name:toUpperCase",
+  "subtotal": "$.items:reduce(($acc, $i) => $acc + @lineTotal($i), 0)",
+  "withTax": "math~round($.items:reduce(($acc, $i) => $acc + @lineTotal($i), 0) * (1 + $taxRate) * 100) / 100"
+}
