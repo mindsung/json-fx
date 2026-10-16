@@ -545,12 +545,15 @@ v1 is **not** bug-for-bug compatible with v0, and doesn't claim to be. The polic
 | Change | v0 → v1 example (verified v0 values) | `check` detection |
 |---|---|---|
 | Prefix unary applies to the whole chain (B5) | `ifElse(!$.active,'off','on')` with `active:false`: `"on"` → `"off"`; `-$.x`: `undefined` → `-5` | prefix `!`/`!!`/`-`/custom unary directly before a chain with ≥ 1 postfix step |
-| String literal after an operator character (B6) | `['a','b']`: `["a",",b"]` → `["a","b"]`; `'a'+'b'`: `"a"` → `"ab"` | an operator character (incl. `,`) immediately followed by `'` outside a literal |
+| String literal after an operator character (B6) | `['a','b']`: `["a",",b"]` → `["a","b"]`; `'a'+'b'`: `"a"` → `"ab"` | an operator token or `,` immediately followed by a string token (probed against v0: only operator characters mis-read a following quote; `(` and brackets are fine) |
 | Exponent number literals (B7) | `1e3`: `1` → `1000` | digit immediately followed by `e`/`E` |
-| Re-entrant / recursive user functions (B2) | factorial `@f(5)`: `1` → `120`; misc-debug template: `4` → `10` | any `@function` that can reach itself in the call graph, or any template passing `@functions`/lambdas into other user functions ("may be affected") |
+| Re-entrant / recursive user functions (B2) | factorial `@f(5)`: `1` → `120`; misc-debug template: `4` → `10` | any `@function` that can reach itself in the call graph, or any template passing `@functions`/lambdas into other user functions ("may be affected"); also any function passed to a user function |
 | `$vars` memoized per evaluation, not across evaluations (B15) | `"$t": "now()"` is no longer frozen after the first `evaluate` | impure function (`now`, `math~random`, `log`, impure extensions) reachable from a `$var` |
 | Stable `sort` with a valid comparator (B13) | order of elements with equal keys | any `sort` with a key lambda |
 | `\'` and `\\` are escapes in string literals (B14) | `'a\\b'`: `a\\b` → `a\b` | literal containing `\'` or `\\` |
+| `A if C1 else B if C2 else D` groups to the right (B18) | `'minor' if $a < 18 else 'senior' if $a >= 66 else 'adult'` with 16: `"adult"` → `"minor"` (v0 grouped it as `(A if C1 else B) if C2 else D`; a `TODO` in `fx/index.ts`) | an unparenthesized `A if C1 else B if C2 else D` |
+| `toISOLocalDateTime` formats its first argument (N1) | v0 ignored it and formatted `Date.now()`; the offset now defaults to the host's offset at that date | any call of `toISOLocalDateTime` |
+| An index or pick after another step is evaluated (N2) | `$.arr[0]`: `undefined` → first item; `$.o['x']`, `$.o{x}`, `($.o)['x']` likewise (v0 handled only a plain variable base and `:item(0)`) | an index or pick step that follows another step |
 
 **Class C — accepted semantic changes (owner decision).** Templates that are correct today can change.
 
