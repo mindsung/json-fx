@@ -3,10 +3,12 @@
 Put **sanitized** templates and sample inputs from existing and upcoming projects here. `npm run compare` evaluates each
 with v0 and v1 and reports every difference (V1-PLAN.md §7.3). An unexplained difference is a v1 bug and blocks the release.
 
-Per template `NAME`:
+Either layout works (both can be mixed):
 
-- `NAME.template.json` — the template (any JSON; a string is a single expression)
-- `NAME.inputs.json` — optional: one inputs object such as `{ "$": { ... }, "$other": 1 }`, or an array of such objects (samples)
+- flat: `NAME.template.json` (any JSON; a string is a single expression) and optionally `NAME.inputs.json` (one inputs
+  object such as `{ "$": { ... }, "$other": 1 }`, or an array of such objects);
+- one directory per template: `NAME/NAME.template.json`, sample documents in `NAME/inputs/*.json` (each one is
+  evaluated as the `$` input), and optionally `NAME/NAME.inputs.json` as above.
 
 If the templates use project-specific extension functions, pass a CommonJS module exporting an array of definitions:
 
