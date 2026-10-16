@@ -83,6 +83,7 @@ class ExprParser {
   private lastChainSteps = 0;
   /** The primary `parsePrimary` returned last was a parenthesized expression containing a `?` guard. */
   private lastPrimaryGuarded = false;
+  private guards = 0;
   private parenGuarded = false;
 
   constructor(
@@ -290,6 +291,7 @@ class ExprParser {
     let taken = 0;
     let node: Node = base;
     let steps: Step[] = [];
+    const guarded: { param: string; receiver: Node; src: SourceRef }[] = [];
     const flush = (): Node => { this.lastChainSteps = taken; return steps.length ? { kind: "chain", base: node, steps, src: node.src } : node; };
     const took = (at: Token): void => {
       if (taken++ === 0 && guardedParens && this.sink) {
@@ -319,9 +321,19 @@ class ExprParser {
           const def = this.registry.get(name.text);
           if (def && (def.deferEvaluation || def.intrinsic)) {
             // Deferred-evaluation functions get the receiver as their first (lazy) argument: desugar to a call.
-            if (guard) { throw new FxCompileError(`'?:' can't be used with '${name.text}': its arguments are evaluated lazily`, this.ref(t)); }
             const receiver = flush();
-            node = this.makeCall(name.text, [receiver, ...args], name);
+            if (guard) {
+              // `R?:f(a)` is `null` when R is null or undefined, else `f(R, a)`, with R evaluated once and the rest of the
+              // chain inside the guard. R is bound to a parameter (a name no template can spell) of an immediately applied
+              // lambda: `(($g) => null if $g == null else f($g, a)…)(R)`; the wrapping happens when the chain ends.
+              const param = `$%guard${++this.guards}`;
+              const here = this.ref(t);
+              const operand: Node = { kind: "ref", name: param, src: here };
+              guarded.push({ param, receiver, src: here });
+              node = this.makeCall(name.text, [operand, ...args], name);
+            } else {
+              node = this.makeCall(name.text, [receiver, ...args], name);
+            }
             steps = [];
           } else {
             steps.push({ kind: "invoke", fn: { name: name.text, def }, args, guard, src: this.ref(name) });
@@ -349,7 +361,16 @@ class ExprParser {
         break;
       }
     }
-    return flush();
+    let result = flush();
+    // Innermost guard last: each guard's receiver already contains the guards before it.
+    for (let k = guarded.length - 1; k >= 0; k--) {
+      const g = guarded[k] as (typeof guarded)[number];
+      const isNull = this.makeCall("eq", [{ kind: "ref", name: g.param, src: g.src }, { kind: "literal", value: null, src: g.src }], this.tok);
+      const body: Node = { kind: "cond", test: isNull, then: { kind: "literal", value: null, src: g.src }, else: result, src: g.src };
+      const lambda: Node = { kind: "lambda", params: [{ name: g.param, callable: false }], body, src: g.src };
+      result = { kind: "apply", callee: lambda, args: [g.receiver], src: g.src };
+    }
+    return result;
   }
 
   private parsePropertyKey(): string {

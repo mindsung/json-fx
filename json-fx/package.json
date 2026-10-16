@@ -1,6 +1,6 @@
 {
   "name": "@mindsung/json-fx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "commonjs",
   "description": "JSON-fx: a query and transform engine for JavaScript. Templates are JSON; strings are expressions; compiled to fast JavaScript.",
   "keywords": [

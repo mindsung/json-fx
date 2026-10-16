@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1
+
+### Fixed
+- `?:` on a deferred-evaluation function (`ifElse`, `catch`, `throw`, extensions with `deferEvaluation`) was a compile error
+  in 1.0.0; 0.x accepted it. `R?:ifElse(a, b)` is `null` when `R` is `null` or `undefined`, otherwise `ifElse(R, a, b)`
+  with `R` evaluated once; as with every other `?` step, a null receiver also ends the rest of the chain
+  (`R?:ifElse(a, b):toUpperCase` is `null`, where 0.x threw).
+
 ## 1.0.0
 
 A rewrite of the engine. See the [migration guide](docs/MIGRATION.md) for every behaviour change.

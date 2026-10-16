@@ -67,7 +67,7 @@ Correct 0.x templates that change meaning, by decision.
 - `?` guards the rest of the chain (0.x threw in some cases).
 - `&&` and `||` short-circuit: the right operand isn't evaluated when it isn't needed (fewer calls of extension functions,
   no more errors from the unused side).
-- `?:` evaluates its receiver once (0.x evaluated it repeatedly, exponentially in nested chains).
+- `?:` evaluates its receiver once (0.x evaluated it repeatedly, exponentially in nested chains). It also works on `ifElse`, `catch`, `throw` and `deferEvaluation` extensions, as in 0.x; a null receiver ends the rest of the chain (0.x threw there).
 - Dynamic keys (`"{ $.items as $v, $k }"`) work. For an object source `$v` is the value and `$k` the key.
 - A cyclic variable reference is a compile error (it overflowed the stack).
 - `"()"` next to output keys is a compile error (0.x threw when evaluating).

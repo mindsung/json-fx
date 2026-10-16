@@ -180,7 +180,7 @@ the value so far is `null` or `undefined`:
 $.customer?.address?.city?:toUpperCase      // null if customer or address is missing
 ```
 
-Without `?`, reading a property of a missing value throws. (`?:` is `?` followed by `:`, like `?.`. It is not the Elvis
+`?:` works with every function, including the lazy ones: `$.rate?:ifElse('fast', 'slow')` is `null` when `$.rate` is missing. Without `?`, reading a property of a missing value throws. (`?:` is `?` followed by `:`, like `?.`. It is not the Elvis
 operator.)
 
 **Parentheses end a chain.** `($.a?.b).c` is `.c` applied to the *result* of `($.a?.b)`, so it throws when `$.a` is

@@ -134,7 +134,10 @@ class Generator {
       [1, () => `${this.expr("str", env, d - 1)}:length`],
       [1, () => `(${this.expr("any", env, d - 1)})?.${r.pick(["x", "n", "length"])}`],
       [0.5, () => `${this.expr("arr", env, d - 1)}?:length`],
-      [0.5, () => `notNull(${sub()})`]
+      [0.5, () => `notNull(${sub()})`],
+      [0.7, () => `${this.expr("any", env, d - 1)}?:ifElse(${sub()}, ${sub()})`],
+      [0.3, () => `${this.expr("any", env, d - 1)}?:catch(${sub()})`],
+      [0.3, () => `${this.expr("any", env, d - 1)}?:ifElse(${sub()}, ${sub()}):${r.pick(["length", "toString", "first"])}`]
     ])();
   }
 

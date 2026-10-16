@@ -46,6 +46,20 @@ describe("0.x public API", () => {
     }]);
     expect(fx.compile("my~lazy($.x)").evaluate({ name: "$", value: { x: 4 } })).toBe(4);
   });
+
+  it("`?:` guards a deferEvaluation extension (a null receiver gives null, the function is not called)", () => {
+    let calls = 0;
+    const fx = new JsonFx([{ name: "my~lazy", deferEvaluation: true, evaluate: (a: { evaluate(): any }, b?: { evaluate(): any }) => { calls++; return [a.evaluate(), b?.evaluate()]; } }]);
+    for (const backend of ["closure", "codegen"] as const) {
+      const compiled = new JsonFx({ backend, functions: [[{ name: "my~lazy", deferEvaluation: true, evaluate: (a: any, b?: any) => { calls++; return [a.evaluate(), b?.evaluate()]; } }]] }).compile("$.x?:my~lazy($.y)");
+      calls = 0;
+      expect(compiled.run({ $: { x: null, y: 2 } })).toBeNull();
+      expect(calls).toBe(0);
+      expect(compiled.run({ $: { x: 1, y: 2 } })).toEqual([1, 2]);
+      expect(calls).toBe(1);
+    }
+    expect(fx.compile("$.x?:my~lazy").evaluate({ name: "$", value: { x: null } })).toBeNull();
+  });
 });
 
 describe("no logging", () => {

@@ -138,7 +138,13 @@ describe("chains", () => {
     expect(p("$a.b:catch('d')")).toBe('catch!(chain($a .b), "d")');
     expect(p("$c:ifElse(1, 2)")).toBe("cond($c ? 1 : 2)");
     expect(p("$a:catch('d').x")).toBe('chain(catch!($a, "d") .x)');
-    expect(() => parser.parseExpression("$a?:catch('d')")).toThrow(FxCompileError);
+  });
+
+  it("lowers `?:` on a deferred-evaluation function to a guard around the call (receiver evaluated once, rest of the chain inside)", () => {
+    expect(p("$a?:catch('d')")).toBe('($%guard1 => cond(eq($%guard1, null) ? null : catch!($%guard1, "d")))($a)');
+    expect(p("$c?:ifElse(1, 2).x")).toBe("($%guard1 => cond(eq($%guard1, null) ? null : chain(cond($%guard1 ? 1 : 2) .x)))($c)");
+    expect(p("$c?:ifElse(1, 2)?:ifElse(3, 4)")).toBe(
+      "($%guard1 => cond(eq($%guard1, null) ? null : ($%guard2 => cond(eq($%guard2, null) ? null : cond($%guard2 ? 3 : 4)))(cond($%guard1 ? 1 : 2))))($c)");
   });
 });
 
