@@ -29,9 +29,11 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.5",
+    "@types/crypto-js": "^4.2.2",
     "@types/mocha": "^5.2.7",
     "@types/node": "^22.20.5",
     "chai": "^4.2.0",
+    "crypto-js": "^4.2.0",
     "json-fx-v0": "npm:@mindsung/json-fx@0.1.25",
     "mocha": "^6.2.2",
     "ncp": "^2.0.0",
