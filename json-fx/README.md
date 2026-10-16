@@ -1,17 +1,26 @@
 # JSON-fx
-**JSON-fx** is an object query and transform engine for JavaScript.
-It defines an intuitive, declarative syntax for expressing an output value as a function of one or more input values.
 
-Use cases could include any scenario in which the query of values from JSON data, or transformation of entire JSON
-objects, is best implemented through runtime configuration rather than hard-coded into application logic.
+**JSON-fx** is a query and transform engine for JavaScript. A *template* is a JSON value in which strings are small
+expressions and objects declare variables, functions and outputs; the template is compiled once, then evaluated against
+any number of inputs.
 
-JSON-fx expressions are embedded in JSON objects known as templates, which are parsed and compiled at
-runtime into expression trees. These are efficient and lightweight wrappers around the native
-JavaScript code they execute. The library includes a large collection of built-in functions and
-operators and is easily extensible.
+```json
+{
+  "$total": "$.items:map($i => $i.price * $i.qty):reduce(($a, $b) => $a + $b, 0)",
+  "customer": "$.customer.name:toTitleCase",
+  "total": "$total",
+  "size": "'large' if $total > 100 else 'small'"
+}
+```
 
-The JSON-fx core library, which includes the parser/compiler and a built-in set of functions, has no external
-runtime dependencies, giving it an extremely compact footprint.
+- **Fast.** Templates compile to plain JavaScript (`new Function`), which V8 optimizes like hand-written code. Where
+  `eval` is unavailable (strict CSP, some edge runtimes) a closure-based backend with identical semantics takes over.
+- **Small and dependency-free.** Works in Node 18+ and modern browsers; ships ESM and CommonJS builds with TypeScript types.
+- **Extensible.** Add your own functions and operators; call functions the template itself defines.
+- **Checkable.** `json-fx check` compiles templates ahead of time and reports errors with suggestions.
+
+> **Upgrading from 0.x?** 1.0 is a rewrite with a few deliberate behaviour changes. Run `json-fx check` over your
+> templates and read the [migration guide](https://github.com/mindsung/json-fx/blob/develop/json-fx/docs/MIGRATION.md).
 
 ## Installation
 
@@ -19,38 +28,33 @@ runtime dependencies, giving it an extremely compact footprint.
 npm install @mindsung/json-fx
 ```
 
-## Usage
-
 ```ts
+// ESM / TypeScript
 import { JsonFx } from "@mindsung/json-fx";
 
-const myCustomExtensionFunctions = [
-  {
-    name: "addFive",
-    evaluate: n => n + 5
-  }
-];
+// CommonJS
+const { JsonFx } = require("@mindsung/json-fx");
+```
 
-const myInput = {
-  someInputProp: 10,
-  anotherInputProp: "hello"
-};
+## Quick start
 
-const myTemplate = {
+```ts
+const fx = new JsonFx([
+  { name: "addFive", evaluate: (n: number) => n + 5 }   // optional extension functions
+]);
+
+const compiled = fx.compile({
   "@myRuntimeFunction($a, $b)": "'The answer is: ' + ($a + $b)",
   "$myVar": "'The var is: ' + @myRuntimeFunction($.someInputProp:addFive, 100)",
   "someOutputProp": "'The prop is: ' + $myVar",
   "anotherOutputProp": "'The other prop is: ' + @myRuntimeFunction($.anotherInputProp, 100)"
-};
+});
 
-const fx = new JsonFx(myCustomExtensionFunctions);
-const compiled = fx.compile(myTemplate);
-const output = compiled.evaluate({ name: "$", value: myInput });
-
-console.log(JSON.stringify(output, null, 2));
+const output = compiled.run({ $: { someInputProp: 10, anotherInputProp: "hello" } });
 ```
 
-Yields the output:
+`output` is
+
 ```json
 {
   "someOutputProp": "The prop is: The var is: The answer is: 115",
@@ -58,310 +62,291 @@ Yields the output:
 }
 ```
 
-## Template inputs
+Compile once and reuse the compiled template: compiling is the expensive step, running is cheap.
 
-Template evaluation will typically include one or more input values. Often, there will be only one input,
-commonly named `"$"` as shown in the basic usage example above. However, any number of named input values may be
-supplied. These input variable names must begin with `"$"`, and they may be of any type. For example:
-```ts
-const inputs = [{
-  name: "$myInput",
-  value: 1000
-}, {
-  name: "$myOtherInput",
-  value: {
-    someProp: {
-      anEvenDeeperProp: "some value"
-    }
-  }
-}];
-const output = compiled.evaluate(...inputs);
-```
-All inputs may then be referenced by their variable names within a template:
-```json
-{
-  "anOutputProp": "$myInput / 2",
-  "anotherOutputProp": "$myOtherInput.someProp.anEvenDeeperProp + ' was input'"
-}
-```
-Which would yield the output:
-```json
-{
-  "anOutputProp": 500,
-  "anotherOutputProp": "some value was input"
-}
-```
-
-## Template expression syntax
-
-Templates may consist of any valid JavaScript value or object. A template could be as simple as a single
-constant value (which would of course be useless, as no transformation or evaluation of any kind would
-take place), or a single JSON-fx string expression, or a complex JSON-fx object expression.
-
-### String expressions
-
-A JSON-fx string expression is, as the name suggests, a string value, which contains one or more function
-calls and/or operators, resulting in exactly one output value or object. It will be parsed by the JSON-fx
-runtime when the template is compiled, creating an efficient expression tree that can be evaluated against
-any number of different input values.
+## API
 
 ```ts
-const template = "math~floor($.someNumber / 10) % 10";
-const compiled = fx.compile(template);
-const input = {
-  name: "$",
-  value: { someNumber: 1234 }
-};
-const output1 = compiled.evaluate(input);
-// output1 = 3
+class JsonFx {
+  constructor(...definitionSets: FxFunctionDef[][]);   // extension functions
+  constructor(options?: JsonFxOptions);
+  compile(template: unknown, options?: CompileOptions): FxCompiledTemplate;
+  define(def: FxFunctionDef | FxFunctionDef[]): void;  // add or replace functions
+  defineGlobal(name: `$${string}`, value: unknown): void;
+  check(template: unknown, options?: CheckOptions): CheckReport;
+}
 
-input.value = { someNumber: 2468 };
-const output2 = compiled.evaluate(input);
-// output2 = 6
+interface JsonFxOptions {
+  functions?: FxFunctionDef[][];
+  backend?: "auto" | "codegen" | "closure";   // default "auto"
+  optimize?: boolean;                         // default true
+}
+
+interface CompileOptions {
+  name?: string;                  // carried by errors and by the generated code's sourceURL
+  inputs?: string[];              // declare the input names, e.g. ['$', '$order']
+  strictIdentifiers?: boolean;    // bare words are compile errors (see below)
+  backend?: "codegen" | "closure";
+  optimize?: boolean;
+}
+
+interface FxCompiledTemplate {
+  run(inputs: Record<string, unknown>): any;     // pure; nothing is kept between calls
+  evaluate(...inputs: { name: string; value: any }[]): any;   // 0.x style; inputs persist between calls
+  clearInputs(): void;
+  readonly warnings: FxWarning[];
+  readonly bareWords: BareWord[];
+  readonly source?: string;                      // the generated JavaScript (codegen backend)
+}
 ```
 
-In this example, the input `$` is an object containing a single property `someNumber`. The template string
-defines a JSON-fx expression, `math~floor($.someNumber / 10) % 10`, which effectively outputs the tens digit of `$.someNumber`
-using integer division and the modulus operator. The template is passed to `fx.compile(...)`
-which converts the string into a compiled expression. Next, `compiled.evaluate(input)` executes the
-expression against the provided input and returns the result, in this case the number `3`. Then, the
-value of the input is changed, and the expression is evaluated again, this time resulting in the
-number `6`.
+### Inputs
 
-#### Functions and operators
+A template reads its inputs as variables whose names start with `$`. The usual single input is named `$` itself:
 
-[Click here for a reference of all JSON-fx built-in functions and operators](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions)
+```ts
+compiled.run({ $: order });                                   // "$.customer.name"
+compiled.run({ $: order, $rates: rates, $locale: "en-US" });  // "$.total * $rates.eur"
+```
 
-Function calls are the core components of any JSON-fx string expression. All string expressions are
-essentially a combination of one or more function evaluations. Even operators are a syntactic shortcut representing a
-call to an associated function. For example, the expression `$a + $b` is just a shorthand representation
-of the function call `add($a, $b)`.
+A reference to an input that was not supplied throws `Undefined variable "$name"` when (and only when) it is evaluated.
+Pass `inputs: ['$', '$rates']` to `compile` to declare the names: any other `$name` is then a *compile* error, which
+catches typos early.
 
-In JSON-fx expressions, functions may be called using standard JavaScript function call syntax, i.e. the
-function name, opening parentheses, comma-separated arguments, and closing parentheses.
+`evaluate()` is the 0.x entry point, kept for compatibility: `compiled.evaluate({ name: "$", value: order })`. Its inputs
+persist between calls (until `clearInputs()`), so prefer `run`.
 
-`add($a, $b)`
+### Globals
 
-Functions may also be chained to other values, functions, or expressions using the
-infix `:` operator:
+`fx.defineGlobal("$config", value)` makes `$config` available to every template compiled afterwards, without passing it
+to each `run`. The name is bound when the template is compiled; the value is read on each run, so later calls to
+`defineGlobal` are seen by templates that are already compiled.
 
-`$a:add($b)` is equivalent to `add($a, $b)`
+### Errors
 
-The left-hand value `$a` is implicitly passed to `add($b)` as the first argument, displacing the
-other arguments. When chaining function calls together, the infix operator can provide better clarity in many
-situations:
+All errors extend `FxError` and carry the template position (`sourceRef`: JSON path, line and column within the
+expression).
 
-`toString(add($a, $b))` is better expressed as `add($a, $b):toString()`,
-or even `$a:add($b):toString()`
+| Class | Thrown | For |
+|---|---|---|
+| `FxSyntaxError` | `compile` | The expression text is not valid |
+| `FxCompileError` | `compile` | Unknown function (with a "did you mean"), wrong arity, cyclic variables, `"()"` mixed with output keys, … |
+| `FxRuntimeError` | `run` | Anything that goes wrong while evaluating, with the path of the field being computed; the original error is the `cause` |
 
-If the right-hand function requires only one argument (which is implicitly provided by the
-left-hand operand), then the parentheses may be omitted:
+### Backends
 
-`$a:add($b):toString`
+`"auto"` (the default) uses the code generator when `new Function` works and the closure backend otherwise. Both produce
+the same results and the same errors. Choose `"closure"` explicitly if you never want generated code, or `"codegen"` to
+fail loudly when it's unavailable. `compiled.source` shows the generated JavaScript, which is handy when debugging.
 
-A comprehensive set of [built-in JSON-fx functions](https://github.com/mindsung/json-fx/tree/develop/json-fx/src/fx/functions)
-provides the core functionality, exposing and extending many of the most useful JavaScript functions.
-Additionally, extension functions and operators can be injected to extend the template language by passing
-an array of definitions to the `JsonFx` class constructor.
+## Template syntax
 
-#### Extension functions
+A template is any JSON value. A **string** is an expression, an **object** is an *object template* (variables,
+functions, outputs), an **array** is an array of templates, and numbers, booleans and `null` are themselves. (Wrap a
+string in an expression to get a constant string: `"'hello'"`.)
 
-A function definition is an object with the two properties, `name`
-and `evaluate`. The ``name`` property is the function name that will be used in expressions,
-and the `evaluate` property is a JavaScript function definition. (JSON-fx function definitions may also include an
-`operator` property, see JSON-fx source for examples. Custom extension functions will not typically include
-operator definitions, as most commonly-used operator symbols are already in use by built-in functions.)
+### Expressions
+
+```
+literals     1   1.5   1e3   'text'   true   false   null   undefined   [1, 'a', $x]   { a: 1, b: $x }
+variables    $   $order   $item        (a name made of letters, digits and _, after a $)
+property     $.customer.name   $.'odd key'   $.items.length
+call         add($a, $b)   math~floor($x)   now()
+chain        $a:add($b):toString          ($a:add($b) is add($a, $b))
+index        $.items[0]   $.row[1, 2]    (several indexes give an array)
+pick         $.user{name, email}         (a new object with just those keys)
+lambda       $x => $x * 2   ($a, $b) => $a + $b
+condition    'adult' if $age >= 18 else 'minor'
+comprehension  $x * 2 for $x in $.items      (same as $.items:map($x => $x * 2))
+operators    + - * / %  **  == === != !== < <= > >=  && ||  !  !!  -x
+```
+
+**String literals** use single quotes. `\'` and `\\` are the only escapes; any other backslash is kept as is.
+
+**Functions.** `name(a, b)` calls a function. `a:name(b)` passes `a` as the first argument, so calls read left to right:
+`$.name:trim:toUpperCase` instead of `toUpperCase(trim($.name))`. Parentheses are optional when there are no further
+arguments. Operators are functions too (`$a + $b` is `add($a, $b)`). The
+[function reference](https://github.com/mindsung/json-fx/blob/develop/json-fx/docs/FUNCTIONS.md) lists every built-in.
+
+**Why `:` and not `.`?** `.` is always property access and `:` is always a function call. Because the two never mix,
+data with keys called `first`, `length`, `min` or `sort` can't collide with functions of the same name, and a function
+added later can't change what an existing property read means. The same distinction lets unknown functions be reported
+at compile time.
+
+**Null-conditional `?`.** Put `?` in front of a step (`?.`, `?:`, `?[`, `?{`) to stop the *whole chain* with `null` when
+the value so far is `null` or `undefined`:
+
+```
+$.customer?.address?.city?:toUpperCase      // null if customer or address is missing
+```
+
+Without `?`, reading a property of a missing value throws. (`?:` is `?` followed by `:`, like `?.`. It is not the Elvis
+operator.)
+
+**Parentheses end a chain.** `($.a?.b).c` is `.c` applied to the *result* of `($.a?.b)`, so it throws when `$.a` is
+missing, as in JavaScript. Put the `?` guards inside one chain.
+
+**Prefix operators** (`-`, `!`, `!!`) apply to the whole chain after them: `-$.x` is `-($.x)`, and `!$.items:length` is
+`!($.items:length)`.
+
+**Precedence**, loosest to tightest: lambda `=>`; `A if C else B` (the `else` branch may be another condition, so
+`'minor' if $a < 18 else 'senior' if $a >= 66 else 'adult'` reads as you'd expect); `for … in`; `||`; `&&`; comparisons;
+`+ -`; `* / %`; `**` (right-associative); prefix operators; chains.
+
+`&&`, `||` and conditions only evaluate the operand they need, and return the operand's value (`'x' || 'y'` is `'x'`).
+
+**Lambdas.** Functions that take a function (`map`, `filter`, `find`, `sort`, `reduce`, …) accept a lambda. Parameters
+start with `$`; parentheses are required for zero or several parameters. `null` and `undefined` arguments reach the
+lambda as `null`. A lambda sees every variable around it.
+
+```
+$.items:filter($i => $i.active):map($i => $i.id)
+$.rows:reduce(($sum, $r) => $sum + $r.amount, 0)
+```
+
+**Bare words.** An identifier that is not a keyword or a function is a string constant: `ifElse($.x, yes, no)` returns
+`"yes"` or `"no"`. This is kept from 0.x, but it is fragile (a function added later with the same name changes the
+meaning), so **write string constants in quotes** (`'yes'`). `compiled.bareWords` and `json-fx check` list them, and
+`strictIdentifiers: true` makes them errors.
+
+### Object templates
+
+Every property of an object template is one of the following; everything else is copied to the output.
+
+| Key | Meaning |
+|---|---|
+| `"name"` | An output property. The value is a constant, an expression string, or a nested template |
+| `"$var"` | A variable, usable by every other expression in this object and the objects inside it |
+| `"@fn($a, $b)"` | A function declared by the template |
+| `"()"` | The single output of this object: the object evaluates to this value instead of to an object |
+| `"name?"` | An optional output `name`: left out when its value is `null` or `undefined` |
+| `"{ source as $v, $k }"` | Dynamic keys (below) |
+| `"// …"` | A comment; ignored |
+
+```json
+{
+  "// how many days a project runs": "",
+  "$day": 86400000,
+  "@days($project)": "(($project.end - $project.start) / $day):math~round",
+  "projects": "$.projects:map($p => { name: $p.name, days: @days($p) })",
+  "nickname?": "$.nickname"
+}
+```
+
+**Variables** are computed lazily and at most once per evaluation (once per call, for variables inside a function). An
+unused variable is never computed. They may be declared in any order and may refer to each other, but not in a cycle
+(a compile error).
+
+**Functions** are real functions: they may call themselves (`"@fact($n)": "1 if $n <= 1 else $n * @fact($n - 1)"`) or
+each other. A parameter named `@f` instead of `$f` takes a function, which you pass as `@name` or as a lambda. A
+function name used as a value is written with its `@`: `$numbers:find(@isBig)`.
+
+**Output promotion.** When an object has a `"()"` key, the object *is* that value; only variable and function
+declarations may sit beside it.
+
+```json
+{
+  "$pi": 3.14159,
+  "@area($r)": "$pi * $r:pow(2)",
+  "()": "@area($)"
+}
+```
+With input `$` = `3` this yields the number `28.27431`, not an object.
+
+**Dynamic keys** build properties from data. `"{ source as $v, $k }"` produces one property for each item of an array
+(key = the item as a string, `$v` the item, `$k` the index) or for each entry of an object (key = the key, `$v` the
+value, `$k` the key):
+
+```json
+{ "{$.prices as $p, $i}": "$p * 2" }
+```
+
+**Scope.** A variable or function belongs to the object that declares it and to every object nested in it, wherever
+the declaration appears in the object.
+
+Expression strings may also contain object literals, `{ a: $x, 'b c': 1 }`, with the same key rules.
+
+### Built-in functions
+
+About 110 functions and operators for arithmetic, comparison, logic, strings, arrays and objects, dates and the whole
+`Math` library (`math~floor`, `math~PI`, …). See the generated
+[function reference](https://github.com/mindsung/json-fx/blob/develop/json-fx/docs/FUNCTIONS.md).
+
+## Extending JSON-fx
+
+An extension is an object with at least a `name` and an `evaluate` function:
+
 ```ts
 const fx = new JsonFx([
-  {
-    name: "addFive",
-    evaluate: n => n + 5
-  }
+  { name: "double", pure: true, evaluate: (n: number) => n * 2 },
+  { name: "crypto~md5", evaluate: (s: string) => md5(s) }          // `~` namespaces a name
 ]);
+// "$.price:double", "crypto~md5($.id)"
 ```
 
-#### Value literals
+| Property | |
+|---|---|
+| `name` | Function name used in templates. Letters, digits, `_` and `~` |
+| `evaluate` | The implementation; receives the evaluated arguments (the receiver of a `:` call comes first) |
+| `pure` | `true` if the result depends only on the arguments and the call has no side effects. Pure calls on literal arguments are computed at compile time, and `json-fx check` treats them as deterministic. Default `false` |
+| `operator` | `{ symbol, precedence, assoc?, isUnary? }` makes the function an operator. Precedence uses the built-in scale: `||` 1, `&&` 1.1, comparisons 2, `+ -` 3, `* / %` 3.1, `**` 3.2 |
+| `deferEvaluation` | Arguments arrive as `{ evaluate(), sourceRef }` and are evaluated only if the function asks (this is how `ifElse` and `catch` work) |
+| `params` | Optional parameter names and types, for tooling |
 
-String expressions may contain value literals, including numeric, string, and boolean values. Numeric literals
-don't require any special notation. String literals must be contained within single quotes `'`. Boolean
-values may be `true` or `false`. Additionally, the special values `null` and `undefined` may be used.
+Functions are looked up when a template is *compiled*; `define()` after that doesn't change templates already compiled.
+A function that takes a function argument receives an ordinary JavaScript function for a lambda or `@name`.
 
-Array literals may also be embedded in string expressions using opening/closing square brackets `[]`.
+## Checking templates: `json-fx check`
 
-```ts
-const template = "(1.5 + 3):toString + ['hello', 2, true, null]:first";
-```
-Yields the value `"4.5hello"` when evaluated against any input (the expression includes no input variables).
-
-
-#### Property accessor dot notation
-
-As in JavaScript and many other programming languages, dot notation is used in string expressions to access
-object properties.
-
-```ts
-const compiled = fx.compile("$.someProp.someDeeperProp");
-const output = compiled.evaluate({
-  name: "$",
-  value: {
-    someProp: {
-      someDeeperProp: "hello"
-    }
-  }
-});
-```
-Yields the output `"hello"`
-
-#### The null-conditional operator
-
-JSON-fx defines a built-in null-conditional operator that allows many templates to appear cleaner and more readable,
-and avoid using frequent, verbose conditional logic for null checking and handling. The null-conditional
-operator `?` may be used inline preceding any property dot accessor or function call. If the value of the
-expression immediately preceding the `?` symbol is null or undefined, the expression will return null.
-
-```ts
-const template = "$.someProp?.someMissingProp?:substr(0, 3)?:toUpperCase";
-```
-When evaluated against any input `$`, if the input value does not include a property `someProp` or
-a property `someProp.someMissingProp`, the expression will happily return a value of null rather
-than throwing a runtime error. This behavior can be especially useful when input objects can be expected
-to have varying structures or optional properties.
-
-#### Anonymous (lambda) functions
-
-Some functions require arguments that are expected to themselves be functions, such as an array `find` function,
-which expects an argument that is a predicate function, and finds the first member of the array matching a
-condition checked by the specified function. When calling such functions, the function-type arguments
-may be expressed using an anonymous function, or lambda, syntax.
-
-Consistent with many programming languages, JSON-fx lambda syntax consists of one or more function argument
-variables, which must begin with `"$"`, followed by `=>`, followed by an expression. If more than one
-argument is declared, the comma-separated argument list must be enclosed in parentheses. When only one
-argument is declared, the parentheses are optional.
-
-```ts
-const template = "[2, 4, 6, 8]:find(($n) => $n > 5)"
-```
-Yields the value ``6`` when evaluated against any input.
-
-### Object expressions
-
-JSON-fx object expressions provide a powerful means by which objects of virtually any complexity may be
-transformed and queried. An object expression is a JavaScript object that includes properties representing some combination
-of JSON-fx variable declarations, JSON-fx runtime user-defined function declarations,
-and outputs. The value of each property on the object may be a constant (single value, object, or array),
-a JSON-fx string expression, or another JSON-fx object expression.
-
-All properties on the object, except for those with the special notations discussed below, will also
-be present on the resulting output value.
-
-```ts
-const compiled = fx.compile({
-  someProp: "$ + 1",
-  anotherProp: {
-    deeperProp: "$ * 2"
-  }
-});
-const output = compiled.evaluate({ name: "$", value: 5 });
-```
-Yields the output value `{ someProp: 6, anotherProp: { deeperProp: 10 } }`
-
-#### Variables
-
-In addition to the named input variables passed into a template evaluation, local variables may be declared
-as well. Variables in object expressions are properties beginning with the symbol `"$"`, and may be used anywhere
-in subsequent expressions. The value assigned to a variable property may be any constant or
-expression value.
-
-```ts
-const template = {
-  "$pi": 3.14159,
-  "$radiusSquared": "$radius * $radius",
-  radius: "$radius",
-  area: "($pi * $radiusSquared * 100):math~round / 100" // round to 2 decimal places
-};
-```
-When evaluated with an input `$radius` of value `3` will yield `{ radius: 3, area: 28.27 }`
-
-#### Runtime user-defined functions
-
-While similar in behavior to extension and built-in functions, runtime user-defined functions are declared and
-implemented within the expression templates. This allows the capabilities of your templates to be extended
-even further without rebuilding and redeploying your application, and also provides a more compact and
-efficient way to reuse expression logic within your template.
-
-Runtime user-defined functions in object expressions are properties beginning with the symbol `"@"`, and may
-be used anywhere in subsequent expressions. The value assigned to the property may technically be any
-constant or expression value, although only an expression value would make the function useful as opposed to
-a variable. Similarly,
-while function arguments aren't strictly required, a function without arguments would serve no advantage over
-simply declaring a variable instead. Function arguments, as with all JSON-fx variables, must begin with ``"$"``.
-
-```ts
-const template = {
-  "@rectArea($length, $width)": "$length * $width",
-  area: "@rectArea($.length, $.width)"
-};
-```
-When evaluated with an input `$` of value `{ length: 3, width: 4 }` will yield `{ area: 12 }`.
-
-Note that, as shown in the example above, when calling runtime user-defined functions, the function name
-must include the beginning `@` symbol.
-
-User-defined functions may also be used, instead of lambda functions, as arguments to other functions
-(either built-in, extension, or runtime user-defined) that
-expect function-type arguments. In this case, the function name, including `@`, is passed as the argument
-value.
-
-```ts
-const template = {
-  "@isBigNumber($n)": "$n >= 100",
-  "$numbers": [50, 75, 100, 200],
-  firstBigNumber: "$numbers:find(@isBigNumber)"
-};
-```
-Yields the value `{ firstBigNumber: 100 }` when evaluated against any input.
-
-#### Variable and user-defined function scope
-
-The scope of any variable or user-defined function within an object expression is the object in which it
-is declared, including any number of levels of inner, nested objects. Because templates are compiled before they
-are evaluated, the actual declaration order of properties on the object is not significant. In other words, so long as it is in the same
-(or nested) object scope, it is not necessary that the property declaring a variable or user-defined
-function appear before it is used (although it will often improve readability).
-
-```ts
-const template = {
-  rectInfo: {
-    // @rectArea is in scope here because it was declared in the parent object.
-    area: "@rectArea($.length, $.width)"
-  },
-  // Valid to declare @rectArea here, even though it is used above this in the
-  // logical property order.
-  "@rectArea($length, $width)": "$length * $width"
-};
+```sh
+npx json-fx check templates/            # a file, or a directory searched for *.template.json / *.json
+npx json-fx check order.template.json --functions ./extensions.cjs --inputs '$,$rates'
 ```
 
-#### Object value promotion
+It compiles each template and reports errors with suggestions (`Unknown function 'toUppercase'. Did you mean
+'toUpperCase'?`), warnings, bare words, and — when you are upgrading from 0.x — every construct whose meaning changed
+(see the migration guide). Options: `--functions <module>` (a CommonJS module exporting an array of definitions),
+`--inputs`, `--globals`, `--strict-identifiers`, `--strict` (exit 1 on change findings too), `--quiet`, `--json`.
+From code, `fx.check(template)` returns the same report.
 
-In addition to variable `"$"` and user-defined function `"@"` notation, a property name
-of `"()"` (empty parentheses) promotes the single value of that property to
-effectively become the value of its parent. Value promotion is
-useful when a single value is required, not an object value, but it is necessary or helpful to arrive at that value by
-using a more complex object expression, so that variables and/or user-defined functions may be
-used.
+## Security
 
-```ts
-const template = {
-  "$pi": 3.14159,
-  "@area($radius)": "$pi * $radius:pow(2)",
-  "()": "@area($)"
-};
-```
-When the above template is evaluated with an input `$` value of `3`, the result is simply the number `28.27431` (not an object).
-Value promotion may be used in any nested level of object expressions, not just at the top level of the
-template object.
+JSON-fx evaluates template logic with the full privileges of your process. Its primary use is templates written by the
+people who run the application. It hardens by default where that costs nothing, but **it is not a sandbox**.
 
-Note that when using value promotion notation, the `"()"` property must be the only property, aside from
-variable and user-defined function declarations, on the object. If other normal object properties exist
-on the object expression alongside the special value promotion property, it will result in a compile-time error.
+**Always on:**
+
+- Reading `__proto__`, `constructor` or `prototype` yields `undefined`, however the key is spelled (`.constructor`,
+  `['constructor']`, a computed key).
+- A property read that would return a function returns `undefined` unless the function is an *own* property of that
+  object. Host callbacks passed in the inputs keep working (`$.items:map($.format)`); inherited methods such as
+  `.constructor`, `.toString` or `Array.prototype.map` can't be reached.
+- The code generator never builds code from template text: identifiers are generated, literals and keys go through
+  `JSON.stringify`, and functions are passed in by reference rather than serialized. It is fuzzed with hostile keys and
+  literals.
+
+**Not protected against:**
+
+- **Resource exhaustion.** Unbounded recursion, `range(0, 1e9)`, exponential string or array growth and very deep
+  nesting can hang or crash the process. There are no time or memory limits.
+- **Data exposure.** A template can read anything reachable from its inputs and globals and put it in its output.
+- **Host capabilities.** Every function you register, and every function you pass as an own property of an input, can be
+  called with arbitrary arguments. Never expose file system, network, `eval`-like or other dangerous functions to
+  templates you don't trust.
+- **Impure built-ins.** `log` writes to the console; `now` and `math~random` are non-deterministic.
+- **Bugs.** Hardening reduces the chance of a template reaching host code through a defect in the engine, especially in
+  a code-generating engine, but can't remove it.
+
+For templates from untrusted sources, evaluate in an isolated process or worker with CPU and memory limits and a
+minimal set of functions, and treat the output as untrusted data.
+
+## Performance
+
+Compiled templates run several times to hundreds of times faster than 0.x. On real production templates the measured
+speed-up of the default backend over 0.x is 2.3× to 9.6× per evaluation, and compiling a 955 KB template takes 280 ms
+instead of 5.9 s (0.x, including its cold start); on synthetic fixtures it is 2.7× to 360×. (`npm run bench` and `npm run compare` in the repository
+reproduce these.) Compile once, reuse the compiled template, and prefer `run` over `evaluate`.
+
+## License
+
+MIT
