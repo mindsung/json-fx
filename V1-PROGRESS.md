@@ -123,7 +123,7 @@ npm run compare -- real-templates --functions ./real-templates/ss-extensions.cjs
 npm run check -- real-templates --functions ./real-templates/ss-extensions.cjs   # the `json-fx` bin once installed
 ```
 The v0 mocha suite is gone with `src/`; its corpus lives on in `test/conformance/` (tag `v0-final` has the old code).
-Note: three `security` conformance cases that record **v0's** behaviour fail when the suite runs on Node 20 (v0 itself, not v1, is
+Note: three `security` conformance cases that record **v0's** behavior fail when the suite runs on Node 20 (v0 itself, not v1, is
 what differs); they pass on Node 22.
 
 ## Deviations from the plan

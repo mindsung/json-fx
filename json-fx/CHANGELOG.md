@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.2
+
+Documentation only; no change to the library.
+
+### Added
+- [Guide](docs/GUIDE.md): a step-by-step introduction to the template language, with verified examples.
+- README: an example with input and output, what JSON-fx is for and when it is not a fit, and a prominent link to the
+  guide. The repository's root README is now a standalone landing page.
+
+### Changed
+- American spelling throughout the documentation (for example "Behavior changes" in the migration guide).
+
 ## 1.0.1
 
 ### Fixed
@@ -10,7 +22,7 @@
 
 ## 1.0.0
 
-A rewrite of the engine. See the [migration guide](docs/MIGRATION.md) for every behaviour change.
+A rewrite of the engine. See the [migration guide](docs/MIGRATION.md) for every behavior change.
 
 ### Added
 - A compiler from templates to JavaScript (`new Function`), with a closure-based backend of identical semantics for

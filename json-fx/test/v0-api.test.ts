@@ -27,7 +27,7 @@ describe("0.x public API", () => {
     const compiled: FxCompiledTemplate = fx.compile(template);
     const input: FxInput = { name: "$", value: { someInputProp: 10 } };
     expect(compiled.evaluate(input)).toEqual({ someOutputProp: "The prop is: The var is: The answer is: 115", differs: true });
-    // inputs persist between evaluate() calls (0.x behaviour) until cleared
+    // inputs persist between evaluate() calls (0.x behavior) until cleared
     expect(fx.compile("$.n").evaluate({ name: "$", value: { n: 1 } })).toBe(1);
     const stateful = fx.compile("$.n + $k");
     stateful.evaluate({ name: "$", value: { n: 1 } }, { name: "$k", value: 10 });

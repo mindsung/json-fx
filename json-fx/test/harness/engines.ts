@@ -18,7 +18,7 @@ export interface Engine {
   readonly name: string;
   /** Whether error `type` and `phase` expectations can be checked (v0 throws FxCompileError for everything). */
   readonly strictErrors: boolean;
-  /** Whether `options` are honoured. */
+  /** Whether `options` are honored. */
   readonly supportsOptions: boolean;
   compile(template: unknown, functions: readonly TestFunctionDef[], options?: EngineCompileOptions): EngineTemplate;
 }

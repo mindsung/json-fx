@@ -1,5 +1,5 @@
 {
-  "defaults": {"source": "error behaviour (users.spec.ts, V1-PLAN.md §3.2/§4.4)"},
+  "defaults": {"source": "error behavior (users.spec.ts, V1-PLAN.md §3.2/§4.4)"},
   "cases": [
     {"name": "syntax error: unary minus right of operand", "template": "10-", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},
     {"name": "syntax error: unary minus right of group", "template": "(10 + 5)-", "expectError": {"type": "FxSyntaxError", "phase": "compile"}, "v0": "same", "tags": ["error", "syntax"], "source": "users.spec.ts 'Throws ...'"},

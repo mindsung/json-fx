@@ -27,7 +27,7 @@ for (const engine of engines) {
         if (engine === v0Engine && c.v0 === "differs") {
           // Known v0 divergence (bug or accepted change): v0 must still deviate, and match what we recorded about it.
           expect(reasons.some(r => r !== null), `v0 now satisfies "${c.name}" — update its v0 status`).toBe(true);
-          runs.forEach((run, i) => expect(checkRecordedV0(run, results[i]!), `recorded v0 behaviour, run ${i}`).toBeNull());
+          runs.forEach((run, i) => expect(checkRecordedV0(run, results[i]!), `recorded v0 behavior, run ${i}`).toBeNull());
         } else {
           reasons.forEach((reason, i) => expect(reason, runs.length > 1 ? `run ${i}` : undefined).toBeNull());
         }

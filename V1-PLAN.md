@@ -177,7 +177,7 @@ Also noted: an object literal emitted as `{"__proto__": v}` sets the prototype i
 
 ### 4.1 Keep JS/TS; compile to JS source; closure backend as fallback
 
-- V8 already is an optimizing compiler. Emitting plain JS (real locals, real arrow functions, native operators, object literals) lets V8 inline, allocate on the stack/escape-analyse, and use hidden-class-optimized object literals. Nothing a hand-rolled interpreter in JS does can compete.
+- V8 already is an optimizing compiler. Emitting plain JS (real locals, real arrow functions, native operators, object literals) lets V8 inline, allocate on the stack/escape-analyze, and use hidden-class-optimized object literals. Nothing a hand-rolled interpreter in JS does can compete.
 - A native core cannot win when the host is JS: marshaling dominates (§3.1 reference rows). N-API object access is not cheaper than a JSON round trip in practice.
 - `new Function` is unavailable under strict CSP (`unsafe-eval` blocked) and on some edge runtimes. The **closure backend** compiles the same IR into nested JS closures with slot-resolved variables — no `eval`, still far faster than v0 (expected; not measured). Later, **ahead-of-time compilation** (emit a `.js` module at build time) is a third way to avoid `eval` entirely.
 - Both backends consume the same resolved/optimized IR, so semantics live in one place, and they can be **differentially tested** against each other.
@@ -225,7 +225,7 @@ Risk: subtle syntax differences from v0. Mitigation: the conformance corpus (§9
 
 ### 4.6 Trust model and security
 
-**Position.** json-fx evaluates template logic with the full privileges of the host process. Template authors are **trusted** in our own projects, which is the primary use case. A published general-purpose library can't assume that, so v1 (a) hardens by default where the cost is negligible and nothing legitimate breaks, and (b) states plainly in the README what it does **not** protect against. Hardening is defence in depth, not a sandbox guarantee.
+**Position.** json-fx evaluates template logic with the full privileges of the host process. Template authors are **trusted** in our own projects, which is the primary use case. A published general-purpose library can't assume that, so v1 (a) hardens by default where the cost is negligible and nothing legitimate breaks, and (b) states plainly in the README what it does **not** protect against. Hardening is defense in depth, not a sandbox guarantee.
 
 **Default hardening (always on):**
 1. **Prototype-path keys blocked.** Reads of `__proto__`, `constructor`, `prototype` return `undefined`. Static keys are decided at compile time; dynamic keys (`[$k]`, `{$k}`) are checked by a runtime helper.
@@ -347,7 +347,7 @@ Inline object literal keys (same set as JSON template keys, see §5.4): `ident`,
 Postfix steps:
 - `.name` / `.$name` / `.'any key'` / `.123` → constant property key (v0 treats `.$b` as the literal key `"$b"`; keep).
 - `:fn` / `:fn(args)` → registered function, receiver is first argument. `:@fn` / `:@fn(args)` → user function. Parentheses optional when no further args.
-- `[e]` → index; `[e1, e2, …]` → array of indexed values (v0 behaviour).
+- `[e]` → index; `[e1, e2, …]` → array of indexed values (v0 behavior).
 - `{k}` / `{k1, k2}` → new object with just those keys (v0 "key indexer").
 - `?` prefix on any step → guard (§4.3).
 
@@ -513,7 +513,7 @@ export interface FxFunctionDef {
 export interface FxLazyArg { evaluate(): any; readonly sourceRef: SourceRef; }
 ```
 
-Later (phase 7): `compiled.toModule(): string` / CLI `json-fx build` for AOT; CLI `json-fx check <template.json>` to lint v0 templates for v1 (unknown functions with suggestions, removed syntax, behaviour-change warnings).
+Later (phase 7): `compiled.toModule(): string` / CLI `json-fx build` for AOT; CLI `json-fx check <template.json>` to lint v0 templates for v1 (unknown functions with suggestions, removed syntax, behavior-change warnings).
 
 ---
 
@@ -521,7 +521,7 @@ Later (phase 7): `compiled.toModule(): string` / CLI `json-fx build` for AOT; CL
 
 v1 is **not** bug-for-bug compatible with v0, and doesn't claim to be. The policy:
 
-1. Every behaviour difference is deliberate, listed below, and placed in one of four classes.
+1. Every behavior difference is deliberate, listed below, and placed in one of four classes.
 2. Every Class B/C difference that can appear in a template is **statically detectable** by `json-fx check`.
 3. A **side-by-side diff of v0 and v1** over real templates and sampled inputs is a release gate (§7.3).
 
@@ -683,7 +683,7 @@ Fields: `expect` **or** `expectError: { "type": "FxCompileError", "match": "Unkn
 - `$.items:map($.fmt)` with an own-property callback → `["#1", "#2"]`.
 - `$typo + 1` → throws `Undefined variable "$typo"`; `ifElse(true, 1, $typo)` → `1` (lazy).
 - The §3.3 payload → no code execution (`$.constructor` reads `undefined`; the template then fails to call it).
-- Class C behaviour: `($a?.b).c` with `$a = null` throws; `{"nick?": "$.n"}` omits `nick` when null and emits `nick` otherwise; `"{ 'nick?' }"` emits the literal key `nick?`.
+- Class C behavior: `($a?.b).c` with `$a = null` throws; `{"nick?": "$.n"}` omits `nick` when null and emits `nick` otherwise; `"{ 'nick?' }"` emits the literal key `nick?`.
 
 ---
 
@@ -696,7 +696,7 @@ Fields: `expect` **or** `expectError: { "type": "FxCompileError", "match": "Unkn
 5. **Lambda argument normalization** (`undefined` → `null`): keep? *Recommendation: keep* (compat).
 6. **Target runtimes:** Node only, or also browsers with strict CSP / edge workers? Determines whether the closure backend must be production-quality in 1.0 or just a reference implementation. *Recommendation: production-quality anyway* (it's the semantic reference).
 7. **Dynamic key parameter order** for object sources: `$v` = value, `$k` = key (what the tests expect) rather than v0's `(key, value)`? *Recommendation: value, key* (consistent with arrays: item, index).
-8. **Production template corpus:** can real templates (sanitized) be added to the conformance corpus? This is the single best protection against unintended behaviour changes.
+8. **Production template corpus:** can real templates (sanitized) be added to the conformance corpus? This is the single best protection against unintended behavior changes.
 9. **Async extension functions:** is there a real need? If yes, design it in Phase 2 (affects IR and API), not Phase 7.
 10. **String literal escapes:** OK with `\'` and `\\` as the only escapes (other backslashes literal)? Alternative: full JS escapes (`\n`, `\u…`) at the cost of changing more v0 literals.
 

@@ -18,7 +18,7 @@ Keep one case per line so diffs stay reviewable. Case names are unique across th
 | `users-scripts.json`, `readme.json`, `misc-debug.json`, `archive-examples.json` | ported from the v0 specs, README, `archive/examples`, `examples/` |
 | `bugs.json` | repros for the verified v0 bugs (V1-PLAN.md §3.2) |
 | `security.json` | the §3.3 payload, prototype/inherited-function hardening (§4.6), hostile keys/literals |
-| `compat.json` | behaviour deliberately kept from v0 (§7.2): bare words, missing inputs, host callbacks |
+| `compat.json` | behavior deliberately kept from v0 (§7.2): bare words, missing inputs, host callbacks |
 | `errors.json` | syntax/compile/runtime errors and their types |
 
 ## Case fields
@@ -58,6 +58,6 @@ the plan (see V1-PROGRESS.md).
 
 ## Adding cases
 
-Add the case with the behaviour v1 should have. Run `npm run test:v1`; if v0 disagrees, set `v0: "differs"` with `change`
+Add the case with the behavior v1 should have. Run `npm run test:v1`; if v0 disagrees, set `v0: "differs"` with `change`
 and `bug`/`note`, and record what v0 does (the values appear in the failure message). Do not edit a `same` expectation to
 make v0 pass without checking the plan.

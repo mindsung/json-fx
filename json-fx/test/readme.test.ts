@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { JsonFx } from "../src";
 
-/** The examples of README.md, run for real (so the documentation can't drift from the behaviour). */
+/** The examples of README.md, run for real (so the documentation can't drift from the behavior). */
 
 const fx = new JsonFx([{ name: "addFive", evaluate: (n: number) => n + 5 }, { name: "double", pure: true, evaluate: (n: number) => n * 2 }]);
 const run = (template: unknown, inputs: Record<string, unknown> = {}) => fx.compile(template).run(inputs);

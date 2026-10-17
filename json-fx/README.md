@@ -1,17 +1,64 @@
 # JSON-fx
 
-**JSON-fx** is a query and transform engine for JavaScript. A *template* is a JSON value in which strings are small
-expressions and objects declare variables, functions and outputs; the template is compiled once, then evaluated against
-any number of inputs.
+**JSON-fx** is a query and transform engine for JavaScript. You describe how to reshape data as a **template**, which is
+plain JSON in which strings are small expressions, then compile it once and run it against any number of inputs.
+Because templates are data, they can live in files or a database and be changed without redeploying your code.
+
+**[📖 New to JSON-fx? Read the guide: a step-by-step introduction to the template language.](https://github.com/mindsung/json-fx/blob/develop/json-fx/docs/GUIDE.md)**
+
+## What it looks like
+
+Template:
 
 ```json
 {
-  "$total": "$.items:map($i => $i.price * $i.qty):reduce(($a, $b) => $a + $b, 0)",
+  "$total": "$.items:reduce(($sum, $i) => $sum + $i.price * $i.qty, 0)",
   "customer": "$.customer.name:toTitleCase",
   "total": "$total",
-  "size": "'large' if $total > 100 else 'small'"
+  "size": "'large' if $total > 100 else 'small'",
+  "email?": "$.customer.email"
 }
 ```
+
+Input:
+
+```json
+{
+  "customer": { "name": "ada lovelace" },
+  "items": [{ "price": 40, "qty": 2 }, { "price": 15, "qty": 2 }]
+}
+```
+
+Output (`email` is left out because the input has none):
+
+```json
+{ "customer": "Ada Lovelace", "total": 110, "size": "large" }
+```
+
+```ts
+import { JsonFx } from "@mindsung/json-fx";
+
+const compiled = new JsonFx().compile(template);   // compile once…
+const output = compiled.run({ $: input });         // …run as often as you like
+```
+
+## What it's for
+
+- **Reshaping JSON**: mapping an API response or database record into the shape another system expects, renaming,
+  picking, flattening, grouping.
+- **Calculated fields**: totals, conditions, string and date formatting, lookups, defined once in a template.
+- **Configuration-driven logic**: report definitions, import/export mappings, rules and notification content that
+  people maintain as JSON files rather than code.
+- **Filtering and querying**: `map`, `filter`, `find`, `sort`, `reduce` and about 110 other built-in functions.
+
+**A good fit when** the templates are written by you or people you trust, the work is data in, data out, and you want
+that logic kept separate from your application code, validated ahead of time and fast to run.
+
+**Not a fit when** templates come from untrusted users (JSON-fx is [not a sandbox](#security); isolate it if you must),
+when you need asynchronous work or side effects (templates compute synchronously from their inputs), or when plain
+JavaScript in your code base would be simpler and nobody needs to change the logic without a deploy.
+
+## Why JSON-fx
 
 - **Fast.** Templates compile to plain JavaScript (`new Function`), which V8 optimizes like hand-written code. Where
   `eval` is unavailable (strict CSP, some edge runtimes) a closure-based backend with identical semantics takes over.
@@ -19,7 +66,7 @@ any number of inputs.
 - **Extensible.** Add your own functions and operators; call functions the template itself defines.
 - **Checkable.** `json-fx check` compiles templates ahead of time and reports errors with suggestions.
 
-> **Upgrading from 0.x?** 1.0 is a rewrite with a few deliberate behaviour changes. Run `json-fx check` over your
+> **Upgrading from 0.x?** 1.0 is a rewrite with a few deliberate behavior changes. Run `json-fx check` over your
 > templates and read the [migration guide](https://github.com/mindsung/json-fx/blob/develop/json-fx/docs/MIGRATION.md).
 
 ## Installation
@@ -140,6 +187,9 @@ the same results and the same errors. Choose `"closure"` explicitly if you never
 fail loudly when it's unavailable. `compiled.source` shows the generated JavaScript, which is handy when debugging.
 
 ## Template syntax
+
+> **Learning the language?** The [guide](https://github.com/mindsung/json-fx/blob/develop/json-fx/docs/GUIDE.md) introduces
+> each feature step by step, with examples and results. This section is the reference.
 
 A template is any JSON value. A **string** is an expression, an **object** is an *object template* (variables,
 functions, outputs), an **array** is an array of templates, and numbers, booleans and `null` are themselves. (Wrap a

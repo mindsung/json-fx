@@ -25,7 +25,7 @@ function now(): number { return Number(process.hrtime.bigint()) / 1e6; }
 
 /**
  * Builds a timing loop with its own copy of the code, so each candidate gets a monomorphic call site: a shared loop
- * would be polymorphic across engines and penalise whichever function runs second.
+ * would be polymorphic across engines and penalize whichever function runs second.
  */
 function makeTimer(): (f: BenchFn, inputs: unknown[], ms: number) => number {
   return new Function("f", "inputs", "ms", `

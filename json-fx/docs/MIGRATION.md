@@ -31,7 +31,7 @@ under an alias (`"json-fx-v0": "npm:@mindsung/json-fx@0.1.25"`), a script that r
 through both and compares the results with `util.isDeepStrictEqual` is enough; the repository's `npm run compare` is
 an example of one.
 
-## 2. Behaviour changes
+## 2. Behavior changes
 
 ### Fixes that change the output of templates that ran without error (Class B)
 

@@ -87,7 +87,7 @@ export function checkRun(engine: Engine, run: ConformanceRun, result: RunResult)
   return callsMismatch(run.expectCalls, result.calls);
 }
 
-/** For `v0: "differs"` runs that record what v0 actually does: returns a reason when v0's behaviour no longer matches the record. */
+/** For `v0: "differs"` runs that record what v0 actually does: returns a reason when v0's behavior no longer matches the record. */
 export function checkRecordedV0(run: ConformanceRun, result: RunResult): string | null {
   const { outcome } = result;
   if (run.v0ActualError !== undefined) {
